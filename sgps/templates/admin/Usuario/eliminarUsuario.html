@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Eliminaci&oacute;n de Usuario{% endblock %}
+{% block head %}Eliminar Usuario {{ usuario.username }}{% endblock %}
+{% block content %}
+
+<p>Esta seguro que desea eliminar a al usuario <strong> {{ usuario.username }} </strong> ?</p>
+<p><strong> Nombre:</strong>  {{ usuario.first_name }}</p>
+<p><strong> Apellido:</strong>  {{ usuario.last_name }}</p>
+<p><strong> Email:</strong>  {{ usuario.email }}</p>
+<form method="post" action=""> 
+<input type="submit" value="eliminar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/usuarios/' "/>
+</form> 
+
+{% endblock %} 

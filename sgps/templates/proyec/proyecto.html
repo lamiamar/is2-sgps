@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Proyecto{% endblock %}
+{% block head %}Proyecto {{proyecto.Nombre}}<br>{% endblock %}
+{% block content %}
+	        <h2>Desarrolar mi proyecto</h2>
+    <br>
+<div class="buttons">
+    <ul>
+	    <li><a href="/proyecto/{{proyecto.id}}/requerimientos/">
+		Especificacion de Requerimientos
+	    </a></li>
+        <br>
+        <br>
+        <li><a href="/proyecto/{{proyecto.id}}/diseno/">
+		Analisis y Diseno
+	    </a></li>
+        <br><br>
+        <li><a href="/proyecto/{{proyecto.id}}/implementacion/">
+		Implementacion
+	    </a></li>
+    </ul>
+</div>
+    <br><br>
+            <h2>Configuraciones</h2>
+    <br>
+
+<div class="buttons">
+    <ul>
+	    <li><a href="/proyectos/{{proyecto.id}}/editar/">
+		Editar
+	    </a></li>
+        <br><br>
+        <li><a href="/proyecto/{{proyecto.id}}/usuarios_miembros/">
+		Miembros del Proyecto
+	    </a></li>
+    </ul>
+</div>
+    <ul>
+<br>  
+<br>
+<div class="buttons">
+	    <a href="/">
+		Atras
+	    </a>
+</div>
+
+{% endblock %}
+

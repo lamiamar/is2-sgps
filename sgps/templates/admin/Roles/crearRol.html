@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Roles{% endblock %}
+{% block head %}Agregar roles<br>{% endblock %}
+{% block content %}
+<form method="post" action=""> 
+	<table>
+    {{ form.as_p}}
+	</table>
+
+<input type="submit" value="Guardar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/roles/{{Tipo}}/' "/>
+</form>
+{% endblock%}

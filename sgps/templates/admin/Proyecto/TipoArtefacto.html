@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Administracion Tipo Artefacto{% endblock %}
+{% block head %}Administraci&oacute;n de Tipo de Artefacto<br>{% endblock %}
+{% block content %}
+<h3><p>Tipos de Artefactos</p></h3>
+    <ul>
+    {% for Tipos in Tipo %}
+   <li>
+	    <td><strong>{{ Tipos.Nombre }}</strong></td>: <td><strong>{{ Tipos.Fase }}</strong></td>
+		
+	    <td><a href="/administracion/tipo_artefacto/editar&id={{ Tipos.id|urlencode }}/" class="edit">editar</a></td>
+	    <td><a href="/administracion/tipo_artefacto/eliminar&id={{ Tipos.id|urlencode }}/" class="edit">eliminar</a></td>
+	  </li>
+    {% endfor %}
+    </ul>
+  <br>
+  <input type="button" value="Nuevo Tipo de Artefacto" onClick = "location.href='/administracion/tipo_artefacto/nuevo/' "/>
+  <input type="button" value="Atras" onClick = "location.href='/' "/>
+{% endblock %}  

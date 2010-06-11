@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Impacto{% endblock %}
+{% block head %}Calculo Impacto de {{ artefacto.Tipo_Artefacto.Nombre}}<br>{% endblock %}
+{% block content %}
+
+	<dl>
+	    <li> Complejidad de {{ artefacto.Tipo_Artefacto.Nombre }} : {{ artefacto.Complejidad }} </li>
+		<li> Calculo Impacto hacia la izquierda: 
+			{% if padres %}
+				<ul>
+				{% for padre in padres %}
+					<li>
+						Complejidad de {{padre.Tipo_Artefacto.Nombre}}: {{padre.Complejidad}}
+					</li>
+				{% endfor %}
+               SubTotal:  {{ CalculoPadres }}
+				</ul>
+			{% endif %}
+		</li>
+		<li> Calculo Impacto hacia la derecha: 
+			{% if hijos %}
+				<ul>
+				{% for hijo in hijos %}
+					<li>
+						Complejidad de {{hijo.Tipo_Artefacto.Nombre}}: {{hijo.Complejidad}}
+					</li>
+				{% endfor %}
+                SubTotal:  {{ CalculoHijos }}
+				</ul>
+             
+			{% endif %}
+		</li>
+		<li> <strong>Calculo Impacto: {{CalculoImpacto}} </strong></li>
+	</dl>
+
+	{% ifequal Fase 'E' %}
+		<input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
+	{% endifequal %}
+	{% ifequal Fase 'D' %}
+		<input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/diseno/' "/>
+	{% endifequal %}
+	{% ifequal Fase 'I' %}
+		<input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
+	{% endifequal %}
+{% endblock %}

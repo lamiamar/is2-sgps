@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Modificaci&oacute;n de Artefactos{% endblock %}
+{% block head %}Modificar Artefacto {{ artefacto.Tipo_Artefacto.Nombre }}{% endblock %}
+{% block content %}
+<form method="post" action=""> 
+	<table>
+    {{form.as_p}}
+	</table>
+<input type="submit" value="Guardar" />
+{% ifequal fase 'E' %}
+	<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/requerimientos/' "/>
+{% endifequal %}
+
+{% ifequal fase 'D' %}
+	<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/diseno/' "/>
+{% endifequal %}
+
+{% ifequal fase 'I' %}
+	<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/implementacion/' "/>
+{% endifequal %}
+</form>
+{% endblock %}

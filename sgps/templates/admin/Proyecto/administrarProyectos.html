@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Administracion Proyecto{% endblock %}
+{% block head %}Administraci&oacute;n de Proyectos<br>{% endblock %}
+{% block content %}
+<h3><p>Proyectos</p></h3>
+    <ul>
+    {% for proyecto in proyectos %}
+      <li>
+	  <strong>{{proyecto.Nombre}}: </strong>{{proyecto.Descripcion}}
+	    <a href="/administracion/proyectos/editar&id={{proyecto.id}}/">editar</a>
+      
+	    <a href="/administracion/proyectos/eliminar/{{ proyecto.id|urlencode }}" class="edit">eliminar</a>
+	  </li>
+	{% endfor %}
+    </ul>
+  <br>
+  <input type="button" value="Nuevo Proyecto" onClick = "location.href='/administracion/proyectos/nuevo/' "/>
+  <input type="button" value="Atras" onClick = "location.href='/' "/>
+{% endblock %}

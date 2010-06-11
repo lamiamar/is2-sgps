@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Pagina principal{% endblock %}
+{% block head %}<center><strong>BIENVENIDOS A SGPS!</strong></center>{% endblock %}
+{% block content %}
+  {% if user.username %}
+    <p> ¡BIENVENIDO/A <strong>{{ user.username }}!</strong></p>
+    <div id="page">
+	    <div id="content">
+		    <div class="post">
+			    <h1 class="title">Administraci&oacute;n del Sistema </h1>
+			    <p class="byline"><small>Sistema de Gestion de Programas Software</small></p>
+			    <div class="entry">
+				    <ol>
+		                <li><a href='/administracion/usuarios'>Administraci&oacute;n de Usuarios</a>
+			
+		                </li>
+
+		                <li><a href='/administracion/proyectos'>Administraci&oacute;n de Proyectos</a>
+			
+		                </li>
+
+		                <li><a href='/administracion/roles'>Administraci&oacute;n de Roles</a>
+			
+		                </li>
+		
+		                <li><a href='/administracion/tipo_artefacto'>Tipo de Artefactos</a>
+			
+		                </li>
+	                </ol>
+			    </div>
+		    </div>
+	    </div>
+	    <!-- end #content -->
+	    <div id="sidebar">
+		    <div id="sidebar-bgtop"></div>
+		    <div id="sidebar-content">
+			    <ul>
+				    <li>
+					    <h2>Mis Proyectos</h2>
+					    <ul>
+
+                            {% for usrolpro in usrolpros %}
+                              <li><a href="/proyectos/{{ usrolpro.proyecto.id|urlencode }}/">{{ usrolpro.proyecto.Nombre }}</a></li>
+                            {% endfor %}
+                            {% for proyecto in proyectos %}
+                              <li><a href="/proyectos/{{ proyecto.id|urlencode }}/">{{ proyecto.Nombre }}</a></li>
+                            {% endfor %}
+					    </ul>
+				    </li>
+			    </ul>
+		    </div>
+		    <div id="sidebar-bgbtm"></div>
+	    </div>
+	    <!-- end #sidebar -->
+    </div>
+  {% else %}
+    <p>
+    Para ingresar vaya a  
+	<a href="/login/">inicio de sesi&oacute;n</a>.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Proyectos{% endblock %}
+{% block head %}Agregar nuevo miembro{{proyecto.id}}<br>{% endblock %}
+{% block content %}
+<form id="form_id" action="" method="post">
+  <p>{{ form.usuario.errors }}<label for="id_nombre">Usuario:</label>{{ form.usuario }}</p> 
+  <p>{{ form.rol.errors }}<label for="id_apellido">Rol:</label>{{ form.rol }}</p> 
+<input type="submit" value="Guardar cambios" />
+<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/usuarios_miembros/' "/>
+</form>
+{% endblock%}

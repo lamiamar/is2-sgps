@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Administracion de Roles{% endblock %}
+{% block head %}Administracion de Roles<br>{% endblock %}
+{% block content %}
+	<h3><p>Roles</p></h3>
+	  <ul>
+		<li><a href='/administracion/roles/{{'S'}}/'>Roles de Sistema</a></li>
+		<li><a href='/administracion/roles/{{'P'}}/'>Roles de Proyectos</a></li>
+
+	  </ul>
+	<br>
+    
+    <input type="button" value="Atras" onClick = "location.href='/' "/>
+
+{% endblock %}

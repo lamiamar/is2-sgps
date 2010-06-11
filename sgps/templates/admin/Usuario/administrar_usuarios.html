@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Administracion Usuario{% endblock %}
+{% block head %}Administrar Usuarios<br>{% endblock %}
+{% block content %}
+{% if usuarios %}
+<h3><p>Usuarios</p></h3>
+  <ul>
+    {% for usuario in usuarios %}
+       	 
+	 <li>
+	    <strong>{{ usuario.username }}</strong>
+		{{ usuario.first_name }}
+		{{ usuario.last_name }}
+
+
+		<a href="/administracion/usuarios/asignar_rol&id={{usuario.id}}/">Asinar Rol de Sistema</a>
+		<a href="/administracion/usuarios/editar/{{ usuario.id|urlencode }}" class="edit">editar</a>
+	   	<a href="/administracion/usuarios/eliminar/{{ usuario.id }}" class="edit">eliminar</a>
+	  </li>
+	
+
+	{% endfor %}
+  </ul>
+{% else %}
+  <p>No existe ning&uacute;n usuario.</p>
+{% endif %}
+<br>
+<input type="button" value="Agregar Usuario" onClick = "location.href='/administracion/usuarios/registrar/' "/>
+<input type="button" value="Atras" onClick = "location.href='/' "/>
+{% endblock %}

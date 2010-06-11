@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Creaci&oacute;n de Proyectos{% endblock %}
+{% block head %}Nuevo Proyecto{% endblock %}
+{% block content %}
+<form method="post" action=""> 
+	<table>
+    {{form.as_p}}
+	</table>
+<input type="submit" value="guardar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/proyectos/' "/>
+</form>
+{% endblock %}
