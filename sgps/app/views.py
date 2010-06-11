@@ -881,3 +881,73 @@ def calculoImpactoPadres(ids, artefacto_id):
             if not relacion.artefactoPadre.id in ids:
                 ids.append(relacion.artefactoPadre.id)
                 calculoImpactoPadres(ids, relacion.artefactoPadre.id)
+                
+                
+############################### ARCHIVOS ##########################################
+
+
+@login_required
+def guardarArchivo(request, id_p, id_ar):
+
+    proyecto = Proyecto.objects.get(id=id_p)
+    if request.method == 'POST':
+        form = ArchivosAdjuntosForm(request.POST, request.FILES)
+        artefacto = Artefacto.objects.get(id=id_ar)
+        
+        adjunto = request.FILES['archivo']
+        
+        try:
+            archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
+                                               Nom_Archivo=adjunto.name)
+            archivo.save()
+            archivo = ArchivosAdjuntos(Artefacto = artefacto,
+                                       Nom_Archivo = adjunto.name,
+                                       Contenido = base64.b64encode(adjunto.read()),
+                                       Tamano = adjunto.size,
+                                       TipoContenido = adjunto.content_type,
+                                       )
+            archivo.save(force_insert=True)
+        except:
+            archivo = ArchivosAdjuntos(Artefacto = artefacto,
+                                       Nom_Archivo = adjunto.name,
+                                       Contenido = base64.b64encode(adjunto.read()),
+                                       Tamano = adjunto.size,
+                                       TipoContenido = adjunto.content_type,
+                                       )
+            archivo.save()
+            
+    form = ArchivosAdjuntosForm()
+    artefacto = Artefacto.objects.get(id=id_ar)
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto)
+
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                         'form': form,
+                                         'artefacto': artefacto,
+                                         'archivos': archivos,
+                                         })
+    return render_to_response('admin/artefacto/adjuntar_archivos.html', contexto)
+
+@login_required
+def obtenerArchivo(request, id_p, id_ar, archivo_id):
+    if request.method == 'GET':
+        elArchivo = ArchivosAdjuntos.objects.get(pk=archivo_id)
+        response = HttpResponse(base64.b64decode(elArchivo.Contenido), content_type=elArchivo.TipoContenido)
+        response['Content-Disposition'] = 'attachment; filename='+elArchivo.Nom_Archivo
+        response['Content-Length'] = elArchivo.Tamano
+        return response
+    return HttpResponse('.')
+
+@login_required
+def eliminar_adjunto(request, id_p, id_ar, archivo_id):
+############## arreglar #################
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    archivo = get_object_or_404(ArchivosAdjuntos, archivo_id)
+    if request.method == 'POST':
+        archivo.Activo = False
+        return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + str(artefacto.id) + "/editar/adjuntar/")
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'artefacto': artefacto,
+                                         'archivo': archivo,
+                                         })
+    return render_to_response('admin/artefacto/eliminar_adjunto.html', contexto)

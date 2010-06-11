@@ -112,13 +112,13 @@ class ProyectoEditarForm(forms.Form):
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     
 class UsuarioProyectoForm(forms.Form):
-    usuario = forms.ModelChoiceField(queryset = User.objects.all())
-    rol = forms.ModelMultipleChoiceField(queryset = Rol.objects.filter(Tipo='P'), widget = forms.CheckboxSelectMultiple, required=False )
+    usuario = forms.ModelChoiceField(queryset=User.objects.all())
+    rol = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='P'), widget=forms.CheckboxSelectMultiple, required=False)
     proyecto = Proyecto()
 
     def clean_usuario(self):
         if 'usuario' in self.cleaned_data:
-            usuarios_existentes = UsuarioRolProyecto.objects.filter(proyecto = 6)
+            usuarios_existentes = UsuarioRolProyecto.objects.filter(proyecto=6)
             
             for i in usuarios_existentes:
                 if(i.usuario.username == self.cleaned_data['usuario']):
@@ -132,19 +132,22 @@ class UsuarioProyectoForm(forms.Form):
 class ArtefactoForm(forms.Form):
 
     Tipo_Artefacto = forms.ModelChoiceField(queryset=None, label='Tipo Artefacto')
-    Proyecto=Proyecto()
-    Prioridad=forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
+    Proyecto = Proyecto()
+    Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
     Complejidad = forms.CharField(max_length=1, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
     def __init__(self, fase, *args, **kwargs):
         super(ArtefactoForm, self).__init__(*args, **kwargs)
         self.fields['Tipo_Artefacto'].queryset = Tipo_Artefacto.objects.filter(Fase=fase)
 class ModificarArtefactoForm(forms.Form):
-    Prioridad=forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
+    Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
     Complejidad = forms.CharField(max_length=1, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
-    Estado = forms.CharField(max_length=1,widget=forms.Select(choices=ESTADO), label=u'Estado')
+    Estado = forms.CharField(max_length=1, widget=forms.Select(choices=ESTADO), label=u'Estado')
 class Tipo_ArtefactoForm(forms.Form): 
     Nombre = forms.CharField(max_length=100, label=u'Nombre')
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    
+class ArchivosAdjuntosForm(forms.Form):
+    archivo = forms.FileField(label=u'Adjuntar archivo', required = False)
 
 
     
