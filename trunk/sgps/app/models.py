@@ -105,11 +105,13 @@ class Artefacto(models.Model):
     Prioridad = models.CharField(max_length=1)
     Complejidad = models.CharField(max_length=1, choices=COMPLEJIDAD)
     Estado = models.CharField(max_length=1, choices=ESTADO)
+    Activo = models.BooleanField(default = True)
     
 class RelacionArtefacto(models.Model):
  
     artefactoPadre = models.ForeignKey(Artefacto, related_name='padre')
     artefactoHijo = models.ForeignKey(Artefacto, related_name='hijo')
+    Activo = models.BooleanField(default = True)
 
     class Meta:
         unique_together = [("artefactoPadre", "artefactoHijo")]
@@ -141,3 +143,21 @@ class Detalle_Linea_Base(models.Model):
   #     self.Numero.Proyecto = self.Proyecto
   #      self.Numero.Tipo_Artefacto = self.Tipo_Artefacto
   #      self.Numero.Ultimo_nro = self.Numero.Ultimo_nro + 1
+
+class ArchivosAdjuntos(models.Model):
+    Artefacto = models.ForeignKey(Artefacto)
+    Nom_Archivo = models.CharField(max_length=50)
+    Contenido = models.TextField()
+    Tamano = models.IntegerField()
+    TipoContenido = models.TextField()
+    Activo = models.BooleanField(default = True)
+
+    class Meta:
+        db_table = 'ArchivosAdjuntos'
+
+class Historial(models.Model):
+    Artefacto = models.ForeignKey(Artefacto)
+    Version = models.IntegerField()
+    Usuario = models.ForeignKey(User)
+    Fecha_modificado = models.DateField()
+    Descripcion = models.TextField()

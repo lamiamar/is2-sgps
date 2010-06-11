@@ -69,5 +69,10 @@ urlpatterns = patterns('',
     (r'^administracion/tipo_artefacto/nuevo/$', Agregar_tipo_artefacto),
     (r'^administracion/tipo_artefacto/eliminar&id=(?P<id>\d+)/$', eliminar_tipo_artefacto),
     (r'^administracion/tipo_artefacto/editar&id=(?P<id>\d+)/$', modificar_tipo_artefacto),
+    
+    ####### ARCHIVO ###########
+    (r'^proyecto/(\d+)/fase/(\d+)/editar/adjuntar/$', guardarArchivo),
+    (r'^proyecto/(\d+)/fase/(\d+)/editar/adjuntar/(\d+)/$', obtenerArchivo),
+    (r'^proyecto/(\d+)/fase/(\d+)/editar/eliminar_adjunto/(\d+)/$', eliminar_adjunto), 
 
 )
