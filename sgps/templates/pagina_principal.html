@@ -11,20 +11,18 @@
 			    <p class="byline"><small>Sistema de Gestion de Programas Software</small></p>
 			    <div class="entry">
 				    <ol>
-		                <li><a href='/administracion/usuarios'>Administraci&oacute;n de Usuarios</a>
-			
-		                </li>
-
-		                <li><a href='/administracion/proyectos'>Administraci&oacute;n de Proyectos</a>
-			
-		                </li>
-
-		                <li><a href='/administracion/roles'>Administraci&oacute;n de Roles</a>
-			
-		                </li>
-		
-		                <li><a href='/administracion/tipo_artefacto'>Tipo de Artefactos</a>
-			
+ 						{% if Usuarios %}
+		                	<li><a href='/administracion/usuarios'>Administraci&oacute;n de Usuarios</a></li>
+                        {% endif %}
+                        {% if Proyectos %}
+		                	<li><a href='/administracion/proyectos'>Administraci&oacute;n de Proyectos</a></li>
+                        {% endif %}
+                        {% if Roles %}
+		                	<li><a href='/administracion/roles'>Administraci&oacute;n de Roles</a></li>
+                        {% endif %}
+                        {% if Tipo_Artefactos %}
+		                	<li><a href='/administracion/tipo_artefacto'>Tipo de Artefactos</a></li>
+                        {% endif %}
 		                </li>
 	                </ol>
 			    </div>
@@ -38,12 +36,8 @@
 				    <li>
 					    <h2>Mis Proyectos</h2>
 					    <ul>
-
-                            {% for usrolpro in usrolpros %}
-                              <li><a href="/proyectos/{{ usrolpro.proyecto.id|urlencode }}/">{{ usrolpro.proyecto.Nombre }}</a></li>
-                            {% endfor %}
-                            {% for proyecto in proyectos %}
-                              <li><a href="/proyectos/{{ proyecto.id|urlencode }}/">{{ proyecto.Nombre }}</a></li>
+                            {% for proyecto in proyectoUser %}
+                              <li><a href="/proyectos/{{ proyecto.id }}/">{{ proyecto.Nombre }}</a></li>
                             {% endfor %}
 					    </ul>
 				    </li>

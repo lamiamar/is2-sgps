@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Gestion Privilegios{% endblock %}
+{% block head %}<center><strong>Gestionar Privilegios de {{permiso.Nombre}}</strong></center><br>{% endblock %}
+{% block content %}
+<form method="post" action=""> 
+	<table>
+    {{form.as_p}}
+	</table>
+<input type="submit" value="Guardar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/roles/permisos/{{rol.id}}/{{rol.Tipo}}/' "/>
+</form>
+{% endblock%} 
