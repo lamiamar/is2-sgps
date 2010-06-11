@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block cuerpo %}
+
+<strong>Listado de preguntas</strong>
+{% if categorias %}
+    {% regroup preguntas by categoria as agrupado %}
+    <ul>
+    {% for grupo in agrupado %}
+        <li>{{ grupo.grouper }}</li>
+        <ul>
+        {% for item in grupo.list %}
+                <li><a href="pregunta/{{item.id}}/">{{ item.titulo }}</a><br>
+                {% for r in respuestas %}
+                    {% ifequal item r.pregunta %}
+                            &nbsp;&nbsp;La pregunta ya ha sido respondida.
+                    {% endifequal %}
+                {% endfor %}
+                </li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay categorías</p>
+{% endif %}
+
+<p><a href="/accounts/logout/">Desconectar</a></p>
+
+{% endblock %}

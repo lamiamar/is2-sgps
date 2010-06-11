@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Inicio de sesi&oacute;n{% endblock %}
+{% block head %}Inicio de sesi&oacute;n{% endblock %}
+{% block content %}
+	<form method="post" action="">
+		<table>
+		{{form.as_table}}
+		<tr>
+		
+		<td><input type="submit" value="Ingresar al Sistema" /></td>
+        <td><input type="hidden" name="next" value="/" /></td>
+		</tr>
+		</table>
+	</form>
+{% endblock %}

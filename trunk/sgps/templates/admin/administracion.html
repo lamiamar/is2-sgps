@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block head %}Administraci&oacute;n del Sistema <br>{% endblock %}
+{% block content %}
+  {% if user.username %}
+
+	<ol>
+		<li><a href='/administracion/usuarios'>Administraci&oacute;n de Usuarios</a>
+			
+		</li>
+
+		<li><a href='/administracion/proyectos'>Administraci&oacute;n de Proyectos</a>
+			
+		</li>
+
+		<li><a href='/administracion/roles'>Administraci&oacute;n de Roles</a>
+			
+		</li>
+		
+		<li><a href='/administracion/tipo_artefacto'>Tipo de Artefactos</a>
+			
+		</li>
+	</ol>
+  {% else %}
+    <p>Necesita iniciar sesi&oacute;n vaya a la p&aacute;gina de 
+	<a href='/login/'>INICIO DE SESI&Oacute;N</a>.</p>
+  {% endif %}
+  <input type="button" value="Atras" onClick = "location.href='/' "/>
+{% endblock %}

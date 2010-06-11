@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Administraci&oacute;n de Artefacto{% endblock %}
+{% block head %}Administraci&oacute;n de Artefacto<br>{% endblock %}
+{% block content %}
+    <ul>
+    {% for artefacto in artefactos %}
+      <li>
+	  <strong>{{ artefacto.Tipo_Artefacto.Nombre }}: 
+     </li>
+    {% endfor %}
+    </ul>
+  <br>
+  <input type="button" value="Nuevo Artefacto" onClick = "location.href='/administracion/artefactos/nuevo/' "/>
+  <input type="button" value="Atras" onClick = "location.href='/administracion' "/>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Eliminaci&oacute;n de Tipo de Artefactos{% endblock %}
+{% block head %}Eliminar Tipo de Artefacto {{ tipo_artefacto.Nombre }}{% endblock %}
+{% block content %}
+<p>Esta seguro que desea eliminar el tipo de artefacto <strong>{{ tipo_artefacto.Nombre }}</strong>?</p>
+<p><strong>{{ tipo_artefacto.Nombre }}:</strong> {{ tipo_artefacto.Fase }}</p>
+<form method="post" action=""> 
+<input type="submit" value="eliminar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/tipo_artefacto/' "/>
+</form> 
+{% endblock %}

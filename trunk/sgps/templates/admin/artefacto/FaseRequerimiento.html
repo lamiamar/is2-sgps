@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Proyecto{% endblock %}
+{% block head %}Especificaci&oacute;n de Requerimientos<br>{% endblock %}
+{% block content %}
+    <ul>
+    {% for artefacto in artefactos %}
+      <li>
+	  <strong>{{ artefacto.Tipo_Artefacto.Nombre }}: </strong>{{ artefacto.Tipo_Artefacto.Fase }}
+	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">editar</a>
+	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">eliminar</a>
+      <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}" class="edit">Relaciones</a>
+      <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
+
+
+	{% ifnotequal artefacto.Estado 'A' %}
+			<a href="/proyectos/{{proyecto.id}}/fase/artefactos/aprobar/{{artefacto.id}}/{{Fase}}/" class="edit">Aprobar</a>
+		{% endifnotequal %}
+
+     </li>
+    {% endfor %}
+    </ul>
+    <input type="button" value="Nuevo Artefacto" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/nuevo/' "/>
+
+    <input type="button" value="Atras" onClick = "location.href='/proyectos/{{proyecto.id}}/' "/>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Modificar cuenta de Usuario{% endblock %}
+{% block head %}Cambiar Contrase&ntilde;a de {{ usuario.username }}{% endblock %}
+{% block content %}
+
+<form method="post" action="">
+  
+  <p><input id="id_username" type="hidden" name="username" maxlength="30" value="{{ usuario.username }}"/></p>
+  <p>{{ form.password.errors }}<label for="id_password1">Contrase&ntilde;a:</label>{{ form.password }}</p> 
+  <p>{{ form.passNueva.errors }}<label for="id_password2">Nueva Contrase&ntilde;a:</label>{{ form.passNueva }}</p> 
+  <p>{{ form.confirmacion.errors }}<label for="id_password2">Confirmar Contrase&ntilde;a:</label>{{ form.confirmacion }}</p> 
+  <input type="submit" value="registrar" />
+  <input type="button" value="Cancelar" onClick = "location.href='/administracion/usuarios/' "/>
+</form>
+
+{% endblock %}

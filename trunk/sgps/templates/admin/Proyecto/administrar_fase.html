@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Administracion Fase{% endblock %}
+{% block head %}Administraci&oacute;n de Fase<br>{% endblock %}
+{% block content %}
+    <ul>
+      <input type="button" value="Especificacion de Requerimientos" onClick = "location.href='/administracion/fase/requerimientos&id={{proyecto.id}}/' "/>
+      <input type="button" value="Analisis y Diseno" onClick = "location.href='/' "/>
+      <input type="button" value="Implementacion" onClick = "location.href='/' "/>
+    {% for fases in fase %}
+      <li>
+	  <strong>{{ fases.Etapa }}: {{ fases.Estado }}</strong>
+	    <a href="/administracion/proyectos/eliminar/{{ fases.id|urlencode }}" class="edit">[eliminar]</a>
+	  </li>
+    {% endfor %}
+    </ul>
+  <br>
+  <input type="button" value="Nueva Fase" onClick = "location.href='/administracion/fase/nuevo/' "/>
+  <input type="button" value="Atras" onClick = "location.href='/administracion/' "/>
+{% endblock %} 

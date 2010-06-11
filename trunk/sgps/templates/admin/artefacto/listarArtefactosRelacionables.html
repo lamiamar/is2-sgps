@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Artefactos{% endblock %}
+{% block head %}Lista de Artefactos Relacionables{% endblock %}
+{% block content %}
+
+{% if artefactos_ant or artefactos %}
+
+     <u> Artefactos de mi Fase  : </u>
+	        {% if artefactos %}
+               
+                <ul>
+		        {% for ar in artefactos %}
+		        
+			         <li><strong>{{ ar.Tipo_Artefacto.Nombre }}</strong> 
+			        <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}/crearRelacion/{{ ar.id|urlencode }}/" class="edit"> relacionar </a></li>
+		        {% endfor %}
+                 </ul>
+	        {% endif %}
+        
+
+    
+            {% if artefactos_ant %}
+                <u> Artefactos de la Fase Anterior: </u>
+                <ul>
+                {% for artefacto2 in artefactos_ant %}
+			        <li><strong>{{ artefacto2.Tipo_Artefacto.Nombre }}</strong>
+			        <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/crearRelacion/{{artefacto2.id}}/" class="edit"> relacionar </a></li>
+		        {% endfor %}
+                </ul>
+                
+	        
+	        {% endif %}
+
+{% else %}
+	<p>No existe ning&uacute;n artefacto dispopnible para relacionar.</p>
+{% endif %}
+
+<input type="button" value="Atras" onClick = "location.href='/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/' "/>
+ 
+
+{% endblock %}
+
+
+

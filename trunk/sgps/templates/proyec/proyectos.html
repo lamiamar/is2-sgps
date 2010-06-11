@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }}{% endblock %}
+{% block head %}Proyectos de {{ user.username }}{% endblock %}
+{% block content %}
+  <ul>
+    {% for proyecto in proyectos %}
+	  <li><a href="/proyectos/{{ proyecto.id|urlencode }}/">{{ proyecto.Nombre }}</a></li>
+    {% endfor %}
+  </ul>
+	<div class="buttons">
+		    <a href="/">
+			Atras
+		    </a>
+	</div>
+{% endblock %}

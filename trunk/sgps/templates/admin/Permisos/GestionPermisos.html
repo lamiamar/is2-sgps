@@ -1,0 +1,19 @@
+ {% extends "base.html" %}
+{% block title %}Gestion Permisos{% endblock %}
+{% block head %}<center><strong>Gestionar Permisos</strong></center>{% endblock %}
+{% block content %}
+	<h3><p>Permisos</p></h3>
+	  <ul>
+      {% if permisos %}
+		{% for permiso in permisos %}
+		  <li>
+			<strong>{{ permiso.Nombre }}:</strong> {{ permiso.Descripcion }}
+            <a href="/administracion/roles/eliminar/{{rol.id}}/{{Tipo}}/" class="edit">configurar privilegios</a>
+		  </li>
+		{% endfor %}
+      {% endif %}
+	  </ul>
+	<br>
+  <input type="button" value="Agregar Permisos" onClick = "location.href='/administracion/roles/permisos/{{rol.id}}/agregar' "/>
+  <input type="button" value="Atras" onClick = "location.href='/administracion/roles/{{Tipo}}/' "/>
+{% endblock %}

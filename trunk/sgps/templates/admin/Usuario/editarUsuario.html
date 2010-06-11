@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Modificar  Usuario{% endblock %}
+{% block head %} Usuario  {{ usuario.username }}{% endblock %}
+{% block content %}
+<form method="post" action="">
+	{{ form.as_p }}
+	<input type="submit" value="Guardar" />
+    <input type="button" value="Cancelar" onClick = "location.href='/administracion/usuarios/' "/>
+</form>
+<br>
+<a href="/administracion/usuarios/cambiar_contrasena/{{ usuario.id }}">cambiar contrase&ntilde;a</a>  
+{% endblock %}

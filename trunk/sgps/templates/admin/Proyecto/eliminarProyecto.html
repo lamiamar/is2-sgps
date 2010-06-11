@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Eliminaci&oacute;n de Proyectos{% endblock %}
+{% block head %}Eliminar Proyecto {{ proyecto.Nombre }}{% endblock %}
+{% block content %}
+<p>Esta seguro que desea eliminar el proyecto <strong>{{ proyecto.Nombre }}</strong>?</p>
+<p><strong>{{ proyecto.Nombre }}: </strong> {{ proyecto.Descripcion }}</p>
+<form method="post" action=""> 
+<input type="submit" value="eliminar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/proyectos/' "/>
+</form> 
+{% endblock %}

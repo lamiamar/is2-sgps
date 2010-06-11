@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Proyectos{% endblock %}
+{% block head %}Relaciones del Artefacto{% endblock %}
+{% block content %}
+
+	
+
+{% if padres or antecesores %}
+        <h4>Relaciones con Artefactos de la misma Fase:</h4>
+	    {% if padres %}
+            Padres:
+	        <ul>
+		    {% for ar in padres%}
+		    	<li>{{ar.Tipo_Artefacto.Nombre}}
+<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ ar.id }}/" class="edit">[eliminar]</a></li>
+		    {% endfor %}
+	        </ul>
+	    {% endif %}
+ 
+        {% if antecesores %}
+	    	<h4>Relaciones con Artefactos de la Fase Anterior:</h4>
+            Antecesores:
+	    	<ul>
+			{% for artefacto2 in antecesores%}
+				<li>{{artefacto2.Tipo_Artefacto.Nombre}}
+					<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
+			{% endfor %}
+	    {% endif %}
+		</ul>
+{% else %}
+	<p>No existe ninguna Relacion </p>
+{% endif %}
+
+<input type="button" value="Agregar Relaci&oacute;n" onClick = "location.href='/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}/listarArtefactos' "/>
+
+{% ifequal fase 'E' %}
+	<input type="button" value="Atras" onClick = "location.href='/proyecto/{{artefacto.Proyecto.id}}/requerimientos/' "/>
+{% endifequal %}
+
+{% ifequal fase 'D' %}
+	<input type="button" value="Atras" onClick = "location.href='/proyecto/{{artefacto.Proyecto.id}}/diseno/' "/>
+{% endifequal %}
+
+{% ifequal fase 'I' %}
+	<input type="button" value="Atras" onClick = "location.href='/proyecto/{{artefacto.Proyecto.id}}/implementacion/' "/>
+{% endifequal %}
+
+	
+{% endblock %}
