@@ -8,7 +8,7 @@
 		{% for permiso in permisos %}
 		  <li>
 			<strong>{{ permiso.Nombre }}:</strong> {{ permiso.Descripcion }}
-            <a href="/administracion/roles/eliminar/{{rol.id}}/{{Tipo}}/" class="edit">configurar privilegios</a>
+            <a href="/administracion/roles/privilegio/{{rol.id}}/{{permiso.id}}/" class="edit">configurar privilegios</a>
 		  </li>
 		{% endfor %}
       {% endif %}

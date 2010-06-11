@@ -15,11 +15,31 @@ from sgps.app.forms import *
 @login_required
 def pagina_principal(request):
     user = User.objects.get(username=request.user.username)
-    proyectos = Proyecto.objects.filter(Usuario=user).order_by('Nombre')
     usrolpros= UsuarioRolProyecto.objects.filter(usuario=user)
+    proyectoUser=Proyecto.objects.filter(id__in=usrolpros).order_by('Nombre')
+    usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
+    Usuarios = False
+    Proyectos = False
+    Roles = False
+    Tipo_Artefactos = False
+    for urs in usrolsis:
+        permi = urs.rol.permisos.all()
+        for per in permi:
+            if per.Nombre =='AdministrarProyectos':
+                Proyectos = True
+            if per.Nombre =='AdministrarUsuarios':
+                Usuarios = True
+            if per.Nombre =='AdministrarRoles':
+                Roles = True              
+            if per.Nombre =='AdministrarTipoDeArtefacto':
+                Tipo_Artefactos = True
     contexto = RequestContext(request, {
+                'proyectoUser': proyectoUser,
                 'usrolpros': usrolpros,
-                'proyectos': proyectos,
+                'Usuarios':Usuarios, 
+                'Proyectos':Proyectos,
+                'Roles':Roles,
+                'Tipo_Artefactos':Tipo_Artefactos,
                 })
     return render_to_response('pagina_principal.html', contexto)
 
@@ -34,7 +54,22 @@ def logout_page(request):
 def administrar_usuarios(request):
     user = User.objects.get(username=request.user.username)
     usuarios = User.objects.all()
-    return render_to_response('admin/Usuario/administrar_usuarios.html', {'username': user.username, 'usuarios': usuarios,})
+    usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    for urs in usrolsis:
+        permi = urs.rol.permisos.filter(Nombre = 'AdministrarUsuarios')
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
+    return render_to_response('admin/Usuario/administrar_usuarios.html', {'username': user.username, 'usuarios': usuarios,'Editar':Editar,'Eliminar':Eliminar,'Escribir':Escribir,})
 
 
 @login_required
@@ -378,7 +413,7 @@ def eliminarRoles(request, id, Tipo):
 @login_required
 def GestionarPermisos(request,id,Tipo):
     rol = get_object_or_404(Rol, pk= id)
-    permisos = rol.Permisos.all()
+    permisos = rol.permisos.all().order_by('Nombre')
     contexto= RequestContext(request, {
                 'permisos' : permisos,
                 'Tipo': Tipo,
@@ -397,15 +432,15 @@ def agregar_permisos(request,id):
         if rol.Tipo == 'P':
             form = PermisoProyectoForm(request.POST)
         if form.is_valid():
-            rol.Permisos.clear()
+            rol.permisos.clear()
             permisos=form.cleaned_data['Permisos']
             for permiso in permisos:
-                rol.Permisos.add(permiso)
+                rol.permisos.add(permiso)
             rol.save()
             return HttpResponseRedirect('/administracion/roles/permisos/' + str(id) +'/' + rol.Tipo + '/')
     else:
         dict = {}
-        listapermiso=rol.Permisos.filter(Tipo=rol.Tipo)
+        listapermiso=rol.permisos.filter(Tipo=rol.Tipo)
         for permiso in listapermiso:
             dict[permiso.id] = True
         if rol.Tipo == 'S':
@@ -419,7 +454,32 @@ def agregar_permisos(request,id):
 
 
 
+##########################CONTROL DE PRIVILEGIOS###########################
 
+@login_required
+def GestionarPrivilegios(request,id,per_id):
+    rol = Rol.objects.get(id=id)
+    permiso = Permiso.objects.get(id=per_id)
+    if request.method == 'POST':
+        form = PrivilegioForm(request.POST)
+        if form.is_valid():
+            permiso.privilegios.clear()
+            privilegios=form.cleaned_data['Privilegios']
+            for privilegio in privilegios:
+                permiso.privilegios.add(privilegio)
+            permiso.save()
+            return HttpResponseRedirect('/administracion/roles/permisos/' + str(id) +'/' + rol.Tipo + '/')
+    else:
+        dict = {}
+        listaprivilegios=permiso.privilegios.all()
+        for privilegio in listaprivilegios:
+            dict[privilegio.id] = True
+        form = PrivilegioForm({'Privilegios': dict})
+    contexto = RequestContext(request, {'form': form,
+                                         'rol': rol,
+                                         'permiso': permiso,
+                                         })
+    return render_to_response('admin/Permisos/GestionPrivilegios.html', contexto)
     
 
 ###########################CONTROL DE ARTEFACTOS###########################

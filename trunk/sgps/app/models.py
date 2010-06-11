@@ -59,7 +59,7 @@ class Permiso(models.Model):
     Nombre = models.CharField(unique=True, max_length=40)
     Descripcion = models.TextField(null=True)
     Tipo = models.CharField(max_length=1, choices=TIPO_ROL)
-    Privilegios = models.ManyToManyField(Privilegio)
+    privilegios = models.ManyToManyField(Privilegio)
     def __unicode__(self):
         return u'%s' % (self.Nombre)
 
@@ -69,7 +69,7 @@ class Rol(models.Model):
     Nombre = models.CharField(unique=True, max_length=40)
     Descripcion = models.TextField(null=True)
     Tipo = models.CharField(max_length=1, choices=TIPO_ROL)
-    Permisos = models.ManyToManyField(Permiso)
+    permisos = models.ManyToManyField(Permiso)
     def __unicode__(self):
         return u'%s' % (self.Nombre)
 
