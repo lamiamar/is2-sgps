@@ -4,30 +4,58 @@
 {% block content %}
 
 	<dl>
-	    <li> Complejidad de {{ artefacto.Tipo_Artefacto.Nombre }} : {{ artefacto.Complejidad }} </li>
+	    <li> Complejidad del Artefacto {{ artefacto.Nombre }} : {{ artefacto.Complejidad }} </li>
 		<li> Calculo Impacto hacia la izquierda: 
 			{% if padres %}
-				<ul>
+				<li>PADRES:</li>
+                <ul>
+                   
 				{% for padre in padres %}
 					<li>
-						Complejidad de {{padre.Tipo_Artefacto.Nombre}}: {{padre.Complejidad}}
+						Complejidad de {{padre.Nombre}}: {{padre.Complejidad}}
 					</li>
 				{% endfor %}
                SubTotal:  {{ CalculoPadres }}
 				</ul>
 			{% endif %}
+            {% if antesesores %}
+				<li>ANTESESORES:</li>
+                <ul>
+                   
+				{% for ante in antesesores %}
+					<li>
+						Complejidad de {{ante.Nombre}}: {{ante.Complejidad}}
+					</li>
+				{% endfor %}
+               SubTotal:  {{ CalculoAntecesores }}
+				</ul>
+			{% endif %}
 		</li>
+            
 		<li> Calculo Impacto hacia la derecha: 
 			{% if hijos %}
+                <li>HIJOS:</li>
 				<ul>
 				{% for hijo in hijos %}
 					<li>
-						Complejidad de {{hijo.Tipo_Artefacto.Nombre}}: {{hijo.Complejidad}}
+						Complejidad de {{hijo.Nombre}}: {{hijo.Complejidad}}
 					</li>
 				{% endfor %}
                 SubTotal:  {{ CalculoHijos }}
 				</ul>
              
+			{% endif %}
+            {% if sucesores %}
+				<li>SUCESORES:</li>
+                <ul>
+                   
+				{% for anteS in sucesores %}
+					<li>
+						Complejidad de {{anteS.Nombre}}: {{anteS.Complejidad}}
+					</li>
+				{% endfor %}
+               SubTotal:  {{ CalculoSucesores }}
+				</ul>
 			{% endif %}
 		</li>
 		<li> <strong>Calculo Impacto: {{CalculoImpacto}} </strong></li>

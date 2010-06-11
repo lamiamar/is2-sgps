@@ -504,6 +504,22 @@ def agregarArtefacto(request, id, fase):
                       Complejidad=form.cleaned_data['Complejidad'],
                       Estado='N',
             )
+            numero= Numeracion.objects.filter(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)
+            if numero:
+                numero= Numeracion.objects.get(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)
+            
+            if numero:
+                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre + str(numero.Ultimo_nro)
+                numero.Ultimo_nro= numero.Ultimo_nro + 1
+                numero.save()
+            else:
+                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre + str(0)
+                print artefacto.Nombre
+                numero=Numeracion(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)   
+                numero.Ultimo_nro=1
+                numero.save()        
+    
+            artefacto.save()
             artefacto.save()
             if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id) + "/requerimientos/")
@@ -787,40 +803,59 @@ def aprobarArtefacto(request, p_id, a_id, fase):
                 return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/implementacion/")
 
 @login_required
+@login_required
 def Calculo_Impacto(request, p_id, artefacto_id):
    
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
     artefacto = Artefacto.objects.get(pk=artefacto_id)
 
-    padresId = []
-    hijosId = []
-    calculoImpactoPadres(padresId, artefacto_id)
-    calculoImpactoHijos(hijosId, artefacto_id)
+    Padres = []
+    Hijos = []
+    calculoImpactoPadres(Padres, artefacto_id)
+    calculoImpactoHijos(Hijos, artefacto_id)
     CalculoPadres=0
     CalculoHijos=0
-    if padresId:
-        for item in padresId:
-            artefacto2 = Artefacto.objects.get(pk=item)
-            complejidad= int(artefacto2.Complejidad)
-            CalculoPadres = CalculoPadres + complejidad
-    if hijosId:
-        for item in hijosId:
-            artefacto3 = Artefacto.objects.get(pk=item)
-            complejidad2= int(artefacto3.Complejidad)
-            CalculoHijos= CalculoHijos + complejidad2
+    CalculoAntecesores=0
+    CalculoSucesores=0
 
-    hijos = Artefacto.objects.filter(id__in=hijosId)
-    padres = Artefacto.objects.filter(id__in=padresId)
-    CalculoImpacto = int(artefacto.Complejidad) + CalculoPadres + CalculoHijos
+    ArtefactosHijos = Artefacto.objects.filter(id__in=Hijos)
+    ArtefactosPadres = Artefacto.objects.filter(id__in=Padres)
+    ArtefactosAntecesores = ArtefactosPadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    ArtefactoSucesores = ArtefactosHijos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    ArtefactosHijos = ArtefactosHijos.exclude(id__in=ArtefactoSucesores)
+    ArtefactosPadres = ArtefactosPadres.exclude(id__in=ArtefactosAntecesores)
+    
+    if ArtefactosPadres:
+        for Ar in ArtefactosPadres:
+            complejidad= int(Ar.Complejidad)
+            CalculoPadres = CalculoPadres + complejidad
+    if ArtefactosHijos:
+        for Ar in ArtefactosHijos:
+            complejidad2= int(Ar.Complejidad)
+            CalculoHijos= CalculoHijos + complejidad2
+    
+    if ArtefactosAntecesores:
+        for Ar in ArtefactosAntecesores:
+            complejidad= int(Ar.Complejidad)
+            CalculoAntecesores = CalculoAntecesores + complejidad
+    if ArtefactoSucesores:
+        for Ar in ArtefactoSucesores:
+            complejidad= int(Ar.Complejidad)
+            CalculoSucesores = CalculoSucesores + complejidad
+    CalculoImpacto = int(artefacto.Complejidad) + CalculoPadres + CalculoHijos + CalculoAntecesores + CalculoSucesores
 
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'Fase': artefacto.Tipo_Artefacto.Fase,
                                          'artefacto': artefacto,
                                          'CalculoHijos': CalculoHijos,
-                                         'hijos': hijos,
+                                         'hijos': ArtefactosHijos,
                                          'CalculoPadres': CalculoPadres,
-                                         'padres': padres,
+                                         'padres': ArtefactosPadres,
+                                         'antesesores': ArtefactosAntecesores,
+                                         'CalculoAntecesores':CalculoAntecesores,
+                                         'sucesores':ArtefactoSucesores,
+                                         'CalculoSucesores':CalculoSucesores,
                                          'CalculoImpacto': CalculoImpacto,
                                          
                                          })
