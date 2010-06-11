@@ -5,7 +5,7 @@
     <ul>
     {% for artefacto in artefactos %}
       <li>
-	  <strong>{{ artefacto.Tipo_Artefacto.Nombre }} </strong>
+	  <strong>{{ artefacto.Nombre }}: </strong>{{ artefacto.Tipo_Artefacto.Fase }}
 	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">editar</a>
       <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">eliminar</a>
 

@@ -90,8 +90,13 @@ class Tipo_Artefacto(models.Model):
 #    Proyecto = models.ForeignKey(Proyecto)
 #    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
 #    Ultimo_nro = models.IntegerField()
+class Numeracion(models.Model):
+    Proyecto = models.ForeignKey(Proyecto)
+    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
+    Ultimo_nro = models.IntegerField(null=True)
 
 class Artefacto(models.Model):
+    Nombre=models.CharField(max_length=40)
     Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
     Proyecto = models.ForeignKey(Proyecto)
     #Fase = models.CharField(max_length=1, choices=ETAPA)
