@@ -146,9 +146,6 @@ class Tipo_ArtefactoForm(forms.Form):
     Nombre = forms.CharField(max_length=100, label=u'Nombre')
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
 
-class FaseForm(forms.Form):
-    Estado = forms.CharField(max_length=1, widget=forms.Select(choices=ESTADO), label=u'ESTADO')
-    Etapa = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
 
     
     
