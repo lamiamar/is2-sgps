@@ -8,7 +8,7 @@
 	{% for item in miembros %}
 		<li>
         <strong>{{item.username}} 
-        {% if Editar %}
+        {% if Modificar %}
         	<a href="/proyecto/{{proyecto.id}}/usuarios_miembros/asignar_rol/{{item.id}}/">Asignar Rol</a>
         {% endif %}
         {% if Eliminar %}
@@ -19,7 +19,7 @@
 </ul>
 
 <p>
-{% if Escribir %}
+{% if Crear %}
 <input type="button" value="Agregar nuevo Miembro" onClick = "location.href='/proyecto/{{proyecto.id}}/usuarios_miembros/agregar_usuario/' "/>
 {% endif %}
 <input type="button" value="Atras" onClick = "location.href='/proyectos/{{proyecto.id}}' "/>

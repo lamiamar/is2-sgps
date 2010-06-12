@@ -13,7 +13,7 @@
 		{% for rol in roles %}
 		  <li>
 			<strong>{{ rol.Nombre }}:</strong> {{ rol.Descripcion }}
-			{% if Editar %}
+			{% if Modificar %}
 				<a href="/administracion/roles/editar/{{ rol.id }}/{{Tipo}}/" class="edit">editar</a>
             	<a href="/administracion/roles/permisos/{{rol.id}}/{{Tipo}}/" class="edit">configurar permisos</a>
 			{% endif %}
@@ -24,7 +24,7 @@
 		{% endfor %}
 	  </ul>
 	<br>
-    {% if Escribir %}
+    {% if Crear %}
 		<input type="button" value="Agregar nuevo Rol" onClick = "location.href='/administracion/roles/nuevo/{{Tipo}}/' "/>
     {% endif %}
     <input type="button" value="Atras" onClick = "location.href='/administracion/roles/' "/>

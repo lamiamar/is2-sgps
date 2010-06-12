@@ -6,7 +6,7 @@
     {% for artefacto in artefactos %}
       <li>
 	  <<strong>{{ artefacto.Nombre }}: </strong>{{ artefacto.Tipo_Artefacto.Fase }}
-	 {% if Editar%}
+	 {% if Modificar%}
 	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">editar</a>
       <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}" class="edit">Relaciones</a>
       <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
@@ -20,7 +20,7 @@
      </li>
     {% endfor %}
     </ul>
-    {% if Escribir %}
+    {% if Crear %}
     <input type="button" value="Nuevo Artefacto" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/nuevo/' "/>
 	{% endif %}
     <input type="button" value="Atras" onClick = "location.href='/proyectos/{{proyecto.id}}/' "/>
