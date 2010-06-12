@@ -72,7 +72,7 @@ class RolSistemaForm(forms.Form):
                                            widget=forms.CheckboxSelectMultiple, required=False)
 class AsignarRolProyectoForm(forms.Form):
 
-    roles = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='P'),
+    roles = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='P').exclude(Nombre= 'Lider de Proyecto'),
                                            widget=forms.CheckboxSelectMultiple, required=False)    
 ############################# Contro de Roles #############################
 
@@ -113,7 +113,8 @@ class ProyectoEditarForm(forms.Form):
     
 class UsuarioProyectoForm(forms.Form):
     usuario = forms.ModelChoiceField(queryset=User.objects.all())
-    rol = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='P'), widget=forms.CheckboxSelectMultiple, required=False)
+    rol = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='P').exclude(Nombre= 'Lider de Proyecto'),
+                                          widget=forms.CheckboxSelectMultiple, required=False)
     proyecto = Proyecto()
 
     def clean_usuario(self):

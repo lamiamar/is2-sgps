@@ -278,7 +278,7 @@ def proyecto(request, id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=id)
     roles = UsuarioRolProyecto.objects.filter(usuario=user, proyecto=proyecto).values_list('rol',flat=True)
-    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user, proyecto = proyecto)
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user, proyecto = proyecto).exclude(rol = None)
     Requerimientos = False
     Diseno = False
     Implementacion = False
@@ -310,7 +310,7 @@ def usuariosMiembros(request, id):
     for user in UsRoPo:
         if not user.usuario in miembros:
             miembros.append(user.usuario)
-    usrolpro= UsuarioRolProyecto.objects.filter(usuario = usuario)
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = usuario).exclude(rol = None)
     Modificar = False
     Eliminar = False
     Crear = False
@@ -361,7 +361,9 @@ def asignarRolProyecto(request, id, id_us):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk = id)
     usuario = User.objects.get(pk = id_us)
-    URP= UsuarioRolProyecto.objects.filter(proyecto = proyecto, usuario = usuario)
+    form = AsignarRolProyectoForm()
+    rol = Rol.objects.get(Nombre= 'Lider de Proyecto')
+    URP= UsuarioRolProyecto.objects.filter(proyecto = proyecto, usuario = usuario).exclude(rol = rol)
     if request.method == 'POST':
         form = AsignarRolProyectoForm(request.POST)
         if form.is_valid():
