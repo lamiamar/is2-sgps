@@ -7,7 +7,7 @@
     {% for proyecto in proyectos %}
       <li>
 	  <strong>{{proyecto.Nombre}}: </strong>{{proyecto.Descripcion}}
-	  {% if Editar %}
+	  {% if Modificar %}
 	    <a href="/administracion/proyectos/editar&id={{proyecto.id}}/">editar</a>
       {% endif %}
       {% if Eliminar %}  
@@ -17,7 +17,7 @@
 	{% endfor %}
     </ul>
   <br>
-  {% if Escribir %}
+  {% if Crear %}
   	<input type="button" value="Nuevo Proyecto" onClick = "location.href='/administracion/proyectos/nuevo/' "/>
   {% endif %}
   <input type="button" value="Atras" onClick = "location.href='/' "/>

@@ -12,7 +12,7 @@
 		{{ usuario.first_name }}
 		{{ usuario.last_name }}
 
-		{% if Editar %}
+		{% if Modificar %}
 			<a href="/administracion/usuarios/asignar_rol&id={{usuario.id}}/">Asinar Rol de Sistema</a>
 			<a href="/administracion/usuarios/editar/{{ usuario.id|urlencode }}" class="edit">editar</a>
 	   	{% endif %}
@@ -28,7 +28,7 @@
   <p>No existe ning&uacute;n usuario.</p>
 {% endif %}
 <br>
-{% if Escribir %}
+{% if Crear %}
 	<input type="button" value="Agregar Usuario" onClick = "location.href='/administracion/usuarios/registrar/' "/>
 {% endif %}
 <input type="button" value="Atras" onClick = "location.href='/' "/>
