@@ -17,7 +17,7 @@
 		<ul>
             <li class="active"><a href="/">Pagina principal</a></li>
 			{% if user.is_authenticated %}
-			    <li class="active"><a href="/administracion/usuarios/editar/?nombre={{ user.username|urlencode }}">mi cuenta</a></li>
+			    <li class="active"><a href="administracion/usuarios/editar/{{ user.id }}">mi cuenta</a></li>
 			    <li class="active"><a href="/logout/">cerrar sesi&oacute;n</a></li>
             {% else %}
                 <li class="active"><a href="/login/">iniciar sesi&oacute;n</a></li> 
