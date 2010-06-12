@@ -6,18 +6,24 @@
     <br>
 <div class="buttons">
     <ul>
+      {% if Requerimientos %}
 	    <li><a href="/proyecto/{{proyecto.id}}/requerimientos/">
 		Especificacion de Requerimientos
 	    </a></li>
+	  {% endif %}
         <br>
         <br>
+      {% if Diseno%}
         <li><a href="/proyecto/{{proyecto.id}}/diseno/">
 		Analisis y Diseno
 	    </a></li>
+	  {% endif %}
         <br><br>
+      {% if Implementacion%}
         <li><a href="/proyecto/{{proyecto.id}}/implementacion/">
 		Implementacion
 	    </a></li>
+	  {% endif %}
     </ul>
 </div>
     <br><br>
@@ -26,13 +32,17 @@
 
 <div class="buttons">
     <ul>
+      {% if EditarProyecto%}
 	    <li><a href="/proyectos/{{proyecto.id}}/editar/">
 		Editar
 	    </a></li>
+	  {% endif %}
         <br><br>
+      {% if AgregarMiembro%}
         <li><a href="/proyecto/{{proyecto.id}}/usuarios_miembros/">
 		Miembros del Proyecto
 	    </a></li>
+	  {% endif %}
     </ul>
 </div>
     <ul>
