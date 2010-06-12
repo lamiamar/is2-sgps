@@ -15,7 +15,7 @@ from sgps.app.forms import *
 @login_required
 def pagina_principal(request):
     user = User.objects.get(username=request.user.username)
-    usrolpros= UsuarioRolProyecto.objects.filter(usuario=user)
+    usrolpros= UsuarioRolProyecto.objects.filter(usuario = user).values_list('proyecto', flat=True).distinct()
     proyectoUser=Proyecto.objects.filter(id__in=usrolpros).order_by('Nombre')
     usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
     Usuarios = False
@@ -178,7 +178,23 @@ def asignarRolesSistema(request, usuario_id):
 @login_required
 def administrar_proyectos(request):
     proyectos = Proyecto.objects.all().order_by('Nombre')
-    return render_to_response('admin/Proyecto/administrarProyectos.html', {'proyectos': proyectos,})
+    user = User.objects.get(username=request.user.username)
+    usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    for urs in usrolsis:
+        permi = urs.rol.permisos.filter(Nombre = 'AdministrarProyectos')
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
+    return render_to_response('admin/Proyecto/administrarProyectos.html', {'proyectos': proyectos,'Editar':Editar,'Eliminar':Eliminar,'Escribir':Escribir,})
 
 @login_required
 def nuevo_proyecto(request):
@@ -191,6 +207,14 @@ def nuevo_proyecto(request):
                                 Descripcion=form.cleaned_data["Descripcion"],
                                 )
             proyecto.save()
+            rol = Rol.objects.get(Nombre = 'Lider de Proyecto')
+            URP = UsuarioRolProyecto.objects.filter(usuario= proyecto.Usuario, proyecto = proyecto, rol = rol )
+            if not URP:
+                UserRolPro = UsuarioRolProyecto(usuario=proyecto.Usuario,
+                             proyecto=proyecto,
+                             rol=rol,
+                                )
+                UserRolPro.save()
             return HttpResponseRedirect('/administracion/proyectos/')
     else:
         form = ProyectoForm()
@@ -206,7 +230,14 @@ def modificarProyecto(request, id):
             proyecto.Usuario=form.cleaned_data['Usuario']
             proyecto.Descripcion=form.cleaned_data['Descripcion']
             proyecto.save()
-            
+            rol = Rol.objects.get(Nombre = 'Lider de Proyecto')
+            URP = UsuarioRolProyecto.objects.filter(usuario= proyecto.Usuario, proyecto = proyecto, rol = rol )
+            if not URP:
+                UserRolPro = UsuarioRolProyecto(usuario=proyecto.Usuario,
+                             proyecto=proyecto,
+                             rol=rol,
+                                )
+                UserRolPro.save()
             return HttpResponseRedirect('/administracion/proyectos/')
     else:
         
@@ -246,8 +277,28 @@ def proyecto(request, id):
     
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=id)
+    roles = UsuarioRolProyecto.objects.filter(usuario=user, proyecto=proyecto).values_list('rol',flat=True)
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user, proyecto = proyecto)
+    Requerimientos = False
+    Diseno = False
+    Implementacion = False
+    EditarProyecto = False
+    AgregarMiembro = False
+    for urp in usrolpro:
+        permi = urp.rol.permisos.all()
+        for per in permi:
+            if per.Nombre =='Requerimientos':
+                Requerimientos = True
+            if per.Nombre =='Diseno':
+                Diseno = True
+            if per.Nombre =='Implementacion':
+                Implementacion = True              
+            if per.Nombre =='EditarProyecto':
+                EditarProyecto = True
+            if per.Nombre =='AgregarMiembro':
+                AgregarMiembro = True
         
-    return render_to_response('proyec/proyecto.html', {'proyecto': proyecto})
+    return render_to_response('proyec/proyecto.html', {'proyecto': proyecto,'Requerimientos':Requerimientos, 'Diseno':Diseno,'Implementacion':Implementacion,'EditarProyecto':EditarProyecto,'AgregarMiembro':AgregarMiembro,})
 
 @login_required
 def usuariosMiembros(request, id):
@@ -258,8 +309,25 @@ def usuariosMiembros(request, id):
     for user in UsRoPo:
         if not user.usuario in miembros:
             miembros.append(user.usuario)
-    
-    return render_to_response('admin/Proyecto/administrarMiembros.html',{'user':user, 'proyecto':Proyecto.objects.get(id=id), 'miembros': miembros})
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    print 'carajo'
+    for urp in usrolpro:
+        permi = urp.rol.permisos.filter(Nombre = 'AgregarMiembro')
+        
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
+    return render_to_response('admin/Proyecto/administrarMiembros.html',{'user':user, 'proyecto':Proyecto.objects.get(id=id), 'miembros': miembros,'Editar':Editar, 'Eliminar':Eliminar, 'Escribir':Escribir,})
 
 @login_required
 def agregar_miembros(request, id):
@@ -354,11 +422,29 @@ def administrar_roles(request):
 
 @login_required
 def administrar_rolesTipo(request, Tipo):
-
+    user = User.objects.get(username=request.user.username)
     roles = Rol.objects.filter(Tipo= Tipo).order_by('Nombre')
+    usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    for urs in usrolsis:
+        permi = urs.rol.permisos.filter(Nombre = 'AdministrarRoles')
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
     contexto= RequestContext(request, {
                 'roles': roles,
                 'Tipo': Tipo,
+                'Editar':Editar,
+                'Eliminar':Eliminar,
+                'Escribir':Escribir,
                 })
     return render_to_response('admin/Roles/Listar_roles.html', contexto)
 
@@ -576,7 +662,24 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
 def TipoArtefactos(request):
 
     Tipo = Tipo_Artefacto.objects.all()
-    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'Tipo': Tipo,})
+    proyectos = Proyecto.objects.all().order_by('Nombre')
+    user = User.objects.get(username=request.user.username)
+    usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    for urs in usrolsis:
+        permi = urs.rol.permisos.filter(Nombre = 'AdministrarTipoDeArtefacto')
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
+    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'Tipo': Tipo,'Editar':Editar, 'Eliminar':Eliminar, 'Escribir':Escribir,})
 
 
 def Agregar_tipo_artefacto(request):
@@ -630,10 +733,27 @@ def FaseERequerimientos(request, id):
     proyecto = Proyecto.objects.get(id=id)
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='E')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
-    
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    for urp in usrolpro:
+        permi = urp.rol.permisos.filter(Nombre = 'Requerimientos')
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'E',
+                                         'Editar': Editar,
+                                         'Eliminar': Eliminar,
+                                         'Escribir': Escribir,
                                          })
     return render_to_response('admin/artefacto/FaseRequerimiento.html', contexto)
 
@@ -645,9 +765,27 @@ def FaseDiseno(request, id):
     proyecto = Proyecto.objects.get(id=id)
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='D')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    for urp in usrolpro:
+        permi = urp.rol.permisos.filter(Nombre = 'Diseno')
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'D',
+                                         'Editar': Editar,
+                                         'Eliminar': Eliminar,
+                                         'Escribir': Escribir,
                                          })
     return render_to_response('admin/artefacto/FaseDiseno.html', contexto)
 
@@ -658,9 +796,27 @@ def FaseImplementacion(request, id):
     proyecto = Proyecto.objects.get(id=id)
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='I')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
+    Editar = False
+    Eliminar = False
+    Escribir = False
+    for urp in usrolpro:
+        permi = urp.rol.permisos.filter(Nombre = 'Implementacion')
+        for per in permi:
+            privi = per.privilegios.all()
+            for pri in privi:
+                if pri.Nombre =='Editar':
+                    Editar = True
+                if pri.Nombre =='Eliminar':
+                    Eliminar = True
+                if pri.Nombre =='Escribir':
+                    Escribir = True
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'I',
+                                         'Editar': Editar,
+                                         'Eliminar': Eliminar,
+                                         'Escribir': Escribir,
                                          })
     return render_to_response('admin/artefacto/FaseImplementacion.html', contexto)
 
