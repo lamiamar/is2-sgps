@@ -32,17 +32,22 @@
 
 <div class="buttons">
     <ul>
+        <li><a href="/proyecto/{{proyecto.id}}/lineaBase/">
+		Generar Linea Base
+	    </a></li>
+        <br>
       {% if EditarProyecto%}
 	    <li><a href="/proyectos/{{proyecto.id}}/editar/">
 		Editar
 	    </a></li>
 	  {% endif %}
-        <br><br>
+        <br>
       {% if AgregarMiembro%}
         <li><a href="/proyecto/{{proyecto.id}}/usuarios_miembros/">
 		Miembros del Proyecto
 	    </a></li>
 	  {% endif %}
+        
     </ul>
 </div>
     <ul>

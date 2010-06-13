@@ -31,6 +31,8 @@ urlpatterns = patterns('',
     
     (r'^administracion/proyectos/editar&id=(?P<id>\d+)/$', modificarProyecto),
     (r'^proyectos/(?P<id>\d+)/editar/$', editar_proyecto),
+    (r'^proyecto/(\d+)/lineaBase/(\w+)/generarLB/$', GenerarLineaBase),
+    (r'^proyecto/(\d+)/lineaBase/$', LineaBase),
     (r'^proyecto/(?P<id>\d+)/usuarios_miembros/$', usuariosMiembros),
     (r'^proyecto/(?P<id>\d+)/usuarios_miembros/agregar_usuario/$', agregar_miembros),
     (r'^proyecto/(?P<id>\d+)/usuarios_miembros/asignar_rol/(?P<id_us>\d+)/$', asignarRolProyecto),

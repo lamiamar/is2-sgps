@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Proyecto{% endblock %}
+{% block head %}L&iacute;nea Base<br>{% endblock %}
+{% block content %}
+	
+		{% ifequal fase 'E' %}
+            La siguiente Fase puede ser aprobada si cumple con todas las condiciones:
+            <ul>
+	            <li>Todos los artefactos deben estar relacionados con al menos un artefacto de fase  anterior</li>
+                <li>Deben estar aprobados todos los artefactos de la Fase</li>
+            </ul>
+			<h3> <strong>Fase de Especificaci&oacute;n de Requerimientos</strong></h3> <input type="button" value="Comprobar" onClick = "location.href='/proyecto/{{proyecto.id}}/lineaBase/{{fase}}/generarLB/' "/>
+		{% endifequal %}
+
+		{% ifequal fase 'D' %}
+            
+             Las  siguientes Fases del Proyecto ya fueron Aprobadas:
+            <ul>
+	            <li>Especificacion de Requerimientos</li>
+            </ul>
+            La siguiente Fase puede ser aprobada si cumple con todas las condiciones:
+            <ul>
+	            <li>Todos los artefactos deben estar relacionados con al menos un artefacto de fase  anterior</li>
+                <li>Deben estar aprobados todos los artefactos de la Fase</li>
+            </ul>
+                
+            <h3><strong>Fase de Dise&ntilde;o</strong></h3> <input type="button" value="Comprobar" onClick = "location.href='/proyecto/{{proyecto.id}}/lineaBase/{{fase}}/generarLB/' "/>
+		{% endifequal %}
+
+		{% ifequal fase 'I' %}
+             
+             Las  siguientes Fases del Proyecto ya fueron Aprobadas:
+            <ul>
+	            <li>Especificacion de Requerimientos</li>
+                <li>Disenho</li>
+            </ul>
+            La siguiente Fase puede ser aprobada si cumple con todas las condiciones:
+            <ul>
+	            <li>Todos los artefactos deben estar relacionados con al menos un artefacto de fase  anterior</li>
+                <li>Deben estar aprobados todos los artefactos de la Fase</li>
+            </ul>
+
+            <h3><strong>Fase de Implementaci&oacute;n</strong></h3> <input type="button" value="Comprobar" onClick = "location.href='/proyecto/{{proyecto.id}}/lineaBase/{{fase}}/generarLB/' "/>
+		{% endifequal %}
+
+		{% ifequal fase 'T' %}
+			<strong><p>El Proyecto ha Finalizado!! </p></strong>
+            Las  siguientes Fases del Proyecto ya fueron Aprobadas:
+            <ul>
+	            <li>Especificacion de Requerimientos</li>
+                <li>Disenho</li>
+                <li>Implementacion</li>
+            </ul>
+		{% endifequal %}
+
+<input type="button" value="Volver" onClick = "location.href='/proyectos/{{proyecto.id}}/' "/>
+
+{% endblock %}
