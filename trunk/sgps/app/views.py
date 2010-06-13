@@ -732,6 +732,10 @@ def eliminar_tipo_artefacto(request, id):
 def FaseERequerimientos(request, id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
+    Aprobado=False
+    LineaBaseReq= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
+    if LineaBaseReq:
+        Aprobado=True
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='E')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
@@ -755,6 +759,7 @@ def FaseERequerimientos(request, id):
                                          'Modificar': Modificar,
                                          'Eliminar': Eliminar,
                                          'Crear': Crear,
+                                         'Aprobado': Aprobado,
                                          })
     return render_to_response('admin/artefacto/FaseRequerimiento.html', contexto)
 
@@ -764,6 +769,15 @@ def FaseERequerimientos(request, id):
 def FaseDiseno(request, id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
+    
+    LineaBaseReq= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
+    LineaBaseDisenho= Linea_Base.objects.filter(Proyecto=proyecto, Fase='D')
+    Paso=False
+    if LineaBaseReq:
+        Paso=True
+        if LineaBaseDisenho:
+            Paso=False
+
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='D')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
@@ -784,6 +798,7 @@ def FaseDiseno(request, id):
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'D',
+                                         'Paso': Paso,
                                          'Modificar': Modificar,
                                          'Eliminar': Eliminar,
                                          'Crear': Crear,
@@ -795,6 +810,13 @@ def FaseDiseno(request, id):
 def FaseImplementacion(request, id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
+    LineaBaseDisenho= Linea_Base.objects.filter(Proyecto=proyecto, Fase='D')
+    LineaBaseImplem= Linea_Base.objects.filter(Proyecto=proyecto, Fase='I')
+    Paso=False
+    if LineaBaseDisenho:
+        Paso=True
+        if LineaBaseImplem:
+            Paso=False
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='I')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
@@ -815,6 +837,7 @@ def FaseImplementacion(request, id):
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'I',
+                                         'Paso': Paso,
                                          'Modificar': Modificar,
                                          'Eliminar': Eliminar,
                                          'Crear': Crear,
@@ -1142,15 +1165,17 @@ def GenerarLineaBase(request, p_id, fase):
    
     TipoArtefacto = Tipo_Artefacto.objects.filter(Fase=fase)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto)
-    if request.method == 'POST':
-        if artefactos:
-            error=comprobarCondiciones(artefactos, lista, fase)
-            if not error:
-                    LineaBase= Linea_Base(Fase=fase, Proyecto=proyecto)
-                    LineaBase.save()
-                    return HttpResponseRedirect('/proyecto/'+ str(proyecto.id) + '/lineaBase/')
-            else:
-                error= "No existe ningun artefacto en la Fase"
+    
+    if artefactos:
+        error=comprobarCondiciones(artefactos, lista, fase)
+        print error
+        if not error:
+            if request.method == 'POST':
+                LineaBase= Linea_Base(Fase=fase, Proyecto=proyecto)
+                LineaBase.save()
+                return HttpResponseRedirect('/proyecto/'+ str(proyecto.id) + '/lineaBase/')
+    else:
+        error= "No existe ningun artefacto en la Fase"
     contexto = RequestContext(request, {
                             'mensaje': error,
                             'artefactos':lista,                        
