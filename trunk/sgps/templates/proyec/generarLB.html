@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Proyecto{% endblock %}
+{% block head %}Generacion de L&iacute;nea Base<br>{% endblock %}
+{% block content %}
+
+    {% if mensaje %}
+
+	    <h4>No se puede generar la linea base: {{mensaje}} </h4>
+        
+        {% if artefactos %}
+        <h4>Problema con los siguientes artefactos</h4>
+        <ul> 
+         {% for artefacto in artefactos %}
+	          <li>{{ artefacto.Nombre }}</li>
+        {% endfor %}
+        
+        </ul>
+
+        {% endif %}
+   {% else %}
+
+<form method="post" action=""> 
+<h4> La fase cumple con las condiciones exactas para la genarcion de Linea Base<h4>
+<h4>Esta seguro que desea Generar la linea Base para esta fase?<h4>
+<input type="submit" value="Generar Linea Base" />
+<input type="button" value="Cancelar" onClick = "location.href='/proyectos/{{proyecto.id}}/' "/>
+</form> 
+
+   {% endif %}
+
+{% endblock %}

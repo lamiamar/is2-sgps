@@ -859,7 +859,7 @@ def listarArtefactoRelacionables(request, p_id, a_id):
     listaArtefactos= eliminarDescendientes(listaArtefactos, artefacto)
     if artefacto.Tipo_Artefacto.Fase == 'I':
         tipos_req = Tipo_Artefacto.objects.filter(Fase='E')
-        artefactos = artefactos.exclude(Tipo_Artefacto__in=tipos_req)
+        listaArtefactos = listaArtefactos.exclude(Tipo_Artefacto__in=tipos_req)
 
     artefactos_ant = listaArtefactos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
 
@@ -1108,3 +1108,74 @@ def eliminar_adjunto(request, id_p, id_ar, archivo_id):
                                          'archivo': archivo,
                                          })
     return render_to_response('admin/artefacto/eliminar_adjunto.html', contexto)
+
+@login_required
+def LineaBase(request, p_id):
+    proyecto = Proyecto.objects.get(id=p_id)
+    requerimientos= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
+    fase='E'
+    if requerimientos:
+        disenho= Linea_Base.objects.filter(Proyecto=proyecto, Fase='D')
+        fase= 'D'
+        if disenho:
+            implementacion= Linea_Base.objects.filter(Proyecto=proyecto, Fase='I')
+            fase='I'
+            if implementacion:
+                fase='T'
+    
+    contexto = RequestContext(request, {
+                'proyecto': proyecto,
+                'fase':fase,
+                })
+
+    return render_to_response('proyec/lineaBase.html', contexto)
+
+      
+
+
+@login_required
+def GenerarLineaBase(request, p_id, fase):
+    
+    proyecto = Proyecto.objects.get(id=p_id)
+    lista=[]
+    error= None
+   
+    TipoArtefacto = Tipo_Artefacto.objects.filter(Fase=fase)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto)
+    if request.method == 'POST':
+        if artefactos:
+            error=comprobarCondiciones(artefactos, lista, fase)
+            if not error:
+                    LineaBase= Linea_Base(Fase=fase, Proyecto=proyecto)
+                    LineaBase.save()
+                    return HttpResponseRedirect('/proyecto/'+ str(proyecto.id) + '/lineaBase/')
+            else:
+                error= "No existe ningun artefacto en la Fase"
+    contexto = RequestContext(request, {
+                            'mensaje': error,
+                            'artefactos':lista,                        
+                            'proyecto': proyecto,
+                            'fase': fase,
+                            })
+    
+    return render_to_response('proyec/generarLB.html', contexto)
+
+def comprobarCondiciones(artefactos, lista, fase):
+      NoAprobados = artefactos.exclude(Estado='A')
+      if  NoAprobados:
+          lista.extend(NoAprobados)
+          mensaje="Hay artefactos no aprobados aun"
+          return mensaje
+      else:
+          if fase == 'E':
+             return None
+          else:
+               for artefacto in artefactos:
+                  relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto)
+                  if not relaciones:
+                     lista.append(artefacto)
+               if lista:
+                  mensaje= "Hay artefactos que no estan relacionados con ningun artefacto de la face anterior"
+                  return  mensaje
+               else: 
+                 return None
