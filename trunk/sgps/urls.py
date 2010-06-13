@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     # Contro de usuarios.......................
     (r'^administracion/usuarios/$', administrar_usuarios),
     (r'^administracion/usuarios/registrar/$', agregarUsuario),
-    (r'^administracion/usuarios/editar/(\d+)$', editarUsuario),
+    (r'^administracion/usuarios/editar/(\d+)/$', editarUsuario),
     (r'^administracion/usuarios/cambiar_contrasena/(\d+)$', ModificarContrasena),
     (r'^administracion/usuarios/eliminar/(\d+)$', eliminarUsuario),
     (r'^administracion/usuarios/asignar_rol&id=(?P<usuario_id>\d+)/$', asignarRolesSistema),

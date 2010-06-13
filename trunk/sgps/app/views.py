@@ -53,7 +53,7 @@ def logout_page(request):
 @login_required
 def administrar_usuarios(request):
     user = User.objects.get(username=request.user.username)
-    usuarios = User.objects.all()
+    usuarios = User.objects.all().order_by('username')
     usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
     Modificar = False
     Eliminar = False
@@ -69,11 +69,12 @@ def administrar_usuarios(request):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
-    return render_to_response('admin/Usuario/administrar_usuarios.html', {'username': user.username, 'usuarios': usuarios,'Modificar':Modificar,'Eliminar':Eliminar,'Crear':Crear,})
+    return render_to_response('admin/Usuario/administrar_usuarios.html',{'user': user, 'usuarios': usuarios,'Modificar':Modificar,'Eliminar':Eliminar,'Crear':Crear,})
 
 
 @login_required
 def agregarUsuario(request):
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         form = AgregarUsuarioForm(request.POST)
         if form.is_valid():
@@ -92,12 +93,13 @@ def agregarUsuario(request):
             return HttpResponseRedirect('/administracion/usuarios/')
     else:
         form = AgregarUsuarioForm()
-    return render_to_response('admin/Usuario/registrar_usuario.html', {'form': form })
+    return render_to_response('admin/Usuario/registrar_usuario.html', {'user': user,'form': form })
 
 
 
 @login_required
 def editarUsuario(request, id_user):
+    user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, id=id_user)    
     if request.method == 'POST':
         form = ModificarUsuarioForm(request.POST)
@@ -113,14 +115,14 @@ def editarUsuario(request, id_user):
             return HttpResponseRedirect('/administracion/usuarios/')
     else:
         form = ModificarUsuarioForm({'nombre': usuario.first_name, 'apellido': usuario.last_name,'direccion': usuario.get_profile().direccion, 'email': usuario.email, })
-    return render_to_response('admin/Usuario/editarUsuario.html', {'form': form, 'usuario': usuario,})
+    return render_to_response('admin/Usuario/editarUsuario.html', {'user': user,'form': form, 'usuario': usuario,})
 
 
 
 
 @login_required
 def ModificarContrasena(request, id_user):
-
+    user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, pk=id_user)
     if request.method == 'POST':
         form = ModificarContrasenaForm(request.POST)
@@ -130,16 +132,16 @@ def ModificarContrasena(request, id_user):
             return HttpResponseRedirect('/administracion/usuarios/')
     else:
         form = ModificarContrasenaForm()
-    return render_to_response('admin/Usuario/cambiarContrasena.html', {'form': form, 'usuario': usuario,})
+    return render_to_response('admin/Usuario/cambiarContrasena.html', {'user': user,'form': form, 'usuario': usuario,})
 
 @login_required
 def eliminarUsuario(request, id_user):
-
-    user = User.objects.get(pk=id_user)
+    user = User.objects.get(username=request.user.username)
+    usuario = User.objects.get(pk=id_user)
     if request.method == 'POST':
-        user.delete()
+        usuario.delete()
         return HttpResponseRedirect('/administracion/usuarios/')
-    return render_to_response('admin/Usuario/eliminarUsuario.html', {'usuario': user,})
+    return render_to_response('admin/Usuario/eliminarUsuario.html', {'user': user,'usuario': usuario,})
 
 @login_required
 def asignarRolesSistema(request, usuario_id):
@@ -194,11 +196,11 @@ def administrar_proyectos(request):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
-    return render_to_response('admin/Proyecto/administrarProyectos.html', {'proyectos': proyectos,'Modificar':Modificar,'Eliminar':Eliminar,'Crear':Crear,})
+    return render_to_response('admin/Proyecto/administrarProyectos.html', {'user': user, 'proyectos': proyectos,'Modificar':Modificar,'Eliminar':Eliminar,'Crear':Crear,})
 
 @login_required
 def nuevo_proyecto(request):
-    
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         form = ProyectoForm(request.POST)
         if form.is_valid():
@@ -218,10 +220,11 @@ def nuevo_proyecto(request):
             return HttpResponseRedirect('/administracion/proyectos/')
     else:
         form = ProyectoForm()
-    return render_to_response('admin/Proyecto/CrearProyecto.html', {'form': form,})
+    return render_to_response('admin/Proyecto/CrearProyecto.html', {'user': user,'form': form,})
 
 
 def modificarProyecto(request, id):
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         proyecto = Proyecto.objects.get(id=id)
         form = ProyectoForm(request.POST)
@@ -245,9 +248,10 @@ def modificarProyecto(request, id):
         proyecto = get_object_or_404(Proyecto, id=id)
         form = ProyectoForm(initial={'Nombre': proyecto.Nombre,
                              'Usuario': proyecto.Usuario.id, 'Descripcion': proyecto.Descripcion,})
-    return render_to_response('admin/Proyecto/editarProyecto.html', {'form': form, 'proyecto': proyecto,})
+    return render_to_response('admin/Proyecto/editarProyecto.html', {'user': user, 'form': form, 'proyecto': proyecto,})
 
 def editar_proyecto(request, id):
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         proyecto = Proyecto.objects.get(id=id)
         form = ProyectoEditarForm(request.POST)
@@ -260,17 +264,17 @@ def editar_proyecto(request, id):
         #id = request.GET['id']
         proyecto = get_object_or_404(Proyecto, id=id)
         form = ProyectoEditarForm(initial={'Descripcion': proyecto.Descripcion,})
-    return render_to_response('proyec/editar_proyecto.html', {'form': form, 'proyecto': proyecto,})
+    return render_to_response('proyec/editar_proyecto.html', {'user': user,'form': form, 'proyecto': proyecto,})
 
 @login_required
 def eliminar_proyecto(request, id):
-
+    user = User.objects.get(username=request.user.username)
     proyecto = get_object_or_404(Proyecto, id=id)
     if request.method == 'POST':
         
         proyecto.delete()
         return HttpResponseRedirect('/administracion/proyectos/')
-    return render_to_response('admin/Proyecto/eliminarProyecto.html', {'proyecto': proyecto,})
+    return render_to_response('admin/Proyecto/eliminarProyecto.html', {'user': user, 'proyecto': proyecto,})
 
 @login_required
 def proyecto(request, id):
@@ -298,7 +302,7 @@ def proyecto(request, id):
             if per.Nombre =='AgregarMiembro':
                 AgregarMiembro = True
         
-    return render_to_response('proyec/proyecto.html', {'proyecto': proyecto,'Requerimientos':Requerimientos, 'Diseno':Diseno,'Implementacion':Implementacion,'EditarProyecto':EditarProyecto,'AgregarMiembro':AgregarMiembro,})
+    return render_to_response('proyec/proyecto.html', {'user': user, 'proyecto': proyecto,'Requerimientos':Requerimientos, 'Diseno':Diseno,'Implementacion':Implementacion,'EditarProyecto':EditarProyecto,'AgregarMiembro':AgregarMiembro,})
 
 @login_required
 def usuariosMiembros(request, id):
@@ -307,9 +311,9 @@ def usuariosMiembros(request, id):
     proyecto = Proyecto.objects.get(pk = id)
     UsRoPo = UsuarioRolProyecto.objects.filter(proyecto = proyecto)
     miembros = []
-    for user in UsRoPo:
-        if not user.usuario in miembros:
-            miembros.append(user.usuario)
+    for users in UsRoPo:
+        if not users.usuario in miembros:
+            miembros.append(users.usuario)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = usuario).exclude(rol = None)
     Modificar = False
     Eliminar = False
@@ -573,13 +577,14 @@ def GestionarPrivilegios(request,id,per_id):
 @login_required
 def administrar_artefactos(request):
 
-
+    user = User.objects.get(username=request.user.username)
     artefactos = Artefacto.objects.all().order_by('Prioridad')
-    return render_to_response('admin/artefacto/administrar_artefacto.html', {'artefactos': artefactos,})
+    return render_to_response('admin/artefacto/administrar_artefacto.html', {'user': user, 'artefactos': artefactos,})
 
 
 @login_required
 def agregarArtefacto(request, id, fase):
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         form = ArtefactoForm(fase, request.POST)
         if form.is_valid():
@@ -616,10 +621,11 @@ def agregarArtefacto(request, id, fase):
                 return HttpResponseRedirect("/proyecto/" + str(id) + "/implementacion/")
     else:
         form = ArtefactoForm(fase)
-    return render_to_response('admin/artefacto/crearArtefacto.html', {'form': form,  'proyecto': id, 'fase': fase,})
+    return render_to_response('admin/artefacto/crearArtefacto.html', {'user': user,'form': form,  'proyecto': id, 'fase': fase,})
 
 
 def modificarArtefacto(request, id_p, fase, id_ar):
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         artefacto = Artefacto.objects.get(id=id_ar)
         form = ModificarArtefactoForm(request.POST)
@@ -640,11 +646,11 @@ def modificarArtefacto(request, id_p, fase, id_ar):
                              'Estado': artefacto.Estado,
                              'Prioridad': artefacto.Prioridad,
                              'Complejidad': artefacto.Complejidad,})
-    return render_to_response('admin/artefacto/modificarArtefacto.html', {'form': form, 'artefacto': artefacto, 'fase': fase, 'ProyectoId': id_p})
+    return render_to_response('admin/artefacto/modificarArtefacto.html', {'user': user,'form': form, 'artefacto': artefacto, 'fase': fase, 'ProyectoId': id_p})
 
 @login_required
 def eliminarArtefacto(request, id_p, fase, id_ar):
-
+    user = User.objects.get(username=request.user.username)
     artefacto = get_object_or_404(Artefacto, id=id_ar)
     if request.method == 'POST':
         # En este caso si quiero que la eliminacion sea ON CASCADE
@@ -656,7 +662,7 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
        if fase == 'I':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/implementacion/")
 
-    return render_to_response('admin/artefacto/eliminarArtefacto.html', {'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p,})
+    return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p,})
 
 
 
@@ -680,10 +686,11 @@ def TipoArtefactos(request):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
-    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'Tipo': Tipo,'Modificar':Modificar, 'Eliminar':Eliminar, 'Crear':Crear,})
+    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'user': user, 'Tipo': Tipo,'Modificar':Modificar, 'Eliminar':Eliminar, 'Crear':Crear,})
 
 
 def Agregar_tipo_artefacto(request):
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         form = Tipo_ArtefactoForm(request.POST)
         if form.is_valid():
@@ -695,9 +702,10 @@ def Agregar_tipo_artefacto(request):
             return HttpResponseRedirect('/administracion/tipo_artefacto/')
     else:
         form = Tipo_ArtefactoForm()
-    return render_to_response('admin/Proyecto/agregarTipo_artefacto.html', {'form': form })
+    return render_to_response('admin/Proyecto/agregarTipo_artefacto.html', {'user': user, 'form': form })
 
 def modificar_tipo_artefacto(request, id):
+    user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         tipo_artefacto = Tipo_Artefacto.objects.get(id=id)
         form = Tipo_ArtefactoForm(request.POST)
@@ -713,18 +721,18 @@ def modificar_tipo_artefacto(request, id):
                              'Fase': tipo_artefacto.Fase,})
 
 
-    contexto = RequestContext(request, {'form': form, 'tipo_artefacto': tipo_artefacto,})
-    return render_to_response('admin/artefacto/editarTipo_artefacto.html', contexto)
+
+    return render_to_response('admin/artefacto/editarTipo_artefacto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,})
 
 
 @login_required
 def eliminar_tipo_artefacto(request, id):
-    
+    user = User.objects.get(username=request.user.username)
     tipo_artefacto = get_object_or_404(Tipo_Artefacto, pk=id)
     if request.method == 'POST':
         tipo_artefacto.delete()
         return HttpResponseRedirect('/administracion/tipo_artefacto/')
-    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'tipo_artefacto': tipo_artefacto,})
+    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,})
 
 
 

@@ -14,7 +14,7 @@
 
 		{% if Modificar %}
 			<a href="/administracion/usuarios/asignar_rol&id={{usuario.id}}/">Asinar Rol de Sistema</a>
-			<a href="/administracion/usuarios/editar/{{ usuario.id|urlencode }}" class="edit">editar</a>
+			<a href="/administracion/usuarios/editar/{{ usuario.id|urlencode }}/" class="edit">editar</a>
 	   	{% endif %}
       	{% if Eliminar %}
 	   		<a href="/administracion/usuarios/eliminar/{{ usuario.id }}" class="edit">eliminar</a>
