@@ -2,7 +2,7 @@
 {% block title %}Gestion Permisos{% endblock %}
 {% block head %}<center><strong>Gestionar Permisos</strong></center>{% endblock %}
 {% block content %}
-	<h3><p>Permisos</p></h3>
+	<h3><p>Permisos de {{rol.Nombre}}</p></h3>
 	  <ul>
       {% if permisos %}
 		{% for permiso in permisos %}
