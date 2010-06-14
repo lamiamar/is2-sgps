@@ -12,4 +12,3 @@ VALUES( 'AdministrarProyectos', 'S' ),
       ( 'CalcularImpacto', 'P' ),
       ( 'GenerarLineaBase', 'P' ),
       ( 'AgregarMiembro', 'P' );
-
