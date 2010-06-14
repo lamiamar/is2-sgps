@@ -138,10 +138,15 @@ def ModificarContrasena(request, id_user):
 def eliminarUsuario(request, id_user):
     user = User.objects.get(username=request.user.username)
     usuario = User.objects.get(pk=id_user)
+    proyectos = Proyecto.objects.all()
+    usuarioprohibido = False
+    for proyecto in proyectos:
+        if proyecto.Usuario.username == usuario.username:
+            usuarioprohibido = True
     if request.method == 'POST':
         usuario.delete()
         return HttpResponseRedirect('/administracion/usuarios/')
-    return render_to_response('admin/Usuario/eliminarUsuario.html', {'user': user,'usuario': usuario,})
+    return render_to_response('admin/Usuario/eliminarUsuario.html', {'user': user,'usuario': usuario,'usuarioprohibido': usuarioprohibido})
 
 @login_required
 def asignarRolesSistema(request, usuario_id):
@@ -410,13 +415,16 @@ def removerMiembro(request, id, id_us):
     user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, pk=id_us)
     proyecto = get_object_or_404(Proyecto, pk=id)
+    usuarioprohibido = False
+    if proyecto.Usuario.username == usuario.username:
+        usuarioprohibido = True
     if request.method == 'POST':
         URP= UsuarioRolProyecto.objects.filter(proyecto = proyecto, usuario = usuario)
         for urp in URP:
             urp.delete()
         return HttpResponseRedirect("/proyecto/" + str(id) + "/usuarios_miembros/")
     else:
-        return render_to_response("proyec/remover_miembro.html", {'usuario':usuario, 'proyecto':proyecto, 'user':user})
+        return render_to_response("proyec/remover_miembro.html", {'usuario':usuario, 'proyecto':proyecto, 'user':user,'usuarioprohibido': usuarioprohibido,})
 
 ######################################## Control de Rol ##############################
 

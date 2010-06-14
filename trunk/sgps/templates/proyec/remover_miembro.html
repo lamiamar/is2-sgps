@@ -2,10 +2,15 @@
 {% block title %}Remover miembro{% endblock %}
 {% block head %}Remover Miembro {{ usuario.username }}{% endblock %}
 {% block content %}
-<p>Esta seguro que desea remover el miembro?</p>
-<p><strong>{{ usuario.username }}:</strong> {{ usuario.first_name }}</p>
-<form method="post" action=""> 
-<input type="submit" value="eliminar" />
-<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/usuarios_miembros/' "/>
-</form> 
+{% if usuarioprohibido %}
+    <p>No puede remover el miembro Usuario <strong>{{usuario.username}}</strong> por que es el Lider de Proyecto<p>
+    <input type="button" value="ok" onClick = "location.href='/proyecto/{{proyecto.id}}/usuarios_miembros/' "/>
+{% else %}
+    <p>Esta seguro que desea remover el miembro?</p>
+    <p><strong>{{ usuario.username }}:</strong> {{ usuario.first_name }}</p>
+    <form method="post" action=""> 
+    <input type="submit" value="eliminar" />
+    <input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/usuarios_miembros/' "/>
+    </form>
+{% endif %} 
 {% endblock %}
