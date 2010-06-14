@@ -11,7 +11,6 @@
         	  	<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">editar</a>
                 <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}" class="edit">Relaciones</a>
         		<a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
-        		<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">eliminar</a>
         		{% ifnotequal artefacto.Estado 'A' %}
         			<a href="/proyectos/{{proyecto.id}}/fase/artefactos/aprobar/{{artefacto.id}}/{{Fase}}/" class="edit">Aprobar</a>
         		{% endifnotequal %}
