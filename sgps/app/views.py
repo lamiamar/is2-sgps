@@ -653,7 +653,7 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
     user = User.objects.get(username=request.user.username)
     artefacto = get_object_or_404(Artefacto, id=id_ar)
     if request.method == 'POST':
-        # En este caso si quiero que la eliminacion sea ON CASCADE
+
        artefacto.delete()
        if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/requerimientos/")
