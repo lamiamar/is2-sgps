@@ -81,6 +81,16 @@ class RolForm(forms.Form):
     Nombre = forms.CharField(label=u'Nombre de rol', max_length=30)
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     
+    def clean_Nombre(self):
+       nombre = self.cleaned_data['Nombre']
+       if 'Nombre' in self.cleaned_data:
+            roles = Rol.objects.all()
+            for rol in roles:
+                if rol.Nombre == nombre:
+                    raise forms.ValidationError('El nombre ya existe. Inserte otro.')
+
+       return nombre
+    
 class ModificarRolForm(forms.ModelForm):
     Nombre = forms.CharField(label=u'Nombre de rol', max_length=30)
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
@@ -107,6 +117,15 @@ class ProyectoForm(forms.Form):
     Nombre = forms.CharField(label=u'Nombre del Proyecto', max_length=20)
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     Usuario = forms.ModelChoiceField(queryset=User.objects.all(), label=u'Lider')
+    def clean_Nombre(self):
+       nombre = self.cleaned_data['Nombre']
+       if 'Nombre' in self.cleaned_data:
+            proyectos = Proyecto.objects.all()
+            for p in proyectos:
+                if p.Nombre == nombre:
+                    raise forms.ValidationError('El nombre ya existe. Inserte otro.')
+
+       return nombre
 
 class ProyectoEditarForm(forms.Form):
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
@@ -156,7 +175,7 @@ class Tipo_ArtefactoForm(forms.Form):
                 if ar.Nombre == nombre:
                     raise forms.ValidationError('El nombre ya existe. Inserte otro.')
 
-       return usu
+       return nombre
     
 class ArchivosAdjuntosForm(forms.Form):
     archivo = forms.FileField(label=u'Adjuntar archivo', required = False)
