@@ -148,13 +148,14 @@ class ArtefactoForm(forms.Form):
     Tipo_Artefacto = forms.ModelChoiceField(queryset=None, label='Tipo Artefacto')
     Proyecto = Proyecto()
     Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
-    Complejidad = forms.CharField(max_length=1, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
+    Complejidad = forms.CharField(max_length=2, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
     def __init__(self, fase, *args, **kwargs):
         super(ArtefactoForm, self).__init__(*args, **kwargs)
         self.fields['Tipo_Artefacto'].queryset = Tipo_Artefacto.objects.filter(Fase=fase)
+        
 class ModificarArtefactoForm(forms.Form):
     Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
-    Complejidad = forms.CharField(max_length=1, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
+    Complejidad = forms.CharField(max_length=2, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
     Estado = forms.CharField(max_length=1, widget=forms.Select(choices=ESTADO), label=u'Estado')
 
 class Tipo_ArtefactoForm(forms.Form): 
