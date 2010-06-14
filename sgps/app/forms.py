@@ -134,16 +134,10 @@ class UsuarioProyectoForm(forms.Form):
     usuario = forms.ModelChoiceField(queryset=User.objects.all())
     rol = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='P').exclude(Nombre= 'Lider de Proyecto'),
                                           widget=forms.CheckboxSelectMultiple, required=False)
-    proyecto = Proyecto()
-
-    def clean_usuario(self):
-        if 'usuario' in self.cleaned_data:
-            usuarios_existentes = UsuarioRolProyecto.objects.filter(proyecto=6)
-            
-            for i in usuarios_existentes:
-                if(i.usuario.username == self.cleaned_data['usuario']):
-                    raise forms.ValidationError('Ya existe este usuario')
-            return self.cleaned_data['usuario']  
+    
+    def __init__(self, Miembros, *args, **kwargs):
+        super(UsuarioProyectoForm, self).__init__(*args, **kwargs)
+        self.fields['usuario'].queryset = User.objects.exclude(id__in=Miembros)
         
     
 
