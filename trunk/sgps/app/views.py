@@ -335,8 +335,13 @@ def usuariosMiembros(request, id):
 @login_required
 def agregar_miembros(request, id):
     user = User.objects.get(username=request.user.username)
+    proyec= Proyecto.objects.get(id=id)
+    miembros=UsuarioRolProyecto.objects.filter(proyecto=proyec)
+    Miembros= []
+    for m in miembros:
+        Miembros.append(m.usuario.id)
     if request.method == 'POST':
-        form = UsuarioProyectoForm(request.POST)
+        form = UsuarioProyectoForm(Miembros, request.POST)
         if form.is_valid():
             rolesMiembros = form.cleaned_data['rol']
             if  rolesMiembros:
@@ -357,7 +362,7 @@ def agregar_miembros(request, id):
             return HttpResponseRedirect("/proyecto/" + str(id) + "/usuarios_miembros/")
     else:
        
-        form = UsuarioProyectoForm()
+        form = UsuarioProyectoForm(Miembros)
     return render_to_response('admin/Proyecto/agregarMiembro.html', {'form':form, 'user':user,  'proyecto':Proyecto.objects.get(pk=id)})
 
 @login_required
