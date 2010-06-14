@@ -99,11 +99,8 @@ class Artefacto(models.Model):
     Nombre=models.CharField(max_length=40)
     Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
     Proyecto = models.ForeignKey(Proyecto)
-    #Fase = models.CharField(max_length=1, choices=ETAPA)
-    #Fase = models.ForeignKey(Fase)
-    #Numero = Numeracion()
     Prioridad = models.CharField(max_length=1)
-    Complejidad = models.CharField(max_length=1, choices=COMPLEJIDAD)
+    Complejidad = models.CharField(max_length=2, choices=COMPLEJIDAD)
     Estado = models.CharField(max_length=1, choices=ESTADO)
     Activo = models.BooleanField(default = True)
     

@@ -627,7 +627,7 @@ def agregarArtefacto(request, id, fase):
                 numero.Ultimo_nro=1
                 numero.save()        
     
-            artefacto.save()
+            
             artefacto.save()
             if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id) + "/requerimientos/")
