@@ -496,10 +496,13 @@ def modificarRol(request, id, Tipo):
 def eliminarRoles(request, id, Tipo):
 
     rol = Rol.objects.get(id=id)
+    rolprohibido = False
+    if rol.Nombre == 'Lider de Proyecto' or rol.Nombre == 'Aministrador del Sistema':
+        rolprohibido = True 
     if request.method == 'POST':
         rol.delete()
         return HttpResponseRedirect('/administracion/roles/' + Tipo +'/')
-    return render_to_response('admin/Roles/eliminarRoles.html', {'rol': rol,'Tipo': Tipo,})
+    return render_to_response('admin/Roles/eliminarRoles.html', {'rol': rol,'Tipo': Tipo,'rolprohibido':rolprohibido})
 ###########################CONTROL DE PERMISO##############################
 @login_required
 def GestionarPermisos(request,id,Tipo):
@@ -558,7 +561,7 @@ def GestionarPrivilegios(request,id,per_id):
             privilegios=form.cleaned_data['Privilegios']
             for privilegio in privilegios:
                 permiso.privilegios.add(privilegio)
-            permiso.save()
+            permiso.save()  
             return HttpResponseRedirect('/administracion/roles/permisos/' + str(id) +'/' + rol.Tipo + '/')
     else:
         dict = {}

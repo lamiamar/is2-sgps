@@ -2,14 +2,17 @@
 {% block title %}Eliminaci&oacute;n de Roles{% endblock %}
 {% block head %}Eliminar Rol {{ rol.Nombre }}{% endblock %}
 {% block content %}
-
-<p>Esta seguro que desea eliminar el Rol <strong> {{ rol.Nombre }} </strong> ?</p>
-<p><strong> Nombre:</strong> {{ rol.Nombre }}</p>
-<p><strong> Descripcion:</strong> {{ rol.Descripcion }}</p>
-<p><strong> Tipo:</strong> {{ rol.Tipo }} </p>
-<form method="post" action=""> 
-<input type="submit" value="eliminar" />
-<input type="button" value="Cancelar" onClick = "location.href='/administracion/roles/{{Tipo}}/' "/>
-</form> 
-
+{% if rolprohibido %}
+    <p>No puede eliminar el rol {{rol.Nombre}} por que es un rol predeterminado del Sistema</p>
+    <input type="button" value="OK" onClick = "location.href='/administracion/roles/{{Tipo}}/' "/>
+{% else %}
+    <p>Esta seguro que desea eliminar el Rol <strong> {{ rol.Nombre }} </strong> ?</p>
+    <p><strong> Nombre:</strong> {{ rol.Nombre }}</p>
+    <p><strong> Descripcion:</strong> {{ rol.Descripcion }}</p>
+    <p><strong> Tipo:</strong> {{ rol.Tipo }} </p>
+    <form method="post" action=""> 
+    <input type="submit" value="eliminar" />
+    <input type="button" value="Cancelar" onClick = "location.href='/administracion/roles/{{Tipo}}/' "/>
+    </form> 
+{% endif %}
 {% endblock %} 
