@@ -13,9 +13,11 @@
 		{% for rol in roles %}
 		  <li>
 			<strong>{{ rol.Nombre }}:</strong> {{ rol.Descripcion }}
+			{% if configpermisos %}
+				<a href="/administracion/roles/permisos/{{rol.id}}/{{Tipo}}/" class="edit">configurar permisos</a>
+			{% endif %}
 			{% if Modificar %}
-				<a href="/administracion/roles/editar/{{ rol.id }}/{{Tipo}}/" class="edit">editar</a>
-            	<a href="/administracion/roles/permisos/{{rol.id}}/{{Tipo}}/" class="edit">configurar permisos</a>
+				<a href="/administracion/roles/editar/{{ rol.id }}/{{Tipo}}/" class="edit">editar</a>            
 			{% endif %}
           	{% if Eliminar %}
 				<a href="/administracion/roles/eliminar/{{rol.id}}/{{Tipo}}/" class="edit">eliminar</a>

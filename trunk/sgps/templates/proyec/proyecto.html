@@ -32,9 +32,11 @@
 
 <div class="buttons">
     <ul>
+      {% if GenerarLineaBase %}
         <li><a href="/proyecto/{{proyecto.id}}/lineaBase/">
 		Generar Linea Base
 	    </a></li>
+	  {% endif %}
         <br>
       {% if EditarProyecto%}
 	    <li><a href="/proyectos/{{proyecto.id}}/editar/">

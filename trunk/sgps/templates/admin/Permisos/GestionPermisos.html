@@ -8,7 +8,15 @@
 		{% for permiso in permisos %}
 		  <li>
 			<strong>{{ permiso.Nombre }}:</strong> {{ permiso.Descripcion }}
-            <a href="/administracion/roles/privilegio/{{rol.id}}/{{permiso.id}}/" class="edit">configurar privilegios</a>
+			{% ifequal permiso.Nombre 'AsignarRolSistema' %}
+			{% else %}{% ifequal permiso.Nombre 'ConfigurarPermisos' %}
+			{% else %}{% ifequal permiso.Nombre 'EditarProyecto' %}
+			{% else %}{% ifequal permiso.Nombre 'ConfigurarRelaciones' %}
+			{% else %}{% ifequal permiso.Nombre 'CalcularImpacto' %}
+			{% else %}{% ifequal permiso.Nombre 'GenerarLineaBase' %}
+			{% else %}
+            	<a href="/administracion/roles/privilegio/{{rol.id}}/{{permiso.id}}/" class="edit">configurar privilegios</a>
+            {% endifequal %}{% endifequal %}{% endifequal %}{% endifequal %}{% endifequal %}{% endifequal %}
 		  </li>
 		{% endfor %}
       {% endif %}
