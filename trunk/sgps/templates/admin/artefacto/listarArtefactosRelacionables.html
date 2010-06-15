@@ -11,7 +11,7 @@
                 <ul>
 		        {% for ar in artefactos %}
 		        
-			         <li><strong>{{ ar.Tipo_Artefacto.Nombre }}</strong> 
+			         <li><strong>{{ ar.Nombre }}</strong> 
 			        <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}/crearRelacion/{{ ar.id|urlencode }}/" class="edit"> relacionar </a></li>
 		        {% endfor %}
                  </ul>
@@ -23,7 +23,7 @@
                 <u> Artefactos de la Fase Anterior: </u>
                 <ul>
                 {% for artefacto2 in artefactos_ant %}
-			        <li><strong>{{ artefacto2.Tipo_Artefacto.Nombre }}</strong>
+			        <li><strong>{{ artefacto2.Nombre }}</strong>
 			        <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/crearRelacion/{{artefacto2.id}}/" class="edit"> relacionar </a></li>
 		        {% endfor %}
                 </ul>

@@ -100,6 +100,7 @@ class Artefacto(models.Model):
     Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
     Proyecto = models.ForeignKey(Proyecto)
     Prioridad = models.CharField(max_length=1)
+    Version = models.IntegerField()
     Complejidad = models.CharField(max_length=2, choices=COMPLEJIDAD)
     Estado = models.CharField(max_length=1, choices=ESTADO)
     Activo = models.BooleanField(default = True)

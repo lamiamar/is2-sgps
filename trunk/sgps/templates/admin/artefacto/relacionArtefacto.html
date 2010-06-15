@@ -11,7 +11,7 @@
             Padres:
 	        <ul>
 		    {% for ar in padres%}
-		    	<li>{{ar.Tipo_Artefacto.Nombre}}
+		    	<li>{{ar.Nombre}}
 <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ ar.id }}/" class="edit">[eliminar]</a></li>
 		    {% endfor %}
 	        </ul>
@@ -22,7 +22,7 @@
             Antecesores:
 	    	<ul>
 			{% for artefacto2 in antecesores%}
-				<li>{{artefacto2.Tipo_Artefacto.Nombre}}
+				<li>{{artefacto2.Nombre}}
 					<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
 			{% endfor %}
 	    {% endif %}

@@ -592,9 +592,9 @@ def GestionarPrivilegios(request,id,per_id):
 ###########################CONTROL DE ARTEFACTOS###########################
 @login_required
 def administrar_artefactos(request):
-
+ 
     user = User.objects.get(username=request.user.username)
-    artefactos = Artefacto.objects.all().order_by('Prioridad')
+    artefactos = Artefacto.objects.filter(Activo=True).order_by('Prioridad')
     return render_to_response('admin/artefacto/administrar_artefacto.html', {'user': user, 'artefactos': artefactos,})
 
 
@@ -607,7 +607,8 @@ def agregarArtefacto(request, id, fase):
             artefacto = Artefacto(
                       Tipo_Artefacto = form.cleaned_data['Tipo_Artefacto'],
                       Proyecto = Proyecto.objects.get(pk = id),
-                      # Fase = form.cleaned_data['Fase'],
+                      Activo=True,
+                      Version=1,
                       Prioridad=form.cleaned_data['Prioridad'],
                       Complejidad=form.cleaned_data['Complejidad'],
                       Estado='N',
@@ -668,17 +669,27 @@ def modificarArtefacto(request, id_p, fase, id_ar):
 def eliminarArtefacto(request, id_p, fase, id_ar):
     user = User.objects.get(username=request.user.username)
     artefacto = get_object_or_404(Artefacto, id=id_ar)
+    relacionesPadre = RelacionArtefacto.objects.filter(artefactoPadre = artefacto)
+    relacionesHijo = RelacionArtefacto.objects.filter(artefactoHijo = artefacto)
+    error= None
+    if relacionesPadre:
+        error= 'Hay artefacto que dependen de el. No se puede eliminar si existe dependencias'
     if request.method == 'POST':
 
-       artefacto.delete()
-       if fase =='E':
+        artefacto.Activo=False
+        for rel in relacionesHijo:
+            rel.Activo = False
+            rel.save()
+        artefacto.save()
+
+        if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/requerimientos/")
-       if fase =='D':
+        if fase =='D':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/diseno/")
-       if fase == 'I':
+        if fase == 'I':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/implementacion/")
 
-    return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p,})
+    return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p, 'mensaje':error,})
 
 
 
@@ -761,7 +772,7 @@ def FaseERequerimientos(request, id):
     if LineaBaseReq:
         Aprobado=True
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='E')
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     Modificar = False
     Eliminar = False
@@ -803,7 +814,7 @@ def FaseDiseno(request, id):
             Paso=False
 
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='D')
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     Modificar = False
     Eliminar = False
@@ -842,7 +853,7 @@ def FaseImplementacion(request, id):
         if LineaBaseImplem:
             Paso=False
     tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='I')
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=tipo_artefacto)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     Modificar = False
     Eliminar = False
@@ -876,11 +887,12 @@ def AdministrarRelacionArtefacto(request, p_id, a_id):
     proyecto = Proyecto.objects.get(id=p_id)
     artefacto = Artefacto.objects.get(id=a_id)
 
-    Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto).values_list('artefactoPadre', flat=True)
+    Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True).values_list('artefactoPadre', flat=True)
+    
     Mispadres = Artefacto.objects.filter(id__in=Mispadres).order_by('id')
     antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     Mispadres = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
-    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto).values_list('artefactoHijo', flat=True)
+    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True).values_list('artefactoHijo', flat=True)
     
 
     fase= artefacto.Tipo_Artefacto.Fase
@@ -899,7 +911,7 @@ def listarArtefactoRelacionables(request, p_id, a_id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
     artefacto = Artefacto.objects.get(pk=a_id)
-    listaArtefactos = Artefacto.objects.filter(Proyecto=proyecto)
+    listaArtefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True)
     listaArtefactos = listaArtefactos.exclude(id=artefacto.id) 
   
     listaArtefactos= eliminarPadresHijos(listaArtefactos,artefacto)
@@ -921,8 +933,8 @@ def listarArtefactoRelacionables(request, p_id, a_id):
     return render_to_response('admin/artefacto/listarArtefactosRelacionables.html', contexto)
 def eliminarPadresHijos(listaArtefactos, artefacto):
     
-    Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto)
-    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto)
+    Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
+    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
     if Mispadres:
         for padre in Mispadres:
             listaArtefactos = listaArtefactos.exclude(id=padre.artefactoPadre.id)
@@ -933,13 +945,13 @@ def eliminarPadresHijos(listaArtefactos, artefacto):
 
 def eliminarDescendientes(artefactos, artefacto):
 
-    hijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto)
+    hijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
     hijos2= []
     if hijos:
         for hijo in hijos:
                 hijos2.append(hijo.artefactoHijo)
 
-    hijos = RelacionArtefacto.objects.filter(artefactoPadre__in=hijos2)
+    hijos = RelacionArtefacto.objects.filter(artefactoPadre__in=hijos2, Activo=True)
     hijos3= []
     if hijos:
         for hijo in hijos:
@@ -947,7 +959,7 @@ def eliminarDescendientes(artefactos, artefacto):
     while hijos3:
         for hijo in hijos3:
             artefactos = artefactos.exclude(id=hijo.id)
-        hijos = RelacionArtefacto.objects.filter(artefactoPadre__in=hijos3)
+        hijos = RelacionArtefacto.objects.filter(artefactoPadre__in=hijos3, Activo=True)
         hijos3= []
         if hijos:
              for hijo in hijos:
@@ -967,7 +979,7 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
     artefactoHijo = Artefacto.objects.get(id=arHijo_id)
 
     relacion_artefacto = RelacionArtefacto(artefactoPadre=artefactoHijo,
-                                   artefactoHijo=artefactoPadre)
+                                   artefactoHijo=artefactoPadre, Activo=True)
 
     relacion_artefacto.save()
     return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
@@ -981,7 +993,7 @@ def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
 
     if request.method == 'POST':
         relacionArtefacto = RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
-        relacionArtefacto.delete()
+        relacionArtefacto.Activo=False
         return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
     contexto = RequestContext(request, {'proyecto': proyecto,
@@ -1006,7 +1018,7 @@ def aprobarArtefacto(request, p_id, a_id, fase):
     if fase == 'I':
                 return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/implementacion/")
 
-@login_required
+
 @login_required
 def Calculo_Impacto(request, p_id, artefacto_id):
    
@@ -1023,8 +1035,8 @@ def Calculo_Impacto(request, p_id, artefacto_id):
     CalculoAntecesores=0
     CalculoSucesores=0
 
-    ArtefactosHijos = Artefacto.objects.filter(id__in=Hijos)
-    ArtefactosPadres = Artefacto.objects.filter(id__in=Padres)
+    ArtefactosHijos = Artefacto.objects.filter(id__in=Hijos, Activo=True)
+    ArtefactosPadres = Artefacto.objects.filter(id__in=Padres, Activo=True)
     ArtefactosAntecesores = ArtefactosPadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     ArtefactoSucesores = ArtefactosHijos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     ArtefactosHijos = ArtefactosHijos.exclude(id__in=ArtefactoSucesores)
@@ -1068,7 +1080,7 @@ def Calculo_Impacto(request, p_id, artefacto_id):
 def calculoImpactoHijos(ids, artefacto_id):
 
     artefacto = Artefacto.objects.get(id=artefacto_id)
-    relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto)
+    relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
     if relaciones:
         for relacion in relaciones:
             if not relacion.artefactoHijo.id in ids:
@@ -1079,7 +1091,7 @@ def calculoImpactoHijos(ids, artefacto_id):
 def calculoImpactoPadres(ids, artefacto_id):
 
     artefacto = Artefacto.objects.get(id=artefacto_id)
-    relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto)
+    relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
     if relaciones:
         for relacion in relaciones:
             if not relacion.artefactoPadre.id in ids:
@@ -1188,7 +1200,7 @@ def GenerarLineaBase(request, p_id, fase):
     error= None
    
     TipoArtefacto = Tipo_Artefacto.objects.filter(Fase=fase)
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
     
     if artefactos:
         error=comprobarCondiciones(artefactos, lista, fase)
@@ -1220,7 +1232,7 @@ def comprobarCondiciones(artefactos, lista, fase):
              return None
           else:
                for artefacto in artefactos:
-                  relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto)
+                  relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
                   if not relaciones:
                      lista.append(artefacto)
                if lista:
