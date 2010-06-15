@@ -996,23 +996,29 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
     proyecto = Proyecto.objects.get(pk=p_id)
     artefactoPadre = Artefacto.objects.get(id=arPadre_id)
     artefactoHijo = Artefacto.objects.get(id=arHijo_id)
-
-    relacion_artefacto = RelacionArtefacto(artefactoPadre=artefactoHijo,
-                                   artefactoHijo=artefactoPadre, Activo=True)
-
-    relacion_artefacto.save()
+    Relacion_Artefacto = RelacionArtefacto.objects.filter(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
+    if Relacion_Artefacto:
+        relacion_artefacto=RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
+        relacion_artefacto.Activo=True
+        relacion_artefacto.save()
+    else:
+        relacion_artefacto = RelacionArtefacto(artefactoPadre=artefactoHijo,
+                                       artefactoHijo=artefactoPadre, Activo=True)
+    
+        relacion_artefacto.save()
     return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
 @login_required
 def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
-    artefactoPadre = Artefacto.objects.get(pk=arPadre_id, Activo=True)
-    artefactoHijo = Artefacto.objects.get(pk=arHijo_id, Activo=True)
+    artefactoPadre = Artefacto.objects.get(pk=arPadre_id)
+    artefactoHijo = Artefacto.objects.get(pk=arHijo_id)
 
     if request.method == 'POST':
         relacionArtefacto = RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacionArtefacto.Activo=False
+        relacionArtefacto.save()
         return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
     contexto = RequestContext(request, {'proyecto': proyecto,
