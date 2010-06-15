@@ -669,8 +669,8 @@ def modificarArtefacto(request, id_p, fase, id_ar):
 def eliminarArtefacto(request, id_p, fase, id_ar):
     user = User.objects.get(username=request.user.username)
     artefacto = get_object_or_404(Artefacto, id=id_ar)
-    relacionesPadre = RelacionArtefacto.objects.filter(artefactoPadre = artefacto)
-    relacionesHijo = RelacionArtefacto.objects.filter(artefactoHijo = artefacto)
+    relacionesPadre = RelacionArtefacto.objects.filter(artefactoPadre = artefacto, Activo=True)
+    relacionesHijo = RelacionArtefacto.objects.filter(artefactoHijo = artefacto, Activo=True)
     error= None
     if relacionesPadre:
         error= 'Hay artefacto que dependen de el. No se puede eliminar si existe dependencias'
@@ -988,8 +988,8 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
 def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
-    artefactoPadre = Artefacto.objects.get(pk=arPadre_id)
-    artefactoHijo = Artefacto.objects.get(pk=arHijo_id)
+    artefactoPadre = Artefacto.objects.get(pk=arPadre_id, Activo=True)
+    artefactoHijo = Artefacto.objects.get(pk=arHijo_id, Activo=True)
 
     if request.method == 'POST':
         relacionArtefacto = RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
