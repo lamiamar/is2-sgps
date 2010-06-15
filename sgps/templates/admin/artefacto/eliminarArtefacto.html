@@ -2,24 +2,42 @@
 {% block title %}Eliminaci&oacute;n de Artefactos{% endblock %}
 {% block head %}Eliminar Artefacto {{ artefacto.Nombre }}{% endblock %}
 {% block content %}
-<p>Esta seguro que desea eliminar el artefacto?</p>
-<p><strong>{{ artefacto.Tipo_Artefacto }}</strong> </p>
-<form method="post" action=""> 
-<input type="submit" value="eliminar" />
+{% if  mensaje %}
 
-{% ifequal fase 'E' %}
-	<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/requerimientos/' "/>
-{% endifequal %}
+	{{mensaje}}
+	
+	{% ifequal fase 'E' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/requerimientos/' "/>
+	{% endifequal %}
+	
+	{% ifequal fase 'D' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/diseno/' "/>
+	{% endifequal %}
+	
+	{% ifequal fase 'I' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/implementacion/' "/>
+	{% endifequal %}
 
-{% ifequal fase 'D' %}
-	<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/diseno/' "/>
-{% endifequal %}
-
-{% ifequal fase 'I' %}
-	<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/implementacion/' "/>
-{% endifequal %}
+{% else %}
+	<p>Esta seguro que desea eliminar el artefacto?</p>
+	<p><strong>{{ artefacto.Tipo_Artefacto }}</strong> </p>
+	<form method="post" action=""> 
+	<input type="submit" value="eliminar" />
 
 
-</form> 
+	{% ifequal fase 'E' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/requerimientos/' "/>
+	{% endifequal %}
+	
+	{% ifequal fase 'D' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/diseno/' "/>
+	{% endifequal %}
+	
+	{% ifequal fase 'I' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/implementacion/' "/>
+	{% endifequal %}
+
+	</form> 
+{% endif %}
 {% endblock %}
 
