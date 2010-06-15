@@ -69,7 +69,8 @@ def administrar_usuarios(request):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
-    return render_to_response('admin/Usuario/administrar_usuarios.html',{'user': user, 'usuarios': usuarios,'Modificar':Modificar,'Eliminar':Eliminar,'Crear':Crear,})
+        asignarrol = urs.rol.permisos.filter(Nombre = 'AsignarRolSistema')
+    return render_to_response('admin/Usuario/administrar_usuarios.html',{'user': user, 'usuarios': usuarios,'Modificar':Modificar,'Eliminar':Eliminar,'Crear':Crear,'asignarrol':asignarrol})
 
 
 @login_required
@@ -293,6 +294,7 @@ def proyecto(request, id):
     Implementacion = False
     EditarProyecto = False
     AgregarMiembro = False
+    GenerarLineaBase = False
     for urp in usrolpro:
         permi = urp.rol.permisos.all()
         for per in permi:
@@ -306,8 +308,10 @@ def proyecto(request, id):
                 EditarProyecto = True
             if per.Nombre =='AgregarMiembro':
                 AgregarMiembro = True
+            if per.Nombre =='GenerarLineaBase':
+                GenerarLineaBase = True
         
-    return render_to_response('proyec/proyecto.html', {'user': user, 'proyecto': proyecto,'Requerimientos':Requerimientos, 'Diseno':Diseno,'Implementacion':Implementacion,'EditarProyecto':EditarProyecto,'AgregarMiembro':AgregarMiembro,})
+    return render_to_response('proyec/proyecto.html', {'user': user, 'proyecto': proyecto,'Requerimientos':Requerimientos, 'Diseno':Diseno,'Implementacion':Implementacion,'EditarProyecto':EditarProyecto,'AgregarMiembro':AgregarMiembro,'GenerarLineaBase':GenerarLineaBase,})
 
 @login_required
 def usuariosMiembros(request, id):
@@ -457,12 +461,14 @@ def administrar_rolesTipo(request, Tipo):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
+        configpermisos = urs.rol.permisos.filter(Nombre = 'ConfigurarPermisos')
     contexto= RequestContext(request, {
                 'roles': roles,
                 'Tipo': Tipo,
                 'Modificar':Modificar,
                 'Eliminar':Eliminar,
                 'Crear':Crear,
+                'configpermisos':configpermisos,
                 })
     return render_to_response('admin/Roles/Listar_roles.html', contexto)
 
@@ -567,6 +573,7 @@ def agregar_permisos(request,id):
 def GestionarPrivilegios(request,id,per_id):
     rol = Rol.objects.get(id=id)
     permiso = Permiso.objects.get(id=per_id)
+    rolpe = rol.permisos.filter(id = permiso.id)
     if request.method == 'POST':
         form = PrivilegioForm(request.POST)
         if form.is_valid():
@@ -788,6 +795,8 @@ def FaseERequerimientos(request, id):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
+        confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
+        impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'E',
@@ -795,6 +804,8 @@ def FaseERequerimientos(request, id):
                                          'Eliminar': Eliminar,
                                          'Crear': Crear,
                                          'Aprobado': Aprobado,
+                                         'confrelaciones':confrelaciones,
+                                         'impacto':impacto,
                                          })
     return render_to_response('admin/artefacto/FaseRequerimiento.html', contexto)
 
@@ -830,6 +841,8 @@ def FaseDiseno(request, id):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
+        confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
+        impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'D',
@@ -837,6 +850,8 @@ def FaseDiseno(request, id):
                                          'Modificar': Modificar,
                                          'Eliminar': Eliminar,
                                          'Crear': Crear,
+                                         'confrelaciones':confrelaciones,
+                                         'impacto':impacto,
                                          })
     return render_to_response('admin/artefacto/FaseDiseno.html', contexto)
 
@@ -869,6 +884,8 @@ def FaseImplementacion(request, id):
                     Eliminar = True
                 if pri.Nombre =='Crear':
                     Crear = True
+        confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
+        impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefactos': artefactos,
                                          'Fase':'I',
@@ -876,6 +893,8 @@ def FaseImplementacion(request, id):
                                          'Modificar': Modificar,
                                          'Eliminar': Eliminar,
                                          'Crear': Crear,
+                                         'confrelaciones':confrelaciones,
+                                         'impacto':impacto,
                                          })
     return render_to_response('admin/artefacto/FaseImplementacion.html', contexto)
 

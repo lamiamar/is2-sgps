@@ -7,10 +7,14 @@
       <li>
 	  <strong>{{ artefacto.Nombre }}: </strong>{{ artefacto.Tipo_Artefacto.Fase }}
       {% if Paso %}
+              {% if confrelaciones %}
+                <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}" class="edit">Relaciones</a>
+              {%endif%}
+              {% if impacto %}
+                <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
+              {%endif%}      
         	  {% if Modificar %}
         	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">editar</a>
-              <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}" class="edit">Relaciones</a>
-              <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
               {% ifnotequal artefacto.Estado 'A' %}
               	<a href="/proyectos/{{proyecto.id}}/fase/artefactos/aprobar/{{artefacto.id}}/{{Fase}}/" class="edit">Aprobar</a>
         	  {% endifnotequal %}
