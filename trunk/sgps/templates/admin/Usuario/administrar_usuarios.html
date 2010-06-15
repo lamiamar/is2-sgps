@@ -11,9 +11,10 @@
 	    <strong>{{ usuario.username }}</strong>
 		{{ usuario.first_name }}
 		{{ usuario.last_name }}
-
-		{% if Modificar %}
-			<a href="/administracion/usuarios/asignar_rol&id={{usuario.id}}/">Asinar Rol de Sistema</a>
+        {% if asignarrol %}
+            <a href="/administracion/usuarios/asignar_rol&id={{usuario.id}}/">Asinar Rol de Sistema</a>
+        {% endif %}
+		{% if Modificar %}	
 			<a href="/administracion/usuarios/editar/{{ usuario.id|urlencode }}/" class="edit">editar</a>
 	   	{% endif %}
       	{% if Eliminar %}
