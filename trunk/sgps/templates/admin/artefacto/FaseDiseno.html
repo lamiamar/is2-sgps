@@ -13,13 +13,13 @@
               {% if impacto %}
                 <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
               {%endif%}
-        	  {% if Modificar %}
+        	  {% if EditarArtefactoDis %}
         	  	<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">editar</a>                 		
         		{% ifnotequal artefacto.Estado 'A' %}
         			<a href="/proyectos/{{proyecto.id}}/fase/artefactos/aprobar/{{artefacto.id}}/{{Fase}}/" class="edit">Aprobar</a>
         		{% endifnotequal %}
         	  {% endif %}	
-        	  {% if Eliminar%}
+        	  {% if EliminarArtefactoDis %}
         			<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">eliminar</a>
               {% endif %}	
              </li>
@@ -28,7 +28,7 @@
     {% endfor %}
     </ul>
      {% if Paso %}   
-        {% if Crear %}
+        {% if CrearArtefactoDis %}
         	<input type="button" value="Nuevo Artefacto" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/nuevo/' "/>
         {% endif %}
     {% endif %}

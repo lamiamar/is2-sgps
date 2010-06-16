@@ -49,17 +49,17 @@ class Proyecto(models.Model):
     def __unicode__(self):
         return self.Nombre
 
-class Privilegio(models.Model):
-    Nombre = models.CharField(unique=True, max_length=40)
-    Descripcion = models.TextField(null=True)
-    def __unicode__(self):
-        return u'%s' % (self.Nombre)
+#class Privilegio(models.Model):
+#    Nombre = models.CharField(unique=True, max_length=40)
+#    Descripcion = models.TextField(null=True)
+#    def __unicode__(self):
+#        return u'%s' % (self.Nombre)
    
 class Permiso(models.Model):
     Nombre = models.CharField(unique=True, max_length=40)
     Descripcion = models.TextField(null=True)
     Tipo = models.CharField(max_length=1, choices=TIPO_ROL)
-    privilegios = models.ManyToManyField(Privilegio)
+#    privilegios = models.ManyToManyField(Privilegio)
     def __unicode__(self):
         return u'%s' % (self.Nombre)
 
