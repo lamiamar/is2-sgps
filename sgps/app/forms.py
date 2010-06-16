@@ -106,10 +106,10 @@ class PermisoSistemaForm(forms.Form):
     Permisos = forms.ModelMultipleChoiceField(queryset=Permiso.objects.filter(Tipo='S'),
                                            widget=forms.CheckboxSelectMultiple, required=False)
 
-class PrivilegioForm(forms.Form):
+#class PrivilegioForm(forms.Form):
 
-    Privilegios = forms.ModelMultipleChoiceField(queryset=Privilegio.objects.all(),
-                                           widget=forms.CheckboxSelectMultiple, required=False)
+#    Privilegios = forms.ModelMultipleChoiceField(queryset=Privilegio.objects.all(),
+#                                           widget=forms.CheckboxSelectMultiple, required=False)
     
 ##########################################Control de proyecto#######################################
 class ProyectoForm(forms.Form):

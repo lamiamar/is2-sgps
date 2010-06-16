@@ -64,7 +64,7 @@ urlpatterns = patterns('',
     (r'^administracion/roles/eliminar/(\d+)/(\w+)/$', eliminarRoles),
     (r'^administracion/roles/permisos/(\d+)/(\w+)/$', GestionarPermisos),
     (r'^administracion/roles/permisos/(\d+)/agregar$', agregar_permisos),
-    (r'^administracion/roles/privilegio/(\d+)/(\d+)/$', GestionarPrivilegios),    
+    #(r'^administracion/roles/privilegio/(\d+)/(\d+)/$', GestionarPrivilegios),    
     #Control de Tipo de Artefacto..........
 
     (r'^administracion/tipo_artefacto/$', TipoArtefactos),
