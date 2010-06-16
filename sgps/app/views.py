@@ -1,3 +1,5 @@
+import base64
+
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import Context
@@ -1139,7 +1141,9 @@ def guardarArchivo(request, id_p, id_ar):
         
         try:
             archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
-                                               Nom_Archivo=adjunto.name)
+                                               Nom_Archivo=adjunto.name,
+                                               Activo=True)
+            archivo.Activo = False
             archivo.save()
             archivo = ArchivosAdjuntos(Artefacto = artefacto,
                                        Nom_Archivo = adjunto.name,
@@ -1159,7 +1163,7 @@ def guardarArchivo(request, id_p, id_ar):
             
     form = ArchivosAdjuntosForm()
     artefacto = Artefacto.objects.get(id=id_ar)
-    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto)
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
 
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'form': form,
@@ -1180,12 +1184,12 @@ def obtenerArchivo(request, id_p, id_ar, archivo_id):
 
 @login_required
 def eliminar_adjunto(request, id_p, id_ar, archivo_id):
-############## arreglar #################
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
-    archivo = get_object_or_404(ArchivosAdjuntos, archivo_id)
+    archivo = get_object_or_404(ArchivosAdjuntos, pk=archivo_id)
     if request.method == 'POST':
         archivo.Activo = False
+        archivo.save()
         return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + str(artefacto.id) + "/editar/adjuntar/")
     contexto = RequestContext(request, {'proyecto': proyecto,
                                         'artefacto': artefacto,

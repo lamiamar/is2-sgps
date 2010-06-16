@@ -7,6 +7,7 @@
     {{form.as_p}}
 	</table>
 <input type="submit" value="Guardar" />
+<input type="button" value="Adjuntar archivo" onClick = "location.href='/proyecto/{{ProyectoId}}/fase/{{artefacto.id}}/editar/adjuntar/' "/>
 {% ifequal fase 'E' %}
 	<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/requerimientos/' "/>
 {% endifequal %}
