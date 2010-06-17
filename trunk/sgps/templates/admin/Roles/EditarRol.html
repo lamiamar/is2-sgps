@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Modificar Rol{% endblock %}
-{% block head %} Modificar Rol {{ rol.Nombre }}{% endblock %}
+{% block head %} Editar Rol {% endblock %}
 {% block content %}
 <form method="post" action="">
-	
+	Nombre: {{ rol.Nombre }}
 	<table>
     {{form.as_p}}
 	</table>

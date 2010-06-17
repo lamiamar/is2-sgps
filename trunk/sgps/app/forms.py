@@ -90,9 +90,8 @@ class RolForm(forms.Form):
                     raise forms.ValidationError('El nombre ya existe. Inserte otro.')
 
        return nombre
-    
-class ModificarRolForm(forms.ModelForm):
-    Nombre = forms.CharField(label=u'Nombre de rol', max_length=30)
+   
+class ModificarRolForm(forms.Form):
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
 
 class PermisoProyectoForm(forms.Form):
@@ -126,6 +125,11 @@ class ProyectoForm(forms.Form):
                     raise forms.ValidationError('El nombre ya existe. Inserte otro.')
 
        return nombre
+   
+class ModificarProyectoForm(forms.Form):
+
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
+    Usuario = forms.ModelChoiceField(queryset=User.objects.all(), label=u'Lider')
 
 class ProyectoEditarForm(forms.Form):
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
@@ -148,6 +152,9 @@ class ArtefactoForm(forms.Form):
     Tipo_Artefacto = forms.ModelChoiceField(queryset=None, label='Tipo Artefacto')
     Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
     Complejidad = forms.CharField(max_length=2, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
+    DescripcionCorta = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Corta')
+    DescripcionLarga = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Larga')
+     
     def __init__(self, fase, *args, **kwargs):
         super(ArtefactoForm, self).__init__(*args, **kwargs)
         self.fields['Tipo_Artefacto'].queryset = Tipo_Artefacto.objects.filter(Fase=fase)
@@ -156,10 +163,14 @@ class ModificarArtefactoForm(forms.Form):
     Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
     Complejidad = forms.CharField(max_length=2, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
     Estado = forms.CharField(max_length=1, widget=forms.Select(choices=ESTADO), label=u'Estado')
+    DescripcionCorta = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Corta')
+    DescripcionLarga = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Larga')
 
 class Tipo_ArtefactoForm(forms.Form): 
     Nombre = forms.CharField(max_length=100, label=u'Nombre')
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    
     
     def clean_Nombre(self):
        nombre = self.cleaned_data['Nombre']
@@ -170,6 +181,10 @@ class Tipo_ArtefactoForm(forms.Form):
                     raise forms.ValidationError('El nombre ya existe. Inserte otro.')
 
        return nombre
+
+class Mod_Tipo_ArtefactoForm(forms.Form):
+    Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     
 class ArchivosAdjuntosForm(forms.Form):
     archivo = forms.FileField(label=u'Adjuntar archivo', required = False)

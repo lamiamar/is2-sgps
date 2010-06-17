@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Modificaci&oacute;n de Tipo de Artefactos{% endblock %}
-{% block head %}Modificar Tipo de Artefacto {{ tipo_artefacto.Nombre }}{% endblock %}
+{% block head %}Editar Tipo de Artefacto {% endblock %}
 {% block content %}
 <form method="post" action=""> 
+Nombre: {{ tipo_artefacto.Nombre }}
 	<table>
     {{form.as_p}}
 	</table>

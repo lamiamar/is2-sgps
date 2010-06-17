@@ -83,6 +83,7 @@ class Fase(models.Model):
 class Tipo_Artefacto(models.Model):
     Nombre = models.CharField(max_length=100)
     Fase = models.CharField(max_length=2, choices=ETAPA)
+    Descripcion = models.TextField(null=True)
     def __unicode__(self):
         return self.Nombre
 
@@ -98,6 +99,8 @@ class Numeracion(models.Model):
 class Artefacto(models.Model):
     Nombre=models.CharField(max_length=40)
     Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
+    DescripcionCorta = models.CharField(max_length=650, null=True)
+    DescripcionLarga = models.TextField(null=True)
     Proyecto = models.ForeignKey(Proyecto)
     Prioridad = models.CharField(max_length=1)
     Version = models.IntegerField()
