@@ -2,8 +2,8 @@
 {% block title %}Eliminaci&oacute;n de Usuario{% endblock %}
 {% block head %}Eliminar Usuario {{ usuario.username }}{% endblock %}
 {% block content %}
-{% if usuarioprohibido %}
-    <p>No puede eliminar el usuario <strong>{{usuario.username}}</strong> por que posee el rol Lider de Proyecto<p>
+{% if mensaje %}
+   <p> {{mensaje}}</p>
     <input type="button" value="OK" onClick = "location.href='/administracion/usuarios/' "/>
 {% else %}
     <p>Esta seguro que desea eliminar a al usuario <strong> {{ usuario.username }} </strong> ?</p>

@@ -133,13 +133,16 @@ def eliminarUsuario(request, id_user):
     usuario = User.objects.get(pk=id_user)
     proyectos = Proyecto.objects.all()
     usuarioprohibido = False
+    mensaje=None
     for proyecto in proyectos:
         if proyecto.Usuario.username == usuario.username:
-            usuarioprohibido = True
+            mensaje="Este usuaruo es lider de algun Proyecto, no se puede eliminar"
+    if usuario.id == 1:
+        mensaje= "Este usuario es el Administrador del sistema no se puede Eliminar"
     if request.method == 'POST':
         usuario.delete()
         return HttpResponseRedirect('/administracion/usuarios/')
-    return render_to_response('admin/Usuario/eliminarUsuario.html', {'user': user,'usuario': usuario,'usuarioprohibido': usuarioprohibido})
+    return render_to_response('admin/Usuario/eliminarUsuario.html', {'user': user,'usuario': usuario,'usuarioprohibido': usuarioprohibido, 'mensaje': mensaje,})
 
 @login_required
 def asignarRolesSistema(request, usuario_id):
@@ -216,9 +219,8 @@ def modificarProyecto(request, id):
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         proyecto = Proyecto.objects.get(id=id)
-        form = ProyectoForm(request.POST)
+        form = ModificarProyectoForm(request.POST)
         if form.is_valid():
-            proyecto.Nombre=form.cleaned_data['Nombre']
             proyecto.Usuario=form.cleaned_data['Usuario']
             proyecto.Descripcion=form.cleaned_data['Descripcion']
             proyecto.save()
@@ -235,7 +237,7 @@ def modificarProyecto(request, id):
         
         #id = request.GET['id']
         proyecto = get_object_or_404(Proyecto, id=id)
-        form = ProyectoForm(initial={'Nombre': proyecto.Nombre,
+        form = ModificarProyectoForm(initial={'Nombre': proyecto.Nombre,
                              'Usuario': proyecto.Usuario.id, 'Descripcion': proyecto.Descripcion,})
     return render_to_response('admin/Proyecto/editarProyecto.html', {'user': user, 'form': form, 'proyecto': proyecto,})
 
@@ -457,9 +459,8 @@ def modificarRol(request, id, Tipo):
     if request.method == 'POST':
         rol = Rol.objects.get(id=id)
         
-        form = RolForm(request.POST)
+        form = ModificarRolForm(request.POST)
         if form.is_valid():
-            rol.Nombre=form.cleaned_data['Nombre']
             rol.Descripcion=form.cleaned_data['Descripcion']
             rol.save()
             
@@ -467,10 +468,7 @@ def modificarRol(request, id, Tipo):
     else:
         #id = request.GET['id']
         rol = get_object_or_404(Rol, id=id)
-        form = RolForm({ 'Nombre': rol.Nombre,
-                                 'Descripcion': rol.Descripcion,
-                                 'Tipo': rol.Tipo,
-                                 })
+        form = ModificarRolForm({'Descripcion': rol.Descripcion,})
 
     return render_to_response('admin/Roles/EditarRol.html', {'form': form, 'rol': rol,'Tipo': Tipo,})
 @login_required
@@ -563,7 +561,7 @@ def agregar_permisos(request,id):
 def administrar_artefactos(request):
  
     user = User.objects.get(username=request.user.username)
-    artefactos = Artefacto.objects.filter(Activo=True).order_by('Prioridad')
+    artefactos = Artefacto.objects.filter(Activo=True).order_by('Nombre')
     return render_to_response('admin/artefacto/administrar_artefacto.html', {'user': user, 'artefactos': artefactos,})
 
 
@@ -576,6 +574,8 @@ def agregarArtefacto(request, id, fase):
             artefacto = Artefacto(
                       Tipo_Artefacto = form.cleaned_data['Tipo_Artefacto'],
                       Proyecto = Proyecto.objects.get(pk = id),
+                      DescripcionCorta=form.cleaned_data['DescripcionCorta'],
+                      DescripcionLarga=form.cleaned_data['DescripcionLarga'],
                       Activo=True,
                       Version=1,
                       Prioridad=form.cleaned_data['Prioridad'],
@@ -616,6 +616,8 @@ def modificarArtefacto(request, id_p, fase, id_ar):
         artefacto = Artefacto.objects.get(id=id_ar)
         form = ModificarArtefactoForm(request.POST)
         if form.is_valid():
+            DescripcionCorta=form.cleaned_data['DescripcionCorta'],
+            DescripcionLarga=form.cleaned_data['DescripcionLarga'],
             artefacto.Estado=form.cleaned_data['Estado']
             artefacto.Prioridad=form.cleaned_data['Prioridad']
             artefacto.Complejidad=form.cleaned_data['Complejidad']
@@ -631,7 +633,9 @@ def modificarArtefacto(request, id_p, fase, id_ar):
         form = ModificarArtefactoForm(initial={
                              'Estado': artefacto.Estado,
                              'Prioridad': artefacto.Prioridad,
-                             'Complejidad': artefacto.Complejidad,})
+                             'Complejidad': artefacto.Complejidad,
+                             'DescripcionCorta':artefacto.DescripcionCorta,
+                             'DescripcionLarga': artefacto.DescripcionLarga,})
     return render_to_response('admin/artefacto/modificarArtefacto.html', {'user': user,'form': form, 'artefacto': artefacto, 'fase': fase, 'ProyectoId': id_p})
 
 @login_required
@@ -664,7 +668,7 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
 
 def TipoArtefactos(request):
 
-    Tipo = Tipo_Artefacto.objects.all()
+    Tipo = Tipo_Artefacto.objects.all().order_by('Nombre')
     proyectos = Proyecto.objects.all().order_by('Nombre')
     user = User.objects.get(username=request.user.username)
     usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
@@ -683,6 +687,7 @@ def Agregar_tipo_artefacto(request):
             tipo = Tipo_Artefacto(
                       Nombre = form.cleaned_data['Nombre'],
                       Fase = form.cleaned_data['Fase'],
+                      Descripcion= form.cleaned_data['Descripcion'],
             )
             tipo.save()
             return HttpResponseRedirect('/administracion/tipo_artefacto/')
@@ -694,17 +699,18 @@ def modificar_tipo_artefacto(request, id):
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         tipo_artefacto = Tipo_Artefacto.objects.get(id=id)
-        form = Tipo_ArtefactoForm(request.POST)
+        form = Mod_Tipo_ArtefactoForm(request.POST)
         if form.is_valid():
-            tipo_artefacto.Nombre=form.cleaned_data['Nombre']
             tipo_artefacto.Fase=form.cleaned_data['Fase']
+            tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
             tipo_artefacto.save()
             return HttpResponseRedirect('/administracion/tipo_artefacto/')
     else:
         tipo_artefacto = get_object_or_404(Tipo_Artefacto, id=id)
-        form = Tipo_ArtefactoForm(initial={
+        form = Mod_Tipo_ArtefactoForm(initial={
                              'Nombre': tipo_artefacto.Nombre,
-                             'Fase': tipo_artefacto.Fase,})
+                             'Fase': tipo_artefacto.Fase,
+                             'Descripcion':tipo_artefacto.Descripcion})
 
 
 

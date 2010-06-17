@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Modificaci&oacute;n de Proyectos{% endblock %}
-{% block head %}Modificar Proyecto {{ proyecto.Nombre }}{% endblock %}
+{% block head %}Edita Proyecto {% endblock %}
 {% block content %}
 <form method="post" action=""> 
+Nombre: {{ proyecto.Nombre }}
     <table>
     {{form.as_p}}
 	</table>
