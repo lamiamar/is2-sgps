@@ -3,6 +3,9 @@
 {% block head %}Editar Artefacto: {{ artefacto.Tipo_Artefacto.Nombre }}{% endblock %}
 {% block content %}
 <form method="post" action=""> 
+	{% if mensaje %}
+		{{ mensaje }}
+	{% endif %}
 	<table>
     {{form.as_p}}
 	</table>
