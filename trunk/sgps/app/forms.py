@@ -162,7 +162,7 @@ class ArtefactoForm(forms.Form):
 class ModificarArtefactoForm(forms.Form):
     Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
     Complejidad = forms.CharField(max_length=2, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
-    Estado = forms.CharField(max_length=1, widget=forms.Select(choices=ESTADO), label=u'Estado')
+    
     DescripcionCorta = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Corta')
     DescripcionLarga = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Larga')
 

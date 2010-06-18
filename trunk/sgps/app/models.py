@@ -6,9 +6,7 @@ TIPO_ROL = (
           ('P', 'Proyecto'),
           )
 ESTADO = (
-          ('N', 'Nuevo'),
           ('I', 'Implementando'),
-          ('T', 'Terminado'),
           ('A', 'Aprobado'),
           ('D', 'Desaprobado')
           )

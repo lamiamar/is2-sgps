@@ -589,7 +589,7 @@ def agregarArtefacto(request, id, fase):
                       Version=1,
                       Prioridad=form.cleaned_data['Prioridad'],
                       Complejidad=form.cleaned_data['Complejidad'],
-                      Estado='N',
+                      Estado='I',
             )
             numero= Numeracion.objects.filter(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)
             if numero:
@@ -621,13 +621,18 @@ def agregarArtefacto(request, id, fase):
 
 def modificarArtefacto(request, id_p, fase, id_ar):
     user = User.objects.get(username=request.user.username)
+    mensaje=None
+    artefacto = Artefacto.objects.get(id=id_ar)
+    if artefacto.Estado == 'A':
+            mensaje="El artefacto ha cambiado de estado Aprobado a Implementando."
+
     if request.method == 'POST':
         artefacto = Artefacto.objects.get(id=id_ar)
         form = ModificarArtefactoForm(request.POST)
         if form.is_valid():
+            artefacto.Estado='I'
             DescripcionCorta=form.cleaned_data['DescripcionCorta'],
             DescripcionLarga=form.cleaned_data['DescripcionLarga'],
-            artefacto.Estado=form.cleaned_data['Estado']
             artefacto.Prioridad=form.cleaned_data['Prioridad']
             artefacto.Complejidad=form.cleaned_data['Complejidad']
             artefacto.save()
@@ -645,7 +650,7 @@ def modificarArtefacto(request, id_p, fase, id_ar):
                              'Complejidad': artefacto.Complejidad,
                              'DescripcionCorta':artefacto.DescripcionCorta,
                              'DescripcionLarga': artefacto.DescripcionLarga,})
-    return render_to_response('admin/artefacto/modificarArtefacto.html', {'user': user,'form': form, 'artefacto': artefacto, 'fase': fase, 'ProyectoId': id_p})
+    return render_to_response('admin/artefacto/modificarArtefacto.html', {'user': user,'form': form, 'artefacto': artefacto, 'fase': fase, 'ProyectoId': id_p, 'mensaje':mensaje})
 
 @login_required
 def eliminarArtefacto(request, id_p, fase, id_ar):
@@ -944,6 +949,7 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
                                        artefactoHijo=artefactoPadre, Activo=True)
     
         relacion_artefacto.save()
+        
     return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
 @login_required
