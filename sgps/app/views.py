@@ -225,13 +225,22 @@ def modificarProyecto(request, id):
             proyecto.Descripcion=form.cleaned_data['Descripcion']
             proyecto.save()
             rol = Rol.objects.get(Nombre = 'Lider de Proyecto')
-            URP = UsuarioRolProyecto.objects.filter(usuario= proyecto.Usuario, proyecto = proyecto, rol = rol )
+            urp = UsuarioRolProyecto.objects.filter(proyecto = proyecto, rol = rol )
+            if urp:
+                usropr =  UsuarioRolProyecto.objects.get(proyecto = proyecto, rol = rol )
+                usropr.rol = None
+                usropr.save()
+            URP = UsuarioRolProyecto.objects.filter(usuario= proyecto.Usuario, proyecto = proyecto, rol = None )
             if not URP:
                 UserRolPro = UsuarioRolProyecto(usuario=proyecto.Usuario,
                              proyecto=proyecto,
                              rol=rol,
                                 )
                 UserRolPro.save()
+            else:
+                usropr =  UsuarioRolProyecto.objects.get(usuario= proyecto.Usuario, proyecto = proyecto, rol = None )
+                usropr.rol = rol
+                usropr.save()
             return HttpResponseRedirect('/administracion/proyectos/')
     else:
         
@@ -592,7 +601,7 @@ def agregarArtefacto(request, id, fase):
                 numero.save()
             else:
                 artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre + str(0)
-                print artefacto.Nombre
+#                print artefacto.Nombre
                 numero=Numeracion(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)   
                 numero.Ultimo_nro=1
                 numero.save()        
