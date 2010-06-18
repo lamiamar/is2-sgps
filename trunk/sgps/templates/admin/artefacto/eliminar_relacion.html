@@ -6,7 +6,7 @@
 	<p>Est&aacute; seguro que desea eliminar esta relaci&oacute;n con "{{ artefactoH.Tipo_Artefacto }}"?</p>
 	<form method="post" action=""> 
 		<input type="submit" value="Eliminar" />
-		<input type="button" value="Cancelar" onClick = "location.href='/proyectos/{{ proyecto.nombre|urlencode }}/desarrollo/relaciones/{{ artefacto.id|urlencode }}/' "/>
+		<input type="button" value="Cancelar" onClick = "location.href='/proyectos/{{ proyecto.id }}/fase/artefactos/relaciones/{{ artefacto.id}}/' "/>
 	</form>
-
+                                                                                     
 {% endblock %}
