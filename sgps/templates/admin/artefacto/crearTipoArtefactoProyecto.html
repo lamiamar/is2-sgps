@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Tipo Artefactos{% endblock %}
+{% block head %}Crear Tipo Artefacto Proyecto<br>{% endblock %}
+{% block content %}
+
+<form method="post" action="/administracion/tipo_artefacto/nuevo/"> 
+    <table>
+    {{form.as_p}}
+    </table>
+
+<input type="submit" value="Guardar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/tipo_artefacto/' "/>
+</form>
+{% endblock%} 

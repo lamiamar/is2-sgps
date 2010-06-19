@@ -189,7 +189,6 @@ class Mod_Tipo_ArtefactoForm(forms.Form):
 class ArchivosAdjuntosForm(forms.Form):
     archivo = forms.FileField(label=u'Adjuntar archivo', required = False)
 
-
     
     
     
