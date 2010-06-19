@@ -14,13 +14,14 @@
                 <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
               {%endif%}      
         	  {% if EditarArtefactoImp %}
-        	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">editar</a>
+              <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/" class="edit">Historial</a>
+        	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">Editar</a>
               {% ifnotequal artefacto.Estado 'A' %}
               	<a href="/proyectos/{{proyecto.id}}/fase/artefactos/aprobar/{{artefacto.id}}/{{Fase}}/" class="edit">Aprobar</a>
         	  {% endifnotequal %}
         	 {% endif %}
         	 {% if EliminarArtefactoImp%}
-        		<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">eliminar</a>
+        		<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">Eliminar</a>
         	 {% endif %}
              </li>
     {% endif %}

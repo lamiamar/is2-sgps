@@ -1,4 +1,5 @@
 import base64
+import datetime
 
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -12,7 +13,46 @@ from django.contrib.auth.decorators import login_required
 from sgps.app.models import *
 from sgps.app.forms import *
 
+#################### funciones auxiliares para historial ###########################
 
+def registrarHistorialArt(artefacto):
+    registroHistorial = HistorialArt(                                     
+                                     Artefacto = artefacto,
+                                     Nombre = artefacto.Nombre,
+                                     Tipo_Artefacto = artefacto.Tipo_Artefacto,
+                                     DescripcionCorta = artefacto.DescripcionCorta,
+                                     DescripcionLarga = artefacto.DescripcionLarga,
+                                     Proyecto = artefacto.Proyecto,
+                                     Prioridad = artefacto.Prioridad,
+                                     Version = artefacto.Version,
+                                     Complejidad = artefacto.Complejidad,
+                                     Usuario = artefacto.Usuario,
+                                     Estado = artefacto.Estado,
+                                     Activo = artefacto.Activo,
+                                     Actual = True,
+                                     Fecha_mod = datetime.date.today(),
+                                     )
+    
+    registroHistorial.save(force_insert=True)
+    
+    files = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+    for archivo in files:
+        historialAdj = HistorialAdj(
+                                        Artefacto = registroHistorial,
+                                        Archivo = archivo,
+                                        )
+        historialAdj.save()
+    
+def registrarHistorialRel(relacion_artefacto):
+    historialRelaciones = HistorialRel(
+                                      artefactoPadre=relacion_artefacto.artefactoPadre, 
+                                      artefactoHijo=relacion_artefacto.artefactoHijo,
+                                      Activo = relacion_artefacto.Activo,
+                                      Fecha_mod = datetime.date.today(),
+                                      )
+    historialRelaciones.save()
+
+###################################### SISTEMA ##################################################
 
 @login_required
 def pagina_principal(request):
@@ -584,13 +624,16 @@ def agregarArtefacto(request, id, fase):
                       Tipo_Artefacto = form.cleaned_data['Tipo_Artefacto'],
                       Proyecto = Proyecto.objects.get(pk = id),
                       DescripcionCorta=form.cleaned_data['DescripcionCorta'],
-                      DescripcionLarga=form.cleaned_data['DescripcionLarga'],
-                      Activo=True,
+                      DescripcionLarga=form.cleaned_data['DescripcionLarga'],                     
                       Version=1,
                       Prioridad=form.cleaned_data['Prioridad'],
                       Complejidad=form.cleaned_data['Complejidad'],
+                      Usuario = request.user,
                       Estado='I',
+                      Activo=True,
+                      
             )
+            
             numero= Numeracion.objects.filter(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)
             if numero:
                 numero= Numeracion.objects.get(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)
@@ -608,6 +651,8 @@ def agregarArtefacto(request, id, fase):
     
             
             artefacto.save()
+            
+            registrarHistorialArt(artefacto)
             if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id) + "/requerimientos/")
             if fase =='D':
@@ -628,14 +673,24 @@ def modificarArtefacto(request, id_p, fase, id_ar):
 
     if request.method == 'POST':
         artefacto = Artefacto.objects.get(id=id_ar)
+        #actualizar la version a la cual estara apuntando el historial, luego de la modificacion
+        artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+        
         form = ModificarArtefactoForm(request.POST)
         if form.is_valid():
+            artefacto_hist.Actual = False
+            artefacto_hist.save()
+            
             artefacto.Estado='I'
             DescripcionCorta=form.cleaned_data['DescripcionCorta'],
             DescripcionLarga=form.cleaned_data['DescripcionLarga'],
             artefacto.Prioridad=form.cleaned_data['Prioridad']
             artefacto.Complejidad=form.cleaned_data['Complejidad']
+            artefacto.Version = artefacto.Version + 1
+            artefacto.Usuario = request.user
             artefacto.save()
+            
+            registrarHistorialArt(artefacto)
             if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/requerimientos/")
             if fase =='D':
@@ -662,12 +717,17 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
     if relacionesPadre:
         error= 'Hay artefacto que dependen de el. No se puede eliminar si existe dependencias'
     if request.method == 'POST':
-
+        artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+        artefacto_hist.Actual = False
+        artefacto_hist.save()
+        
         artefacto.Activo=False
         for rel in relacionesHijo:
             rel.Activo = False
             rel.save()
         artefacto.save()
+        
+        registrarHistorialArt(artefacto)
 
         if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/requerimientos/")
@@ -740,7 +800,66 @@ def eliminar_tipo_artefacto(request, id):
         return HttpResponseRedirect('/administracion/tipo_artefacto/')
     return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,})
 
+##################Falta implementar todaviaaa###################################################
 
+def TipoArtefactosProyecto(request, id_p):
+    
+    proyecto = Proyecto.objects.get(pk=id_p)
+    Tipo = Tipo_Artefacto_Proyecto.objects.filter(Proyecto=proyecto).order_by('Nombre')
+    user = User.objects.get(username=request.user.username)
+    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'user': user, 'Tipo': Tipo,})
+
+
+
+def Agregar_tipo_artefacto_Proyecto(request, p_id):
+    user = User.objects.get(username=request.user.username)
+    proyecto=Proyecto.objects.get(pk=p_id)
+    if request.method == 'POST':
+        form = Tipo_ArtefactoForm(request.POST)
+        if form.is_valid():
+            tipoProyecto = Tipo_Artefacto_Proyecto(
+                      Nombre = form.cleaned_data['Nombre'],
+                      Fase = form.cleaned_data['Fase'],
+                      Descripcion= form.cleaned_data['Descripcion'],
+                      Proyecto=proyecto
+            )
+            tipoProyecto.save()
+            return HttpResponseRedirect('/administracion/tipo_artefacto/')
+    else:
+        form = Tipo_ArtefactoForm()
+    return render_to_response('admin/artefacto/crearTipoArtefactoProyecto.html', {'user': user, 'form': form })
+
+def modificar_tipo_artefacto_Proyecto(request, id):
+    user = User.objects.get(username=request.user.username)
+    if request.method == 'POST':
+        tipo_artefacto = Tipo_Artefacto_Proyecto.objects.get(id=id)
+        form = Mod_Tipo_ArtefactoForm(request.POST)
+        if form.is_valid():
+            tipo_artefacto.Fase=form.cleaned_data['Fase']
+            tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
+            tipo_artefacto.save()
+            return HttpResponseRedirect('/administracion/tipo_artefacto/')
+    else:
+        tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, id=id)
+        form = Mod_Tipo_ArtefactoForm(initial={
+                             'Fase': tipo_artefacto.Fase,
+                             'Descripcion':tipo_artefacto.Descripcion})
+
+
+
+    return render_to_response('admin/artefacto/editarTipo_artefacto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,})
+
+
+@login_required
+def eliminar_tipo_artefacto_Proyecto(request, id):
+    user = User.objects.get(username=request.user.username)
+    tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id)
+    if request.method == 'POST':
+        tipo_artefacto.delete()
+        return HttpResponseRedirect('/administracion/tipo_artefacto/')
+    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,})
+
+###############################################################################################
 
 @login_required
 def FaseERequerimientos(request, id):
@@ -944,11 +1063,13 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
         relacion_artefacto=RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacion_artefacto.Activo=True
         relacion_artefacto.save()
+        registrarHistorialRel(relacion_artefacto)
     else:
         relacion_artefacto = RelacionArtefacto(artefactoPadre=artefactoHijo,
                                        artefactoHijo=artefactoPadre, Activo=True)
     
         relacion_artefacto.save()
+        registrarHistorialRel(relacion_artefacto)
         
     return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
@@ -963,6 +1084,8 @@ def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
         relacionArtefacto = RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacionArtefacto.Activo=False
         relacionArtefacto.save()
+        registrarHistorialRel(relacion_artefacto)
+        
         return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
     contexto = RequestContext(request, {'proyecto': proyecto,
@@ -980,6 +1103,8 @@ def aprobarArtefacto(request, p_id, a_id, fase):
 
     artefacto.Estado = 'A'
     artefacto.save()
+    registrarHistorialArt(artefacto)
+    
     if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/requerimientos/")
     if fase =='D':
@@ -1069,8 +1194,6 @@ def calculoImpactoPadres(ids, artefacto_id):
                 
                 
 ############################### ARCHIVOS ##########################################
-
-
 @login_required
 def guardarArchivo(request, id_p, id_ar):
 
@@ -1080,6 +1203,7 @@ def guardarArchivo(request, id_p, id_ar):
         artefacto = Artefacto.objects.get(id=id_ar)
         
         adjunto = request.FILES['archivo']
+        artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
         
         try:
             archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
@@ -1092,17 +1216,35 @@ def guardarArchivo(request, id_p, id_ar):
                                        Contenido = base64.b64encode(adjunto.read()),
                                        Tamano = adjunto.size,
                                        TipoContenido = adjunto.content_type,
+                                       Activo = True,
                                        )
             archivo.save(force_insert=True)
+
+            artefacto_hist.Actual = False
+            artefacto_hist.save()
+            
+            artefacto.Version = artefacto.Version + 1
+            artefacto.save()
+            registrarHistorialArt(artefacto)
+
         except:
             archivo = ArchivosAdjuntos(Artefacto = artefacto,
                                        Nom_Archivo = adjunto.name,
                                        Contenido = base64.b64encode(adjunto.read()),
                                        Tamano = adjunto.size,
                                        TipoContenido = adjunto.content_type,
+                                       Activo = True,
                                        )
             archivo.save()
             
+            artefacto_hist.Actual = False
+            artefacto_hist.save()
+            
+            artefacto.Version = artefacto.Version + 1
+            artefacto.save()
+            
+            registrarHistorialArt(artefacto)
+
     form = ArchivosAdjuntosForm()
     artefacto = Artefacto.objects.get(id=id_ar)
     archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
@@ -1129,15 +1271,81 @@ def eliminar_adjunto(request, id_p, id_ar, archivo_id):
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     archivo = get_object_or_404(ArchivosAdjuntos, pk=archivo_id)
+    artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
     if request.method == 'POST':
+        artefacto_hist.Actual = False
+
         archivo.Activo = False
         archivo.save()
+
+        artefacto.Version = artefacto.Version + 1
+        registrarHistorialArt(artefacto)
+
         return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + str(artefacto.id) + "/editar/adjuntar/")
     contexto = RequestContext(request, {'proyecto': proyecto,
                                         'artefacto': artefacto,
                                          'archivo': archivo,
                                          })
     return render_to_response('admin/artefacto/eliminar_adjunto.html', contexto)
+
+##################################### HISTORIAL - VERSIONES ##################################################################
+
+@login_required
+def menuHistorial(request, p_id, fase, ar_id):
+    proyecto = Proyecto.objects.get(pk = p_id)
+    artefacto = Artefacto.objects.get(pk = ar_id)
+
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        })
+    return render_to_response('admin/artefacto/historiales.html', contexto)    
+    
+@login_required
+def verHistorialArt(request, id_p, fase, id_ar):
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    
+    listaHistorialArt = HistorialArt.objects.filter(Artefacto=artefacto)
+
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        'hist_art': listaHistorialArt,
+                                        })
+    return render_to_response('admin/artefacto/historial_art.html', contexto)
+
+@login_required
+def verHistorialRel(request, id_p, fase, id_ar):
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    
+    listaHistorialRel = HistorialRel.objects.filter(artefactoHijo=artefacto)
+    
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        'his_rel': listaHistorialRel,
+                                        })
+    return render_to_response('admin/artefacto/historial_rel.html', contexto)
+
+@login_required
+def verHistorialAdj(request, id_p, fase, id_ar):
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    
+    listaHistorialArt = HistorialArt.objects.filter(Artefacto=artefacto)
+    listaHistorialAdj = HistorialAdj.objects.filter(Artefacto__in=listaHistorialArt)
+
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        'his_adj': listaHistorialAdj,
+                                        })
+    return render_to_response('admin/artefacto/historial_adj.html', contexto)
+
+#################################################################################################
+
 
 @login_required
 def LineaBase(request, p_id):

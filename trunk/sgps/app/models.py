@@ -5,6 +5,8 @@ TIPO_ROL = (
           ('S', 'Sistema'),
           ('P', 'Proyecto'),
           )
+
+
 ESTADO = (
           ('I', 'Implementando'),
           ('A', 'Aprobado'),
@@ -82,8 +84,18 @@ class Tipo_Artefacto(models.Model):
     Nombre = models.CharField(max_length=100)
     Fase = models.CharField(max_length=2, choices=ETAPA)
     Descripcion = models.TextField(null=True)
+    
     def __unicode__(self):
         return self.Nombre
+    
+class Tipo_Artefacto_Proyecto(models.Model):
+    Nombre = models.CharField(max_length=40)
+    Descripcion = models.TextField()
+    Fase = models.CharField(max_length=1, choices=ETAPA)
+    Proyecto = models.ForeignKey(Proyecto)
+
+    def __unicode__(self):
+        return u'%s' % (self.nombre)
 
 #class Numeracion(models.Model):
 #    Proyecto = models.ForeignKey(Proyecto)
@@ -103,6 +115,7 @@ class Artefacto(models.Model):
     Prioridad = models.CharField(max_length=1)
     Version = models.IntegerField()
     Complejidad = models.CharField(max_length=2, choices=COMPLEJIDAD)
+    Usuario = models.ForeignKey(User)
     Estado = models.CharField(max_length=1, choices=ESTADO)
     Activo = models.BooleanField(default = True)
     
@@ -154,9 +167,33 @@ class ArchivosAdjuntos(models.Model):
     class Meta:
         db_table = 'ArchivosAdjuntos'
 
-class Historial(models.Model):
+class HistorialArt(models.Model):
     Artefacto = models.ForeignKey(Artefacto)
+    Nombre=models.CharField(max_length=40)
+    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
+    DescripcionCorta = models.CharField(max_length=650, null=True)
+    DescripcionLarga = models.TextField(null=True)
+    Proyecto = models.ForeignKey(Proyecto)
+    Prioridad = models.CharField(max_length=1)
     Version = models.IntegerField()
+    Complejidad = models.CharField(max_length=2, choices=COMPLEJIDAD)
     Usuario = models.ForeignKey(User)
-    Fecha_modificado = models.DateField()
-    Descripcion = models.TextField()
+    Estado = models.CharField(max_length=1, choices=ESTADO)
+    Activo = models.BooleanField(default = True)
+    Actual = models.BooleanField()
+    Fecha_mod = models.DateTimeField(auto_now =False, auto_now_add=True, editable=False)
+    
+    class Meta:
+        unique_together = [("Artefacto", "Version", "Activo")]
+    
+class HistorialRel(models.Model):
+    artefactoPadre = models.ForeignKey(Artefacto, related_name='artPadre')
+    artefactoHijo = models.ForeignKey(Artefacto, related_name='artHijo')
+    Activo = models.BooleanField()
+    Fecha_mod = models.DateTimeField(auto_now =False, auto_now_add=True, editable=False)
+    
+    
+class HistorialAdj(models.Model):
+    Artefacto = models.ForeignKey(HistorialArt)
+    Archivo = models.ForeignKey(ArchivosAdjuntos)
+    Fecha_mod = models.DateTimeField(auto_now =False, auto_now_add=True, editable=False)
