@@ -92,7 +92,9 @@ class Tipo_Artefacto_Proyecto(models.Model):
     Nombre = models.CharField(max_length=40)
     Descripcion = models.TextField()
     Fase = models.CharField(max_length=1, choices=ETAPA)
+    TipoArtefactoGeneral = models.ForeignKey(Tipo_Artefacto)
     Proyecto = models.ForeignKey(Proyecto)
+    
 
     def __unicode__(self):
         return u'%s' % (self.nombre)
