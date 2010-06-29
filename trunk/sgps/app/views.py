@@ -992,18 +992,25 @@ def listarArtefactoRelacionables(request, p_id, a_id):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
     artefacto = Artefacto.objects.get(pk=a_id)
+    fase=artefacto.Tipo_Artefacto.Fase
     listaArtefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True)
     listaArtefactos = listaArtefactos.exclude(id=artefacto.id) 
   
     listaArtefactos= eliminarPadresHijos(listaArtefactos,artefacto)
     listaArtefactos= eliminarDescendientes(listaArtefactos, artefacto)
+            
     if artefacto.Tipo_Artefacto.Fase == 'I':
         tipos_req = Tipo_Artefacto.objects.filter(Fase='E')
         listaArtefactos = listaArtefactos.exclude(Tipo_Artefacto__in=tipos_req)
 
     artefactos_ant = listaArtefactos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
 
-    listaArtefactos = listaArtefactos.exclude(id__in=artefactos_ant) 
+    listaArtefactos = listaArtefactos.exclude(id__in=artefactos_ant)
+    #### En caso de que solo deba tener un solo pader, no toy segura preguntar###########
+    siPadre= RelacionArtefacto.objects.filter(artefactoHijo=artefacto, artefactoPadre__Tipo_Artefacto__Fase=fase, Activo=True)
+
+    if siPadre:
+        listaArtefactos = listaArtefactos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
 
     contexto = RequestContext(request, {
                 'proyecto': proyecto,
@@ -1103,7 +1110,7 @@ def aprobarArtefacto(request, p_id, a_id, fase):
 
     artefacto.Estado = 'A'
     artefacto.save()
-    registrarHistorialArt(artefacto)
+ #   registrarHistorialArt(artefacto)########
     
     if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/requerimientos/")
