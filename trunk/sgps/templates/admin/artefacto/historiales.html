@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Historial{% endblock %}
+{% block head %}Lista de registros de historial del artefacto {{ artefacto.Nombre }}{% endblock %}
+{% block content %}
+<hr>
+<ol>
+    <li><a href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historial_art/{{artefacto.id}}'>Ver historial de atributos del artefacto</a></li>
+    <br>
+   	<li><a href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historial_rel/{{artefacto.id}}'>Ver historial de relaciones del artefacto</a></li>
+    <br>
+    <li><a href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historial_adj/{{artefacto.id}}'>Ver historial de archivos del artefacto</a></li>
+    <br>
+</ol>
+
+{% ifequal Fase 'E' %}
+	<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
+{% endifequal %}
+
+{% ifequal Fase 'D' %}
+	<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/diseno/' "/>
+{% endifequal %}
+
+{% ifequal Fase 'I' %}
+	<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
+{% endifequal %}
+
+{% endblock %}
+
