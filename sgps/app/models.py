@@ -97,7 +97,7 @@ class Tipo_Artefacto_Proyecto(models.Model):
     
 
     def __unicode__(self):
-        return u'%s' % (self.nombre)
+        return self.Nombre
 
 #class Numeracion(models.Model):
 #    Proyecto = models.ForeignKey(Proyecto)
@@ -105,12 +105,12 @@ class Tipo_Artefacto_Proyecto(models.Model):
 #    Ultimo_nro = models.IntegerField()
 class Numeracion(models.Model):
     Proyecto = models.ForeignKey(Proyecto)
-    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
+    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto_Proyecto)
     Ultimo_nro = models.IntegerField(null=True)
 
 class Artefacto(models.Model):
     Nombre=models.CharField(max_length=40)
-    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
+    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto_Proyecto)
     DescripcionCorta = models.CharField(max_length=650, null=True)
     DescripcionLarga = models.TextField(null=True)
     Proyecto = models.ForeignKey(Proyecto)
@@ -172,7 +172,7 @@ class ArchivosAdjuntos(models.Model):
 class HistorialArt(models.Model):
     Artefacto = models.ForeignKey(Artefacto)
     Nombre=models.CharField(max_length=40)
-    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto)
+    Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto_Proyecto)
     DescripcionCorta = models.CharField(max_length=650, null=True)
     DescripcionLarga = models.TextField(null=True)
     Proyecto = models.ForeignKey(Proyecto)

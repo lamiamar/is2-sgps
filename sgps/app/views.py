@@ -655,8 +655,9 @@ def verInformacion_Artefacto(request, pid, id):
 @login_required
 def agregarArtefacto(request, id, fase):
     user = User.objects.get(username=request.user.username)
+    proyec = Proyecto.objects.get(pk = id),
     if request.method == 'POST':
-        form = ArtefactoForm(fase, request.POST)
+        form = ArtefactoForm(id, fase, request.POST)
         if form.is_valid():
             artefacto = Artefacto(
                       Tipo_Artefacto = form.cleaned_data['Tipo_Artefacto'],
@@ -698,7 +699,7 @@ def agregarArtefacto(request, id, fase):
             if fase == 'I':
                 return HttpResponseRedirect("/proyecto/" + str(id) + "/implementacion/")
     else:
-        form = ArtefactoForm(fase)
+        form = ArtefactoForm(id, fase)
     return render_to_response('admin/artefacto/crearArtefacto.html', {'user': user,'form': form,  'proyecto': id, 'fase': fase,})
 
 
@@ -926,7 +927,7 @@ def FaseERequerimientos(request, id):
     LineaBaseReq= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
     if LineaBaseReq:
         Aprobado=True
-    tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='E')
+    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='E')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
@@ -962,7 +963,7 @@ def FaseDiseno(request, id):
         if LineaBaseDisenho:
             Paso=False
 
-    tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='D')
+    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='D')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
@@ -996,7 +997,7 @@ def FaseImplementacion(request, id):
         Paso=True
         if LineaBaseImplem:
             Paso=False
-    tipo_artefacto= Tipo_Artefacto.objects.filter(Fase='I')
+    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='I')
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
@@ -1057,7 +1058,7 @@ def listarArtefactoRelacionables(request, p_id, a_id):
     listaArtefactos= eliminarDescendientes(listaArtefactos, artefacto)
             
     if artefacto.Tipo_Artefacto.Fase == 'I':
-        tipos_req = Tipo_Artefacto.objects.filter(Fase='E')
+        tipos_req = Tipo_Artefacto_Proyecto.objects.filter(Fase='E')
         listaArtefactos = listaArtefactos.exclude(Tipo_Artefacto__in=tipos_req)
 
     artefactos_ant = listaArtefactos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
@@ -1442,7 +1443,7 @@ def GenerarLineaBase(request, p_id, fase):
     lista=[]
     error= None
    
-    TipoArtefacto = Tipo_Artefacto.objects.filter(Fase=fase)
+    TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase=fase)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
     
     if artefactos:
