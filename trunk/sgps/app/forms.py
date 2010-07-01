@@ -202,7 +202,12 @@ class Edi_Tipo_Artefacto_ProyectoForm(forms.Form):
  
     
 class ArchivosAdjuntosForm(forms.Form):
-    archivo = forms.FileField(label=u'Adjuntar archivo', required = False)
+    archivo = forms.FileField(label=u'Adjuntar archivo')
+    
+    def clean_archivo(self):
+        if 'archivo' in request.FILES['archivo']:
+            return archivo
+        raise forms.ValidationError('Debe ingresar un archivo')
 
     
     
