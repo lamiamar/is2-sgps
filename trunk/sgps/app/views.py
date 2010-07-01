@@ -927,7 +927,7 @@ def FaseERequerimientos(request, id):
     LineaBaseReq= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
     if LineaBaseReq:
         Aprobado=True
-    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='E')
+    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='E', Proyecto=proyecto)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
@@ -963,7 +963,7 @@ def FaseDiseno(request, id):
         if LineaBaseDisenho:
             Paso=False
 
-    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='D')
+    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='D', Proyecto=proyecto)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
@@ -997,7 +997,7 @@ def FaseImplementacion(request, id):
         Paso=True
         if LineaBaseImplem:
             Paso=False
-    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='I')
+    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='I', Proyecto=proyecto)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
@@ -1058,7 +1058,7 @@ def listarArtefactoRelacionables(request, p_id, a_id):
     listaArtefactos= eliminarDescendientes(listaArtefactos, artefacto)
             
     if artefacto.Tipo_Artefacto.Fase == 'I':
-        tipos_req = Tipo_Artefacto_Proyecto.objects.filter(Fase='E')
+        tipos_req = Tipo_Artefacto_Proyecto.objects.filter(Fase='E', Proyecto=proyecto)
         listaArtefactos = listaArtefactos.exclude(Tipo_Artefacto__in=tipos_req)
 
     artefactos_ant = listaArtefactos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
@@ -1443,7 +1443,7 @@ def GenerarLineaBase(request, p_id, fase):
     lista=[]
     error= None
    
-    TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase=fase)
+    TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase=fase, Proyecto=proyecto)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
     
     if artefactos:
