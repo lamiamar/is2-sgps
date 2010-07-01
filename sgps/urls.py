@@ -81,14 +81,13 @@ urlpatterns = patterns('',
    # (r'^proyecto/(?P<id>\d+)/TipoArtefactos/crear/$', Agregar_tipo_artefacto_Proyecto),
     
     ####### ARCHIVO ###########
-    (r'^proyecto/(\d+)/fase/(\d+)/editar/adjuntar/$', guardarArchivo),
-    (r'^proyecto/(\d+)/fase/(\d+)/editar/adjuntar/(\d+)/$', obtenerArchivo),
-    (r'^proyecto/(\d+)/fase/(\d+)/editar/eliminar_adjunto/(\d+)/$', eliminar_adjunto), 
+    (r'^proyecto/(\d+)/fase/(\w+)/adjuntar/(\d+)/$', guardarArchivo),
+    (r'^proyecto/(\d+)/fase/(\d+)/obtener_adjunto/(\d+)/$', obtenerArchivo),
+    (r'^proyecto/(\d+)/fase/(\w+)/(\d+)/eliminar_adjunto/(\d+)/$', eliminar_adjunto), 
 
     ########## HISTORIAL #########
     (r'^proyecto/(\d+)/fase/(\w+)/historiales/(\d+)/$', menuHistorial),
     (r'^proyecto/(\d+)/fase/(\w+)/historial_art/(\d+)/$', verHistorialArt),
     (r'^proyecto/(\d+)/fase/(\w+)/historial_rel/(\d+)/$', verHistorialRel),
     (r'^proyecto/(\d+)/fase/(\w+)/historial_adj/(\d+)/$', verHistorialAdj),
-
 )

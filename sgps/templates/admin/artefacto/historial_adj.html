@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Historial{% endblock %}
+{% block head %}Historial de archivos del artefacto {{ artefacto.Nombre }}{% endblock %}
+{% block content %}
+
+{% if his_adj %}
+    <u> Historial de archivos del artefacto: </u><br>
+    <ul>
+    {% for adj in his_adj %}
+        <li><strong>ID_artefacto:</strong>(del historial){{ reg.Artefacto }}<br>
+        <li><strong>Archivo:</strong>{{ adj.Archivo.Nom_Archivo }}{{ rel.artefactoPadre.Nombre }}<br>
+        <li><strong>Activo:</strong>{{ rel.Activo }}<br>
+        <li><strong>Modificado:</strong>{{ rel.Fecha_mod }}<br>
+        <br>
+        <br>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/'"/>
+{% endblock %}

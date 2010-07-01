@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Historial{% endblock %}
+{% block head %}Historial del artefacto {{ artefacto.Nombre }}{% endblock %}
+{% block content %}
+
+{% if his_art %}
+    <u> Historial de los atributos espec&iacute;ficos del artefacto: </u>
+    <hr>
+    <ul>
+     {% for reg in his_art %}     
+        <li><strong>Prioridad:</strong> {{ reg.Prioridad }}<br>
+        <li><strong>Complejidad:</strong> {{ reg.Complejidad }}<br>
+        <li><strong>Version:</strong> {{ reg.Version }}<br>
+        <li><strong>Estado:</strong> {{ reg.Estado }}<br>
+        <li><strong>Modificado:</strong> {{ reg.Fecha_mod }}<br>
+        {% if not reg.Actual %}
+            <input type="button" value="Detalles de esta versi&oacute;n" />
+            <input type="button" value="Volver a esta versi&oacute;n" />
+        {% endif %}
+        <br>
+        <br>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/'"/>
+
+{% endblock %}
+

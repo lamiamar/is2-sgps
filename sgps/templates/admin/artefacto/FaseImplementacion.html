@@ -16,6 +16,7 @@
         	  {% if EditarArtefactoImp %}
               <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/" class="edit">Historial</a>
         	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">Editar</a>
+              <a href="/proyecto/{{Proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/" class="edit">Archivos<a/>
               {% ifnotequal artefacto.Estado 'A' %}
               	<a href="/proyectos/{{proyecto.id}}/fase/artefactos/aprobar/{{artefacto.id}}/{{Fase}}/" class="edit">Aprobar</a>
         	  {% endifnotequal %}
