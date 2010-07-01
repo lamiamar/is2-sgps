@@ -1265,65 +1265,63 @@ def guardarArchivo(request, id_p, fase, id_ar):
     proyecto = Proyecto.objects.get(id=id_p)
     if request.method == 'POST':
         form = ArchivosAdjuntosForm(request.POST, request.FILES)
-        if form.is_valid():
-            artefacto = Artefacto.objects.get(id=id_ar)
-            
-            adjunto = request.FILES['archivo']
-            artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
         
-            try:
-                archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
-                                                       Nom_Archivo=adjunto.name,
-                                                       Activo=True) 
-                archivo.Activo = False
-                archivo.save()
-                archivo = ArchivosAdjuntos(Artefacto = artefacto,
-                                           Nom_Archivo = adjunto.name,
-                                           Contenido = base64.b64encode(adjunto.read()),
-                                           Tamano = adjunto.size,
-                                           TipoContenido = adjunto.content_type,
-                                           Activo = True,
-                                           )
-                archivo.save(force_insert=True)
-
-                artefacto_hist.Actual = False
-                artefacto_hist.save()
-            
-                artefacto.Version = artefacto.Version + 1
-                artefacto.save()
-                registrarHistorialArt(artefacto)
-
-            except:
-                archivo = ArchivosAdjuntos(Artefacto = artefacto,
-                                           Nom_Archivo = adjunto.name,
-                                           Contenido = base64.b64encode(adjunto.read()),
-                                           Tamano = adjunto.size,
-                                           TipoContenido = adjunto.content_type,
-                                           Activo = True,
-                                           )
-                archivo.save()
-            
-                artefacto_hist.Actual = False
-                artefacto_hist.save()
-            
-                artefacto.Version = artefacto.Version + 1
-                artefacto.save()
-            
-                registrarHistorialArt(artefacto)
-                
-            return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + fase + "/adjuntar/" + str(artefacto.id))
-    else:
-        form = ArchivosAdjuntosForm()    
         artefacto = Artefacto.objects.get(id=id_ar)
-        archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+            
+        adjunto = request.FILES['archivo']
+        artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+        
+        try:
+            archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
+                                                   Nom_Archivo=adjunto.name,
+                                                   Activo=True) 
+            archivo.Activo = False
+            archivo.save()
+            archivo = ArchivosAdjuntos(Artefacto = artefacto,
+                                       Nom_Archivo = adjunto.name,
+                                       Contenido = base64.b64encode(adjunto.read()),
+                                       Tamano = adjunto.size,
+                                       TipoContenido = adjunto.content_type,
+                                       Activo = True,
+                                       )
+            archivo.save(force_insert=True)
 
-        contexto = RequestContext(request, {'proyecto': proyecto,
+            artefacto_hist.Actual = False
+            artefacto_hist.save()
+            
+            artefacto.Version = artefacto.Version + 1
+            artefacto.save()
+            registrarHistorialArt(artefacto)
+
+        except:
+            archivo = ArchivosAdjuntos(Artefacto = artefacto,
+                                       Nom_Archivo = adjunto.name,
+                                       Contenido = base64.b64encode(adjunto.read()),
+                                       Tamano = adjunto.size,
+                                       TipoContenido = adjunto.content_type,
+                                       Activo = True,
+                                       )
+            archivo.save()
+            
+            artefacto_hist.Actual = False
+            artefacto_hist.save()
+            
+            artefacto.Version = artefacto.Version + 1
+            artefacto.save()
+            
+            registrarHistorialArt(artefacto)
+    
+    form = ArchivosAdjuntosForm()    
+    artefacto = Artefacto.objects.get(id=id_ar)
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+
+    contexto = RequestContext(request, {'proyecto': proyecto,
                                         'Fase': fase,
-                                         'form': form,
-                                         'artefacto': artefacto,
-                                         'archivos': archivos,
+                                        'form': form,
+                                        'artefacto': artefacto,
+                                        'archivos': archivos,
                                          })
-        return render_to_response('admin/artefacto/adjuntar_archivos.html', contexto)
+    return render_to_response('admin/artefacto/adjuntar_archivos.html', contexto)
 
 @login_required
 def obtenerArchivo(request, id_p, id_ar, archivo_id):
@@ -1383,7 +1381,7 @@ def verHistorialArt(request, id_p, fase, id_ar):
     contexto = RequestContext(request, {'proyecto': proyecto,
                                         'Fase': fase,
                                         'artefacto': artefacto,
-                                        'hist_art': listaHistorialArt,
+                                        'his_art': listaHistorialArt,
                                         })
     return render_to_response('admin/artefacto/historial_art.html', contexto)
 

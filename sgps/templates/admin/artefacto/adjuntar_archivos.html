@@ -6,7 +6,7 @@
 <p>Adjuntar archivo para el artefacto:</p>
 <p><strong> ID: ({{ artefacto.id }})</strong> {{ artefacto.Tipo_Artefacto }}</p>
 <form enctype="multipart/form-data" method="post" action="">
-    <p>{{ form.archivo.errors }}<label>Adjuntar:</label>{{ form.archivo }}</p>
+    {{ form.as_p }}
 
 <input type="submit" value="Guardar" />
 
