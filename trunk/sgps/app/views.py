@@ -1260,7 +1260,7 @@ def calculoImpactoPadres(ids, artefacto_id):
                 
 ############################### ARCHIVOS ##########################################
 @login_required
-def guardarArchivo(request, id_p, id_ar):
+def guardarArchivo(request, id_p, fase, id_ar):
 
     proyecto = Proyecto.objects.get(id=id_p)
     if request.method == 'POST':
@@ -1315,6 +1315,7 @@ def guardarArchivo(request, id_p, id_ar):
     archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
 
     contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
                                          'form': form,
                                          'artefacto': artefacto,
                                          'archivos': archivos,
@@ -1332,7 +1333,7 @@ def obtenerArchivo(request, id_p, id_ar, archivo_id):
     return HttpResponse('.')
 
 @login_required
-def eliminar_adjunto(request, id_p, id_ar, archivo_id):
+def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     archivo = get_object_or_404(ArchivosAdjuntos, pk=archivo_id)
@@ -1344,10 +1345,13 @@ def eliminar_adjunto(request, id_p, id_ar, archivo_id):
         archivo.save()
 
         artefacto.Version = artefacto.Version + 1
+        artefacto.save()
+        
         registrarHistorialArt(artefacto)
 
-        return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + str(artefacto.id) + "/editar/adjuntar/")
+        return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + fase + "/adjuntar/" + str(artefacto.id))
     contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
                                         'artefacto': artefacto,
                                          'archivo': archivo,
                                          })
