@@ -90,7 +90,7 @@ class Tipo_Artefacto(models.Model):
     
 class Tipo_Artefacto_Proyecto(models.Model):
     Nombre = models.CharField(max_length=40)
-    Descripcion = models.TextField()
+    Descripcion = models.TextField(null=True) 
     Fase = models.CharField(max_length=1, choices=ETAPA)
     TipoArtefactoGeneral = models.ForeignKey(Tipo_Artefacto, null=True)
     Proyecto = models.ForeignKey(Proyecto)

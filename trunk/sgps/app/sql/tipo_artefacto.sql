@@ -36,4 +36,3 @@ VALUES('Codigo Clases', 'I');
 
 INSERT INTO  app_tipo_artefacto ("Nombre", "Fase")
 VALUES('Codigo Interfaz', 'I');
-
