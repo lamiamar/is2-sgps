@@ -639,7 +639,19 @@ def administrar_artefactos(request):
     artefactos = Artefacto.objects.filter(Activo=True).order_by('Nombre')
     return render_to_response('admin/artefacto/administrar_artefacto.html', {'user': user, 'artefactos': artefactos,})
 
+def verInformacion_Artefacto(request, pid, id):
+    user = User.objects.get(username=request.user.username)
+    artefacto = Artefacto.objects.get(pk=id, Activo=True)
+    proyecto=Proyecto.objects.get(pk=pid)
+    Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True).values_list('artefactoPadre', flat=True)
+    
+    Mispadres = Artefacto.objects.filter(id__in=Mispadres).order_by('id')
+    antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Mispadres = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Fase=artefacto.Tipo_Artefacto.Fase
+    return render_to_response('admin/artefacto/informacion_artefacto.html', {'user': user, 'artefacto': artefacto, 'padres':Mispadres , 'antecesores': antecesores, 'proyecto':proyecto, 'Fase':Fase})
 
+        
 @login_required
 def agregarArtefacto(request, id, fase):
     user = User.objects.get(username=request.user.username)

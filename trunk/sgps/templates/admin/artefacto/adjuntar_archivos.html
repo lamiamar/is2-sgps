@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Archivos{% endblock %}
+{% block head %}Adjuntar Archivo{{ artefacto.id }}{% endblock %}
+{% block content %}
+<p>Adjuntar archivo para el artefacto:</p>
+<p><strong>{{ artefacto.id }}:</strong> {{ artefacto.Tipo_Artefacto }}</p>
+<form method="post" action="">
+    <table> 
+    {{form.as_p}}
+    </table>
+<input type="button" value="Adjuntar archivo" onClick = "location.href='/proyecto/{{proyecto}}/fase/{{artefacto.id}}/editar/adjuntar/' "/>
+
+<input type="submit" value="Guardar" />
+<input type="button" value="Cancelar" onClick = "location.href='/administracion/proyecto/fase/{{proyecto}}' "/>
+</form> 
+{% endblock %}

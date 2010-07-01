@@ -24,6 +24,11 @@
         		<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">Eliminar</a>
         	 {% endif %}
              </li>
+    {% else %}
+             {% if impacto %}
+                <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
+              {%endif%}
+              <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Informacion</a>
     {% endif %}
     {% endfor %}
     </ul>
