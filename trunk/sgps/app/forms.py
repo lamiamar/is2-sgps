@@ -159,9 +159,9 @@ class ArtefactoForm(forms.Form):
     DescripcionCorta = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Corta')
     DescripcionLarga = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Larga')
      
-    def __init__(self, fase, *args, **kwargs):
+    def __init__(self, id, fase, *args, **kwargs):
         super(ArtefactoForm, self).__init__(*args, **kwargs)
-        self.fields['Tipo_Artefacto'].queryset = Tipo_Artefacto.objects.filter(Fase=fase)
+        self.fields['Tipo_Artefacto'].queryset = Tipo_Artefacto_Proyecto.objects.filter(Fase = fase, Proyecto = id)
         
 class ModificarArtefactoForm(forms.Form):
     Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
