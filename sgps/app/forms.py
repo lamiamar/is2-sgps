@@ -70,6 +70,10 @@ class RolSistemaForm(forms.Form):
 
     roles = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='S'),
                                            widget=forms.CheckboxSelectMultiple, required=False)
+class RolSistemasuperForm(forms.Form):
+
+    roles = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='S').exclude(Nombre= 'Aministrador del Sistema'),
+                                           widget=forms.CheckboxSelectMultiple, required=False)
 class AsignarRolProyectoForm(forms.Form):
 
     roles = forms.ModelMultipleChoiceField(queryset=Rol.objects.filter(Tipo='P').exclude(Nombre= 'Lider de Proyecto'),

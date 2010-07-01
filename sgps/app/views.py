@@ -97,6 +97,10 @@ def administrar_usuarios(request):
     user = User.objects.get(username=request.user.username)
     usuarios = User.objects.all().order_by('username')
     usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
+    CrearUsuarios = None
+    EditarUsuarios = None
+    EliminarUsuarios = None
+    asignarrol= None
     for urs in usrolsis:
         CrearUsuarios = urs.rol.permisos.filter(Nombre = 'CrearUsuarios')
         EditarUsuarios = urs.rol.permisos.filter(Nombre = 'EditarUsuarios')
@@ -189,8 +193,17 @@ def asignarRolesSistema(request, usuario_id):
     
     user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, id=usuario_id)
+    rol = Rol.objects.get(Nombre = 'Aministrador del Sistema')
+#    if user.id == 1:
+#        rolesUsuario = UsuarioRolSistema.objects.filter(usuario = usuario).exclude(rol=rol)
+#    else:
+#        rolesUsuario = UsuarioRolSistema.objects.filter(usuario = usuario)
     rolesUsuario = UsuarioRolSistema.objects.filter(usuario = usuario)
     if request.method == 'POST':
+#        if user.id == 1:
+#            form = RolSistemasuperForm(request.POST)
+#        else:
+#            form = RolSistemaForm(request.POST)
         form = RolSistemaForm(request.POST)
         if form.is_valid():
             seleccionado = form.cleaned_data['roles']
@@ -209,6 +222,10 @@ def asignarRolesSistema(request, usuario_id):
         dict = {}
         for usuarioRol in rolesUsuario:
             dict[usuarioRol.rol.id] = True
+#        if user.id == 1:
+#            form = RolSistemasuperForm(initial={'roles': dict})
+#        else:
+#            form = RolSistemaForm(initial={'roles': dict})
         form = RolSistemaForm(initial={'roles': dict})
     return render_to_response("admin/Usuario/asignarRolesSistema.html", {'form':form, 'usuario':usuario, 'user':user})
 
@@ -249,6 +266,15 @@ def nuevo_proyecto(request):
                              rol=rol,
                                 )
                 UserRolPro.save()
+            TAP = Tipo_Artefacto.objects.all()
+            for tap in TAP:
+                ap = Tipo_Artefacto_Proyecto(Nombre=tap.Nombre,
+                                             Fase=tap.Fase,
+                                             Descripcion=tap.Descripcion,
+                                             TipoArtefactoGeneral=tap,
+                                             Proyecto=proyecto,
+                                             )
+                ap.save()
             return HttpResponseRedirect('/administracion/proyectos/')
     else:
         form = ProyectoForm()
@@ -755,6 +781,7 @@ def TipoArtefactos(request):
 
 def Agregar_tipo_artefacto(request):
     user = User.objects.get(username=request.user.username)
+    proyectos = Proyecto.objects.all()
     if request.method == 'POST':
         form = Tipo_ArtefactoForm(request.POST)
         if form.is_valid():
@@ -764,6 +791,15 @@ def Agregar_tipo_artefacto(request):
                       Descripcion= form.cleaned_data['Descripcion'],
             )
             tipo.save()
+            for proyecto in proyectos:
+                tipopro = Tipo_Artefacto_Proyecto(
+                      Nombre = form.cleaned_data['Nombre'],
+                      Fase = form.cleaned_data['Fase'],
+                      Descripcion= form.cleaned_data['Descripcion'],
+                      TipoArtefactoGeneral = tipo,
+                      Proyecto = proyecto
+                )
+                tipopro.save()
             return HttpResponseRedirect('/administracion/tipo_artefacto/')
     else:
         form = Tipo_ArtefactoForm()
