@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Modificaci&oacute;n de Tipo de Artefactos{% endblock %}
+{% block head %}Editar Tipo de Artefacto {% endblock %}
+{% block content %}
+<form method="post" action=""> 
+Nombre: {{ tipo_artefacto.Nombre }}
+    <table>
+    {{form.as_p}}
+    </table>
+<input type="submit" value="Guardar" />
+<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto}}/tipoArtefacto/' "/>
+</form>
+{% endblock %}

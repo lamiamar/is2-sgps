@@ -807,15 +807,15 @@ def TipoArtefactosProyecto(request, id_p):
     proyecto = Proyecto.objects.get(pk=id_p)
     Tipo = Tipo_Artefacto_Proyecto.objects.filter(Proyecto=proyecto).order_by('Nombre')
     user = User.objects.get(username=request.user.username)
-    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'user': user, 'Tipo': Tipo,})
+    return render_to_response('proyec/tipoArtefactosProyecto.html', {'user': user, 'Tipo': Tipo, 'Proyecto':proyecto,})
 
 
 
-def Agregar_tipo_artefacto_Proyecto(request, p_id):
+def crearTipoArtefactosProyecto(request, p_id):
     user = User.objects.get(username=request.user.username)
     proyecto=Proyecto.objects.get(pk=p_id)
     if request.method == 'POST':
-        form = Tipo_ArtefactoForm(request.POST)
+        form = Tipo_Artefacto_ProyectoForm(request.POST)
         if form.is_valid():
             tipoProyecto = Tipo_Artefacto_Proyecto(
                       Nombre = form.cleaned_data['Nombre'],
@@ -824,40 +824,40 @@ def Agregar_tipo_artefacto_Proyecto(request, p_id):
                       Proyecto=proyecto
             )
             tipoProyecto.save()
-            return HttpResponseRedirect('/administracion/tipo_artefacto/')
+            return HttpResponseRedirect('/proyecto/' + str(proyecto.id) + '/tipoArtefacto/')
     else:
-        form = Tipo_ArtefactoForm()
-    return render_to_response('admin/artefacto/crearTipoArtefactoProyecto.html', {'user': user, 'form': form })
+        form = Tipo_Artefacto_ProyectoForm()
+    return render_to_response('proyec/crearTipoArtefactosProyecto.html', {'user': user, 'form': form, 'Proyecto': proyecto, })
 
-def modificar_tipo_artefacto_Proyecto(request, id):
+def editarTipoArtefactosProyecto(request, id, id_ta):
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
-        tipo_artefacto = Tipo_Artefacto_Proyecto.objects.get(id=id)
-        form = Mod_Tipo_ArtefactoForm(request.POST)
+        tipo_artefacto = Tipo_Artefacto_Proyecto.objects.get(id=id_ta)
+        form = Edi_Tipo_Artefacto_ProyectoForm(request.POST)
         if form.is_valid():
             tipo_artefacto.Fase=form.cleaned_data['Fase']
             tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
             tipo_artefacto.save()
-            return HttpResponseRedirect('/administracion/tipo_artefacto/')
+            return HttpResponseRedirect('/proyecto/' + str(id) + '/tipoArtefacto/')
     else:
-        tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, id=id)
-        form = Mod_Tipo_ArtefactoForm(initial={
+        tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, id=id_ta)
+        form = Edi_Tipo_Artefacto_ProyectoForm(initial={
                              'Fase': tipo_artefacto.Fase,
                              'Descripcion':tipo_artefacto.Descripcion})
 
 
 
-    return render_to_response('admin/artefacto/editarTipo_artefacto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,})
+    return render_to_response('proyec/editarTipoArtefactosProyecto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,'proyecto': id})
 
 
 @login_required
-def eliminar_tipo_artefacto_Proyecto(request, id):
+def eliminarTipoArtefactosProyecto(request, id, id_ta):
     user = User.objects.get(username=request.user.username)
-    tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id)
+    tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id_ta)
     if request.method == 'POST':
         tipo_artefacto.delete()
-        return HttpResponseRedirect('/administracion/tipo_artefacto/')
-    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,})
+        return HttpResponseRedirect('/proyecto/' + str(id) + '/tipoArtefacto/')
+    return render_to_response('proyec/eliminarTipoArtefactosProyecto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'proyecto':id,})
 
 ###############################################################################################
 
