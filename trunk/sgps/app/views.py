@@ -843,10 +843,14 @@ def modificar_tipo_artefacto(request, id):
 def eliminar_tipo_artefacto(request, id):
     user = User.objects.get(username=request.user.username)
     tipo_artefacto = get_object_or_404(Tipo_Artefacto, pk=id)
+    artefactos = Artefacto.objects.filter(Activo=True, Tipo_Artefacto=tipo_artefacto)
+    eliminar = None
+    if artefactos:
+        eliminar = True
     if request.method == 'POST':
         tipo_artefacto.delete()
         return HttpResponseRedirect('/administracion/tipo_artefacto/')
-    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,})
+    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'eliminar':eliminar,})
 
 ##################Falta implementar todaviaaa###################################################
 
@@ -901,11 +905,16 @@ def editarTipoArtefactosProyecto(request, id, id_ta):
 @login_required
 def eliminarTipoArtefactosProyecto(request, id, id_ta):
     user = User.objects.get(username=request.user.username)
+    proyecto = Proyecto.objects.get(id=id)
     tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id_ta)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto=tipo_artefacto)
+    eliminar = None
+    if artefactos:
+        eliminar = True
     if request.method == 'POST':
         tipo_artefacto.delete()
         return HttpResponseRedirect('/proyecto/' + str(id) + '/tipoArtefacto/')
-    return render_to_response('proyec/eliminarTipoArtefactosProyecto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'proyecto':id,})
+    return render_to_response('proyec/eliminarTipoArtefactosProyecto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'proyecto':id,'eliminar': eliminar,})
 
 ###############################################################################################
 
