@@ -186,6 +186,17 @@ class Mod_Tipo_ArtefactoForm(forms.Form):
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     
+class Tipo_Artefacto_ProyectoForm(forms.Form): 
+    Nombre = forms.CharField(max_length=100, label=u'Nombre')
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
+    Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    
+class Edi_Tipo_Artefacto_ProyectoForm(forms.Form):
+    Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
+
+ 
+    
 class ArchivosAdjuntosForm(forms.Form):
     archivo = forms.FileField(label=u'Adjuntar archivo', required = False)
 
