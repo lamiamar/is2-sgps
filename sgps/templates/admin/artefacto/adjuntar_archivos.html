@@ -28,7 +28,7 @@
     {% for archivo in archivos %}
         <li><strong>{{ archivo.Nom_Archivo }}</strong>
         <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.id}}/obtener_adjunto/{{archivo.id}}/ "> Editar</a>
-        <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.Tipo_Artefacto.Fase}}/{{artefacto.id}}/eliminar_adjunto/{{archivo.id}}/ "> Eliminar</a>
+        <a href="/proyecto/{{ proyecto.id }}/fase/{{Fase}}/{{artefacto.id}}/eliminar_adjunto/{{archivo.id}}/ "> Eliminar</a>
         </li>
     {% endfor %}
     </ul>
