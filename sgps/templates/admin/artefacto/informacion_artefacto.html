@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Proyecto{% endblock %}
+{% block head %}Especificaci&oacute;n de Requerimientos<br>{% endblock %}
+{% block content %}
+<h4>Informacion general:</h4>
+<ul>
+     <li> <strong>Nombre de Artefacto:</strong>{{ artefacto.Nombre }}</li>
+     <li> <strong>Descripcion Corta:</strong>{{ artefacto.DescripcionCorta }}</li>
+     <li> <strong>Descripcion Larga:</strong>{{ artefacto.DescripcionLarga }}</li>
+</ul>      
+<h4>Relaciones:</h4>
+
+{% if padres or antecesores %}
+        
+        {% if padres %}
+            <h4>Relaciones con Artefactos de la misma Fase:</h4>
+            Padres:
+            <ul>
+            {% for ar in padres%}
+                <li>{{ar.Nombre}}
+            {% endfor %}
+            </ul>
+        {% endif %}
+ 
+        {% if antecesores %}
+            <h4>Relaciones con Artefactos de la Fase Anterior:</h4>
+            Antecesores:
+            <ul>
+            {% for artefacto2 in antecesores%}
+                <li>{{artefacto2.Nombre}}
+            {% endfor %}
+        {% endif %}
+        </ul>
+{% else %}
+    <p>No existe ninguna Relacion </p>
+{% endif %}
+{% ifequal Fase 'E' %}
+        <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
+    {% endifequal %}
+    {% ifequal Fase 'D' %}
+        <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/diseno/' "/>
+    {% endifequal %}
+    {% ifequal Fase 'I' %}
+        <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
+    {% endifequal %}
+    
+{% endblock %}
