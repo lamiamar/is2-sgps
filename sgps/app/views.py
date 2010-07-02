@@ -886,7 +886,24 @@ def editarTipoArtefactosProyecto(request, id, id_ta):
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         tipo_artefacto = Tipo_Artefacto_Proyecto.objects.get(id=id_ta)
-        form = Edi_Tipo_Artefacto_ProyectoForm(request.POST)
+        artefactos = Artefacto.objects.all()
+        ta = False
+        for artefacto in artefactos:
+            if artefacto.Tipo_Artefacto == tipo_artefacto:
+                ta = True
+        if ta:
+            fase = tipo_artefacto.Fase
+            if fase == 'E':
+                form = Edi_Tipo_Artefacto_Proyecto_ReqForm(request.POST)
+            if fase == 'D':
+                form = Edi_Tipo_Artefacto_Proyecto_DisForm(request.POST)
+            if fase == 'I':
+                form = Edi_Tipo_Artefacto_Proyecto_ImpForm(request.POST)
+            if form.is_valid():
+                tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
+                tipo_artefacto.save()
+        else:
+            form = Edi_Tipo_Artefacto_ProyectoForm(request.POST)
         if form.is_valid():
             tipo_artefacto.Fase=form.cleaned_data['Fase']
             tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
