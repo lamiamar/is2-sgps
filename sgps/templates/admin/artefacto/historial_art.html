@@ -14,7 +14,7 @@
         <li><strong>Estado:</strong> {{ reg.Estado }}<br>
         <li><strong>Modificado:</strong> {{ reg.Fecha_mod }}<br>
         {% if not reg.Actual %}
-            <input type="button" value="Detalles de esta versi&oacute;n" />
+            <input type="button" value="Detalles de esta versi&oacute;n" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/detalles_version/{{artefacto.id}}/'"/>
             <input type="button" value="Volver a esta versi&oacute;n" />
         {% endif %}
         <br>

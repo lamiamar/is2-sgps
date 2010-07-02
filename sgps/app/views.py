@@ -45,7 +45,8 @@ def registrarHistorialArt(artefacto):
     
 def registrarHistorialRel(relacion_artefacto):
     historialRelaciones = HistorialRel(
-                                      artefactoPadre=relacion_artefacto.artefactoPadre, 
+                                      artefactoPadre=relacion_artefacto.artefactoPadre,
+                                      padreVersion=relacion_artefacto.artefactoPadre.Version, 
                                       artefactoHijo=relacion_artefacto.artefactoHijo,
                                       Activo = relacion_artefacto.Activo,
                                       Fecha_mod = datetime.date.today(),
@@ -1194,8 +1195,9 @@ def aprobarArtefacto(request, p_id, a_id, fase):
 
     artefacto.Estado = 'A'
     artefacto.save()
- #   registrarHistorialArt(artefacto)########
     
+    registrarHistorialArt(artefacto)
+      
     if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/requerimientos/")
     if fase =='D':
@@ -1339,15 +1341,27 @@ def guardarArchivo(request, id_p, fase, id_ar):
     
     form = ArchivosAdjuntosForm()    
     artefacto = Artefacto.objects.get(id=id_ar)
-    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
 
     contexto = RequestContext(request, {'proyecto': proyecto,
                                         'Fase': fase,
                                         'form': form,
                                         'artefacto': artefacto,
-                                        'archivos': archivos,
                                          })
     return render_to_response('admin/artefacto/adjuntar_archivos.html', contexto)
+
+@login_required
+def listarArchivo(request, id_p, fase, id_ar):
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+    
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        'archivos': archivos,
+                                         })
+    return render_to_response('admin/artefacto/listar_archivos.html', contexto)
 
 @login_required
 def obtenerArchivo(request, id_p, id_ar, archivo_id):
@@ -1439,6 +1453,56 @@ def verHistorialAdj(request, id_p, fase, id_ar):
                                         'his_adj': listaHistorialAdj,
                                         })
     return render_to_response('admin/artefacto/historial_adj.html', contexto)
+
+def detallesVersion(request, id_p, fase, id_ar):
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    
+    relaciones = HistorialRel.objects.filter(artefactoHijo=artefacto).values_list('artefactoPadre', flat=True)
+    
+    Mispadres = Artefacto.objects.filter(id__in=relaciones, Activo=True).order_by('id')
+    
+    
+    antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    
+    Mipadre = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+   
+    Mishijos = HistorialRel.objects.filter(artefactoPadre=artefacto).values_list('artefactoHijo', flat=True)
+    Mishijos = Mishijos.filter(artefactoHijo__Activo=True)
+    Mishijos = Artefacto.objects.filter(id__in=Mishijos, Activo=True).order_by('id')
+   
+
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        'antecesores': antecesores,
+                                        'padre': Mipadre,
+                                        'hijos': Mishijos,
+                                        })
+
+    return render_to_response('admin/artefacto/detalles_version.html', contexto)
+
+def reversionar(request, id_p, fase, id_ar):
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    
+    relaciones = HistorialRel.objects.filter(artefactoHijo=artefacto).values_list('artefactoPadre', flat=True)
+    
+    padres_valid = Artefacto.objects.filter(id__in=relaciones, Activo=True).order_by('id')
+    
+    padres_invalid = Artefacto.objects.filter(id__in=relaciones, Activo=False).order_by('id')
+    
+    antecesores_valid = padres_valid.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    antecesores_invalid = padres_invalid.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    
+    Mipadre = padres_valid.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+   
+    Mishijos = HistorialRel.objects.filter(artefactoPadre=artefacto).values_list('artefactoHijo', flat=True)
+    Mishijos_valid = Mishijos.filter(artefactoHijo__Activo=True)
+    Mishijos_invalid = Mishijos.filter(artefactoHijo__Activo=False)
+    Mishijos_val = Artefacto.objects.filter(id__in=Mishijos, Activo=True).order_by('id')
+
+
 
 #################################################################################################
 
