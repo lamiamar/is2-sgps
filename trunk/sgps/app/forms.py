@@ -190,17 +190,54 @@ class Mod_Tipo_ArtefactoForm(forms.Form):
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     
+class Edi_Tipo_Artefacto_ProyectoForm(forms.Form):
+    Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
+
+    
 class Tipo_Artefacto_ProyectoForm(forms.Form): 
     Nombre = forms.CharField(max_length=100, label=u'Nombre')
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
     
-class Edi_Tipo_Artefacto_ProyectoForm(forms.Form):
+class Edi_Tipo_Artefacto_Proyecto_ReqForm(forms.Form):
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
-
- 
     
+    def clean_Fase(self):
+        fase1 = 'E'
+        print fase1
+        fase2 = self.cleaned_data['Fase']
+        print fase2
+        if fase1 == fase2:
+            return fase1
+        raise forms.ValidationError('No puede cambiar la fase, esta siendo utilizada por un Artefacto')
+ 
+class Edi_Tipo_Artefacto_Proyecto_DisForm(forms.Form):
+    Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
+    
+    def clean_Fase(self):
+        fase1 = 'D'
+        print fase1
+        fase2 = self.cleaned_data['Fase']
+        print fase2
+        if fase1 == fase2:
+            return fase1
+        raise forms.ValidationError('No puede cambiar la fase, esta siendo utilizada por un Artefacto')
+    
+class Edi_Tipo_Artefacto_Proyecto_ImpForm(forms.Form):
+    Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
+    Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
+    
+    def clean_Fase(self):
+        fase1 = 'I'
+        print fase1
+        fase2 = self.cleaned_data['Fase']
+        print fase2
+        if fase1 == fase2:
+            return fase1
+        raise forms.ValidationError('No puede cambiar la fase, esta siendo utilizada por un Artefacto')    
 class ArchivosAdjuntosForm(forms.Form):
     archivo = forms.FileField(label=u'Adjuntar archivo')
     
