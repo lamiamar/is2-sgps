@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Historial{% endblock %}
+{% block head %} Detalles del artefacto {{ artefacto.Nombre }}{% endblock %}
+{% block content %}
+<h3> Version del artefacto: {{ artefacto.Version }} </h3>
+<br>
+<u> Relaciones del artefacto: </u><br>
+{% if antecesores %}
+    <u> Antecesores: </u>
+    <ul>
+    {% for rel in antecesores %}
+        <li><strong>Antecesor:</strong>{{ rel.Nombre }}<br>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% if padre %}
+    <u> Padre: </u>
+    <ul>
+    {% for rel in padre %}
+        <li><strong>Padre:</strong>{{ rel.Nombre }}<br>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% if hijos %}
+    <u> Hijos: </u>
+    <ul>
+    {% for rel in hijos %}
+        <li><strong>Hijo:</strong>{{ rel.Nombre }}<br>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historial_art/{{artefacto.id}}'"/>
+{% endblock %} 

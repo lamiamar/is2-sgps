@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Archivos{% endblock %}
+{% block head %}Lista de Archivos{% endblock %}
+{% block content %}
+
+{% if archivos %}
+    <p>Archivos adjuntos a este artefacto de {{artefacto.Tipo_Artefacto}}</p>
+    <ul>
+    {% for archivo in archivos %}
+        <li><strong>{{ archivo.Nom_Archivo }}</strong>
+        <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.id}}/obtener_adjunto/{{archivo.id}}/ "> Editar</a>
+        <a href="/proyecto/{{ proyecto.id }}/fase/{{Fase}}/{{artefacto.id}}/eliminar_adjunto/{{archivo.id}}/ "> Eliminar</a>
+        </li>
+    {% endfor %}
+    </ul>
+    <p>La opci&oacute;n editar le permite descargar el archivo guardado para insertar modificaciones. Una vez actualizado el archivo, 
+    vuelva a adjuntarlo con el mismo nombre.</p>
+{% else %}
+<p>A&uacute;n no se han adjuntado archivos al artefacto ({{ artefacto.id }}) de {{ artefacto.Tipo_Artefacto }}</p>
+{% endif %}
+<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/' "/>
+{% endblock %}

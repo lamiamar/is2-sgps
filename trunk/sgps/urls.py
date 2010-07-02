@@ -82,6 +82,7 @@ urlpatterns = patterns('',
     
     ####### ARCHIVO ###########
     (r'^proyecto/(\d+)/fase/(\w+)/adjuntar/(\d+)/$', guardarArchivo),
+    (r'^proyecto/(\d+)/fase/(\w+)/listar_adjunto/(\d+)/$', listarArchivo),
     (r'^proyecto/(\d+)/fase/(\d+)/obtener_adjunto/(\d+)/$', obtenerArchivo),
     (r'^proyecto/(\d+)/fase/(\w+)/(\d+)/eliminar_adjunto/(\d+)/$', eliminar_adjunto), 
 
@@ -90,4 +91,7 @@ urlpatterns = patterns('',
     (r'^proyecto/(\d+)/fase/(\w+)/historial_art/(\d+)/$', verHistorialArt),
     (r'^proyecto/(\d+)/fase/(\w+)/historial_rel/(\d+)/$', verHistorialRel),
     (r'^proyecto/(\d+)/fase/(\w+)/historial_adj/(\d+)/$', verHistorialAdj),
+    
+    (r'^proyecto/(\d+)/fase/(\w+)/detalles_version/(\d+)/$', detallesVersion),
+    
 )

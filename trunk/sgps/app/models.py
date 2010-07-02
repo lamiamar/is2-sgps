@@ -190,6 +190,7 @@ class HistorialArt(models.Model):
     
 class HistorialRel(models.Model):
     artefactoPadre = models.ForeignKey(Artefacto, related_name='artPadre')
+    padreVersion = models.IntegerField()
     artefactoHijo = models.ForeignKey(Artefacto, related_name='artHijo')
     Activo = models.BooleanField()
     Fecha_mod = models.DateTimeField(auto_now =False, auto_now_add=True, editable=False)
