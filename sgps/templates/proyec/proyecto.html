@@ -32,9 +32,11 @@
 
 <div class="buttons">
     <ul>
+      {% if TipoArtefactoEspecifico %}
     	<li><a href="/proyecto/{{proyecto.id}}/tipoArtefacto/">
 		Tipo de Artefacto
 	    </a></li>
+	  {% endif %}
 	    <br>
       {% if GenerarLineaBase %}
         <li><a href="/proyecto/{{proyecto.id}}/lineaBase/">

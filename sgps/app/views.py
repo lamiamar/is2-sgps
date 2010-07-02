@@ -67,13 +67,13 @@ def pagina_principal(request):
     for urs in usrolsis:
         permi = urs.rol.permisos.all()
         for per in permi:
-            if per.Nombre =='AdministrarProyectos':
+            if per.Nombre =='CrearProyectos' or per.Nombre =='EditarProyectos' or per.Nombre == 'EliminarProyectos':
                 Proyectos = True
-            if per.Nombre =='AdministrarUsuarios':
+            if per.Nombre =='CrearUsuarios' or per.Nombre =='EditarUsuarios' or per.Nombre == 'EliminarUsuarios' or per.Nombre == 'AsignarRolSistema':
                 Usuarios = True
-            if per.Nombre =='AdministrarRoles':
+            if per.Nombre =='CrearRoles' or per.Nombre =='EditarRoles' or per.Nombre == 'EliminarRoles' or per.Nombre == 'ConfigurarPermisos':
                 Roles = True              
-            if per.Nombre =='AdministrarTipoDeArtefacto':
+            if per.Nombre =='CrearTipoDeArtefacto' or per.Nombre =='EditarTipoDeArtefacto' or per.Nombre == 'EliminarTipoDeArtefacto':
                 Tipo_Artefactos = True
     contexto = RequestContext(request, {
                 'proyectoUser': proyectoUser,
@@ -355,23 +355,27 @@ def proyecto(request, id):
     EditarProyecto = False
     AgregarMiembro = False
     GenerarLineaBase = False
+    TipoArtefactoEspecifico = False
     for urp in usrolpro:
         permi = urp.rol.permisos.all()
         for per in permi:
-            if per.Nombre =='Requerimientos':
+            if per.Nombre =='CrearArtefactoReq' or per.Nombre =='EditarArtefactoReq' or per.Nombre == 'EliminarArtefactoReq' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto':
                 Requerimientos = True
-            if per.Nombre =='Diseno':
+            if per.Nombre =='CrearArtefactoDis' or per.Nombre =='EditarArtefactoDis' or per.Nombre == 'EliminarArtefactoDis' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto':
                 Diseno = True
-            if per.Nombre =='Implementacion':
+            if per.Nombre =='CrearArtefactoImp' or per.Nombre =='EditarArtefactoImp' or per.Nombre == 'EliminarArtefactoImp' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto':
                 Implementacion = True              
             if per.Nombre =='EditarProyecto':
                 EditarProyecto = True
-            if per.Nombre =='AgregarMiembro':
+            if per.Nombre =='CrearMiembro' or per.Nombre =='EditarMiembro' or per.Nombre =='EliminarMiembro':
                 AgregarMiembro = True
+            print AgregarMiembro
+            if per.Nombre =='CrearTipoArtefactoEspecifico' or per.Nombre =='EditarTipoArtefactoEspecifico' or per.Nombre =='EliminarTipoArtefactoEspecifico':
+                TipoArtefactoEspecifico = True
             if per.Nombre =='GenerarLineaBase':
                 GenerarLineaBase = True
         
-    return render_to_response('proyec/proyecto.html', {'user': user, 'proyecto': proyecto,'Requerimientos':Requerimientos, 'Diseno':Diseno,'Implementacion':Implementacion,'EditarProyecto':EditarProyecto,'AgregarMiembro':AgregarMiembro,'GenerarLineaBase':GenerarLineaBase,})
+    return render_to_response('proyec/proyecto.html', {'user': user, 'proyecto': proyecto,'Requerimientos':Requerimientos, 'Diseno':Diseno,'Implementacion':Implementacion,'EditarProyecto':EditarProyecto,'AgregarMiembro':AgregarMiembro,'GenerarLineaBase':GenerarLineaBase,'TipoArtefactoEspecifico':TipoArtefactoEspecifico})
 
 @login_required
 def usuariosMiembros(request, id):
@@ -860,7 +864,12 @@ def TipoArtefactosProyecto(request, id_p):
     proyecto = Proyecto.objects.get(pk=id_p)
     Tipo = Tipo_Artefacto_Proyecto.objects.filter(Proyecto=proyecto).order_by('Nombre')
     user = User.objects.get(username=request.user.username)
-    return render_to_response('proyec/tipoArtefactosProyecto.html', {'user': user, 'Tipo': Tipo, 'Proyecto':proyecto,})
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user).exclude(rol = None)
+    for urp in usrolpro:
+        CrearTipoArtefactoEspecifico = urp.rol.permisos.filter(Nombre = 'CrearTipoArtefactoEspecifico')
+        EditarTipoArtefactoEspecifico= urp.rol.permisos.filter(Nombre = 'EditarTipoArtefactoEspecifico')
+        EliminarTipoArtefactoEspecifico = urp.rol.permisos.filter(Nombre = 'EliminarTipoArtefactoEspecifico')
+    return render_to_response('proyec/tipoArtefactosProyecto.html', {'user': user, 'Tipo': Tipo, 'Proyecto':proyecto,'CrearTipoArtefactoEspecifico':CrearTipoArtefactoEspecifico,'EditarTipoArtefactoEspecifico':EditarTipoArtefactoEspecifico,'EliminarTipoArtefactoEspecifico':EliminarTipoArtefactoEspecifico,})
 
 
 
