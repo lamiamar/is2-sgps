@@ -683,7 +683,7 @@ def agregarArtefacto(request, id, fase):
                 numero= Numeracion.objects.get(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)
             
             if numero:
-                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre + str(numero.Ultimo_nro)
+                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre  + '(' + str(numero.Ultimo_nro) + ')'
                 numero.Ultimo_nro= numero.Ultimo_nro + 1
                 numero.save()
             else:
@@ -718,8 +718,11 @@ def modificarArtefacto(request, id_p, fase, id_ar):
     if request.method == 'POST':
         artefacto = Artefacto.objects.get(id=id_ar)
         #actualizar la version a la cual estara apuntando el historial, luego de la modificacion
+       ##########aK SALE ERROR CUANDO NO AY HISTORIAL###############
+       
         artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
         
+        ################################################################
         form = ModificarArtefactoForm(request.POST)
         if form.is_valid():
             artefacto_hist.Actual = False
@@ -1196,7 +1199,7 @@ def aprobarArtefacto(request, p_id, a_id, fase):
     artefacto.Estado = 'A'
     artefacto.save()
     
-    registrarHistorialArt(artefacto)
+    #registrarHistorialArt(artefacto)
       
     if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/requerimientos/")
@@ -1531,7 +1534,7 @@ def reversionar(request, id_p, fase, id_ar, version):
 
     activarArchivos(artefacto, prev_artefacto.id, version_archivos)
     
-def anularRelacionesActuales(artefacto):
+#def anularRelacionesActuales(artefacto):
 
     
 def activarRelacionesAnteriores(padres_valid, antecesores_valid, hijos_valid):
