@@ -6,7 +6,18 @@
     <ul>
     {% for Tipos in Tipo %}
    <li>
-	    <td><strong>{{ Tipos.Nombre }}</strong></td>: <td><strong>{{ Tipos.Fase }}</strong></td>
+	    <td><strong>{{ Tipos.Nombre }}</strong></td>:
+        <td>
+        {% ifequal Tipos.Fase 'E' %}
+            Especificacion de Requerimientos
+        {% endifequal %}
+        {% ifequal Tipos.Fase 'I' %}
+            Implementacion
+        {% endifequal %}
+        {% ifequal Tipos.Fase 'D' %}
+            Analisis y Disenho
+        {% endifequal %}
+        </td>
 		{% if EditarTipoDeArtefacto %}
 	    	<td><a href="/administracion/tipo_artefacto/editar&id={{ Tipos.id|urlencode }}/" class="edit">editar</a></td>
 	    {% endif %}

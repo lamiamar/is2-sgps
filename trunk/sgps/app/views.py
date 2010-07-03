@@ -1367,6 +1367,21 @@ def listarArchivo(request, id_p, fase, id_ar):
     return render_to_response('admin/artefacto/listar_archivos.html', contexto)
 
 @login_required
+def listarArchivoAprobado(request, id_p, fase, id_ar):
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+    
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        'archivos': archivos,
+                                         })
+    return render_to_response('admin/artefacto/listar_archivos_aprobado.html', contexto)
+
+
+@login_required
 def obtenerArchivo(request, id_p, id_ar, archivo_id):
     if request.method == 'GET':
         elArchivo = ArchivosAdjuntos.objects.get(pk=archivo_id)
