@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Archivos{% endblock %}
+{% block head %}Lista de Archivos{% endblock %}
+{% block content %}
+
+{% if archivos %}
+    <p>Archivos adjuntos a este artefacto de {{artefacto.Tipo_Artefacto}}</p>
+    <ul>
+    {% for archivo in archivos %}
+        <li><strong>{{ archivo.Nom_Archivo }}</strong>
+        <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.id}}/obtener_adjunto/{{archivo.id}}/ "> Descargar</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+<p>A&uacute;n no se han adjuntado archivos al artefacto ({{ artefacto.id }}) de {{ artefacto.Tipo_Artefacto }}</p>
+{% endif %}
+{% ifequal Fase 'E' %}
+    <input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
+{% endifequal %}
+{% ifequal Fase 'I' %}
+    <input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
+{% endifequal %}
+{% ifequal Fase 'D' %}
+    <input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/diseno/' "/>
+{% endifequal %}
+{% endblock %}
