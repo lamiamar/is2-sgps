@@ -93,6 +93,6 @@ urlpatterns = patterns('',
     (r'^proyecto/(\d+)/fase/(\w+)/historial_rel/(\d+)/$', verHistorialRel),
     (r'^proyecto/(\d+)/fase/(\w+)/historial_adj/(\d+)/$', verHistorialAdj),
     
-    (r'^proyecto/(\d+)/fase/(\w+)/detalles_version/(\d+)/$', detallesVersion),
+    (r'^proyecto/(\d+)/fase/(\w+)/detalles_version/(\d+)/(\d+)/$', detallesVersion),
     
 )

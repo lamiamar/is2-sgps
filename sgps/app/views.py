@@ -687,7 +687,7 @@ def agregarArtefacto(request, id, fase):
                 numero.Ultimo_nro= numero.Ultimo_nro + 1
                 numero.save()
             else:
-                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre + str(0)
+                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre + '(' + str(0) + ')'
 #                print artefacto.Nombre
                 numero=Numeracion(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)   
                 numero.Ultimo_nro=1
@@ -1155,16 +1155,33 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
     artefactoHijo = Artefacto.objects.get(id=arHijo_id)
     Relacion_Artefacto = RelacionArtefacto.objects.filter(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
     if Relacion_Artefacto:
+        artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
+        artefacto_hist.Actual = False
+        artefacto_hist.save()
+        
         relacion_artefacto=RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacion_artefacto.Activo=True
         relacion_artefacto.save()
         registrarHistorialRel(relacion_artefacto)
+        
+        artefactoPadre.Version = artefactoPadre.Version + 1
+        artefactoPadre.save()
+        registrarHistorialArt(artefactoPadre)
+        
     else:
+        artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
+        artefacto_hist.Actual = False
+        artefacto_hist.save()
+        
         relacion_artefacto = RelacionArtefacto(artefactoPadre=artefactoHijo,
                                        artefactoHijo=artefactoPadre, Activo=True)
     
         relacion_artefacto.save()
         registrarHistorialRel(relacion_artefacto)
+        
+        artefactoPadre.Version = artefactoPadre.Version + 1
+        artefactoPadre.save()
+        registrarHistorialArt(artefactoPadre)
         
     return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
@@ -1176,10 +1193,18 @@ def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
     artefactoHijo = Artefacto.objects.get(pk=arHijo_id)
 
     if request.method == 'POST':
+        artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
+        artefacto_hist.Actual = False
+        artefacto_hist.save()
+        
         relacionArtefacto = RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacionArtefacto.Activo=False
         relacionArtefacto.save()
-        registrarHistorialRel(relacion_artefacto)
+        registrarHistorialRel(relacionArtefacto)
+        
+        artefactoPadre.Version = artefactoPadre.Version + 1
+        artefactoPadre.save()
+        registrarHistorialArt(artefactoPadre)
         
         return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
@@ -1472,14 +1497,13 @@ def verHistorialAdj(request, id_p, fase, id_ar):
                                         })
     return render_to_response('admin/artefacto/historial_adj.html', contexto)
 
-def detallesVersion(request, id_p, fase, id_ar):
+def detallesVersion(request, id_p, fase, id_ar, version):
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     
-    relaciones = HistorialRel.objects.filter(artefactoHijo=artefacto).values_list('artefactoPadre', flat=True)
-    
-    Mispadres = Artefacto.objects.filter(id__in=relaciones, Activo=True).order_by('id')
-    
+    relaciones = HistorialRel.objects.filter(artefactoHijo=artefacto, Activo=False).values_list('artefactoPadre', flat=True)
+
+    Mispadres = Artefacto.objects.filter(id__in=relaciones, Version=version, Activo=True).order_by('id')
     
     antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     
@@ -1493,6 +1517,7 @@ def detallesVersion(request, id_p, fase, id_ar):
     contexto = RequestContext(request, {'proyecto': proyecto,
                                         'Fase': fase,
                                         'artefacto': artefacto,
+                                        'version': version,
                                         'antecesores': antecesores,
                                         'padre': Mipadre,
                                         'hijos': Mishijos,
@@ -1510,7 +1535,7 @@ def reversionar(request, id_p, fase, id_ar, version):
     artefacto_hist.Actual = False
     artefacto_hist.save()
     
-    prev_version = HistorialArt.objects.filter(Version=version)
+    prev_version = HistorialArt.objects.get(Artefacto=id_ar, Version=version)
     
     anularRelacionesActuales(artefacto)
     
@@ -1529,8 +1554,8 @@ def reversionar(request, id_p, fase, id_ar, version):
     
     registrarHistorialArt(artefacto)
     
-    prev_artefacto = Artefacto.objects.get(Version=version)    
-    relaciones_padres = HistorialRel.objects.filter(artefactoHijo=prev_artefacto).values_list('artefactoPadre', flat=True)
+    #prev_artefacto = Artefacto.objects.get(id=id_ar, Version=version)    
+    relaciones_padres = HistorialRel.objects.filter(artefactoHijo=prev_version).values_list('artefactoPadre', flat=True)
     
     padres_valid = Artefacto.objects.filter(id__in=relaciones_padres, Activo=True).order_by('id')
     padres_invalid = Artefacto.objects.filter(id__in=relaciones_padres, Activo=False).order_by('id')
@@ -1540,17 +1565,26 @@ def reversionar(request, id_p, fase, id_ar, version):
     
     Mipadre = padres_valid.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
    
-    relaciones_hijos = HistorialRel.objects.filter(artefactoPadre=prev_artefacto).values_list('artefactoHijo', flat=True)
+    relaciones_hijos = HistorialRel.objects.filter(artefactoPadre=prev_version).values_list('artefactoHijo', flat=True)
     
     hijos_valid = Artefacto.objects.filter(id__in=relaciones_hijos, Activo=True).order_by('id')
     hijos_invalid = Artefacto.objects.filter(id__in=relaciones_hijos, Activo=False).order_by('id')
     
-    activarRelacionesAnteriores(padres_valid, antecesores_valid, hijos_valid)
+    activarRelacionesAnteriores(artefacto, padres_valid, antecesores_valid, hijos_valid)
 
-    activarArchivos(artefacto, prev_artefacto.id, version_archivos)
+    activarArchivos(artefacto, prev_version.Artefacto.id, version_archivos)
     
-#def anularRelacionesActuales(artefacto):
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                        'Fase': fase,
+                                        'artefacto': artefacto,
+                                        'version': version,
+                                        'antecesores_invalid': antecesores_invalid,
+                                        'padres_invalid': padres_invalid,
+                                        'hijos_invalid': hijos_invalid,
+                                        })
 
+    return render_to_response('admin/artefacto/reversion.html', contexto)
+    
     
 def activarRelacionesAnteriores(padres_valid, antecesores_valid, hijos_valid):
     
