@@ -68,13 +68,13 @@ def pagina_principal(request):
     for urs in usrolsis:
         permi = urs.rol.permisos.all()
         for per in permi:
-            if per.Nombre =='CrearProyectos' or per.Nombre =='EditarProyectos' or per.Nombre == 'EliminarProyectos':
+            if per.Nombre =='CrearProyectos' or per.Nombre =='EditarProyectos' or per.Nombre == 'EliminarProyectos' or per.Nombre == 'VerProyectos':
                 Proyectos = True
-            if per.Nombre =='CrearUsuarios' or per.Nombre =='EditarUsuarios' or per.Nombre == 'EliminarUsuarios' or per.Nombre == 'AsignarRolSistema':
+            if per.Nombre =='CrearUsuarios' or per.Nombre =='EditarUsuarios' or per.Nombre == 'EliminarUsuarios' or per.Nombre == 'AsignarRolSistema' or per.Nombre == 'VerUsuarios':
                 Usuarios = True
-            if per.Nombre =='CrearRoles' or per.Nombre =='EditarRoles' or per.Nombre == 'EliminarRoles' or per.Nombre == 'ConfigurarPermisos':
+            if per.Nombre =='CrearRoles' or per.Nombre =='EditarRoles' or per.Nombre == 'EliminarRoles' or per.Nombre == 'ConfigurarPermisos' or per.Nombre == 'VerRoles':
                 Roles = True              
-            if per.Nombre =='CrearTipoDeArtefacto' or per.Nombre =='EditarTipoDeArtefacto' or per.Nombre == 'EliminarTipoDeArtefacto':
+            if per.Nombre =='CrearTipoDeArtefacto' or per.Nombre =='EditarTipoDeArtefacto' or per.Nombre == 'EliminarTipoDeArtefacto' or per.Nombre == 'VerArtefactos':
                 Tipo_Artefactos = True
     contexto = RequestContext(request, {
                 'proyectoUser': proyectoUser,
@@ -360,11 +360,11 @@ def proyecto(request, id):
     for urp in usrolpro:
         permi = urp.rol.permisos.all()
         for per in permi:
-            if per.Nombre =='CrearArtefactoReq' or per.Nombre =='EditarArtefactoReq' or per.Nombre == 'EliminarArtefactoReq' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto':
+            if per.Nombre =='CrearArtefactoReq' or per.Nombre =='EditarArtefactoReq' or per.Nombre == 'EliminarArtefactoReq' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto' or per.Nombre == 'VerArtefactosEspecificos' or per.Nombre == 'AprobarArtefacto':
                 Requerimientos = True
-            if per.Nombre =='CrearArtefactoDis' or per.Nombre =='EditarArtefactoDis' or per.Nombre == 'EliminarArtefactoDis' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto':
+            if per.Nombre =='CrearArtefactoDis' or per.Nombre =='EditarArtefactoDis' or per.Nombre == 'EliminarArtefactoDis' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto' or per.Nombre == 'VerArtefactosEspecificos' or per.Nombre == 'AprobarArtefacto':
                 Diseno = True
-            if per.Nombre =='CrearArtefactoImp' or per.Nombre =='EditarArtefactoImp' or per.Nombre == 'EliminarArtefactoImp' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto':
+            if per.Nombre =='CrearArtefactoImp' or per.Nombre =='EditarArtefactoImp' or per.Nombre == 'EliminarArtefactoImp' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto' or per.Nombre == 'VerArtefactosEspecificos' or per.Nombre == 'AprobarArtefacto':
                 Implementacion = True              
             if per.Nombre =='EditarProyecto':
                 EditarProyecto = True
@@ -961,12 +961,14 @@ def FaseERequerimientos(request, id):
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
+        AprobarArtefacto = urp.rol.permisos.filter(Nombre = 'AprobarArtefacto')
         CrearArtefactoReq = urp.rol.permisos.filter(Nombre = 'CrearArtefactoReq')
         EditarArtefactoReq = urp.rol.permisos.filter(Nombre = 'EditarArtefactoReq')
         EliminarArtefactoReq = urp.rol.permisos.filter(Nombre = 'EliminarArtefactoReq')
         confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
         impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
+                                         'AprobarArtefacto':AprobarArtefacto,
                                          'artefactos': artefactos,
                                          'Fase':'E',
                                          'EditarArtefactoReq': EditarArtefactoReq,
@@ -997,6 +999,7 @@ def FaseDiseno(request, id):
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
+        AprobarArtefacto = urp.rol.permisos.filter(Nombre = 'AprobarArtefacto')
         CrearArtefactoDis = urp.rol.permisos.filter(Nombre = 'CrearArtefactoDis')
         EditarArtefactoDis = urp.rol.permisos.filter(Nombre = 'EditarArtefactoDis')
         EliminarArtefactoDis = urp.rol.permisos.filter(Nombre = 'EliminarArtefactoDis')
@@ -1004,6 +1007,7 @@ def FaseDiseno(request, id):
         confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
         impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
+                                         'AprobarArtefacto':AprobarArtefacto,
                                          'artefactos': artefactos,
                                          'Fase':'D',
                                          'Paso': Paso,
@@ -1031,12 +1035,14 @@ def FaseImplementacion(request, id):
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
+        AprobarArtefacto = urp.rol.permisos.filter(Nombre = 'AprobarArtefacto')
         CrearArtefactoImp = urp.rol.permisos.filter(Nombre = 'CrearArtefactoImp')
         EditarArtefactoImp = urp.rol.permisos.filter(Nombre = 'EditarArtefactoImp')
         EliminarArtefactoImp = urp.rol.permisos.filter(Nombre = 'EliminarArtefactoImp')
         confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
         impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
+                                         'AprobarArtefacto':AprobarArtefacto,
                                          'artefactos': artefactos,
                                          'Fase':'I',
                                          'Paso': Paso,
