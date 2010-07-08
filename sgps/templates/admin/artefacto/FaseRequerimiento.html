@@ -17,10 +17,13 @@
               <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/" class="edit">Historial</a>
         	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">Editar</a>
               <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/" class="edit">Archivos<a/>
+              {% endif %}
+              {% if AprobarArtefacto %}
               {% ifnotequal artefacto.Estado 'A' %}
         		<a href="/proyectos/{{proyecto.id}}/fase/artefactos/aprobar/{{artefacto.id}}/{{Fase}}/" class="edit">Aprobar</a>
         	  {% endifnotequal %}
-        	  {% endif %}
+              {% endif %}
+        	  
         	 {% if EliminarArtefactoReq %}
         		<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">Eliminar</a>
              {% endif %}
