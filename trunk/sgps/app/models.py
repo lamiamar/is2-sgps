@@ -83,6 +83,7 @@ class Fase(models.Model):
 
 class Tipo_Artefacto(models.Model):
     Nombre = models.CharField(max_length=100)
+    Codigo=models.CharField(max_length=10)
     Fase = models.CharField(max_length=2, choices=ETAPA)
     Descripcion = models.TextField(null=True)
     
@@ -90,7 +91,8 @@ class Tipo_Artefacto(models.Model):
         return self.Nombre
     
 class Tipo_Artefacto_Proyecto(models.Model):
-    Nombre = models.CharField(max_length=40)
+    Nombre = models.CharField(max_length=100)
+    Codigo=models.CharField(max_length=10)
     Descripcion = models.TextField(null=True) 
     Fase = models.CharField(max_length=1, choices=ETAPA)
     TipoArtefactoGeneral = models.ForeignKey(Tipo_Artefacto, null=True)

@@ -172,9 +172,19 @@ class ModificarArtefactoForm(forms.Form):
 
 class Tipo_ArtefactoForm(forms.Form): 
     Nombre = forms.CharField(max_length=100, label=u'Nombre')
+    Codigo = forms.CharField(max_length=10, label=u'Codigo')
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
     
+    def clean_Codigo(self):
+       codigo = self.cleaned_data['Codigo']
+       if 'Codigo' in self.cleaned_data:
+            tiposArtefacto = Tipo_Artefacto.objects.all()
+            for ar in tiposArtefacto:
+                if ar.Codigo == codigo:
+                    raise forms.ValidationError('El Codigo ya existe. Inserte otro.')
+
+       return codigo
     
     def clean_Nombre(self):
        nombre = self.cleaned_data['Nombre']
@@ -185,6 +195,8 @@ class Tipo_ArtefactoForm(forms.Form):
                     raise forms.ValidationError('El nombre ya existe. Inserte otro.')
 
        return nombre
+   
+
 
 class Mod_Tipo_ArtefactoForm(forms.Form):
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
@@ -197,9 +209,11 @@ class Edi_Tipo_Artefacto_ProyectoForm(forms.Form):
     
 class Tipo_Artefacto_ProyectoForm(forms.Form): 
     Nombre = forms.CharField(max_length=100, label=u'Nombre')
+    Codigo = forms.CharField(max_length=10, label=u'Codigo')
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
     
+
 class Edi_Tipo_Artefacto_Proyecto_ReqForm(forms.Form):
     Fase = forms.CharField(max_length=1, widget=forms.Select(choices=ETAPA), label=u'ETAPA')
     Descripcion = forms.CharField(widget=forms.Textarea(), required=False, label=u'Descripcion')
