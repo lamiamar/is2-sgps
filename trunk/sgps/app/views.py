@@ -1320,7 +1320,9 @@ def Calculo_Impacto(request, p_id, artefacto_id):
             complejidad= int(Ar.Complejidad)
             CalculoSucesores = CalculoSucesores + complejidad
     CalculoImpacto = int(artefacto.Complejidad) + CalculoPadres + CalculoHijos + CalculoAntecesores + CalculoSucesores
-
+    
+    izquierda= CalculoPadres + CalculoAntecesores
+    derecha=CalculoHijos + CalculoSucesores
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'Fase': artefacto.Tipo_Artefacto.Fase,
                                          'artefacto': artefacto,
@@ -1329,6 +1331,8 @@ def Calculo_Impacto(request, p_id, artefacto_id):
                                          'CalculoPadres': CalculoPadres,
                                          'padres': ArtefactosPadres,
                                          'antesesores': ArtefactosAntecesores,
+                                         'izquierda':izquierda,
+                                         'derecha':derecha,
                                          'CalculoAntecesores':CalculoAntecesores,
                                          'sucesores':ArtefactoSucesores,
                                          'CalculoSucesores':CalculoSucesores,
