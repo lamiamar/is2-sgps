@@ -1103,14 +1103,17 @@ def AdministrarRelacionArtefacto(request, p_id, a_id):
     Mispadres = Artefacto.objects.filter(id__in=Mispadres).order_by('id')
     antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     Mispadres = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
-    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True).values_list('artefactoHijo', flat=True)
     
+    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True).values_list('artefactoHijo', flat=True)
+    Mishijos = Artefacto.objects.filter(id__in=Mishijos).order_by('id')
+         
 
     fase= artefacto.Tipo_Artefacto.Fase
 
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'artefacto': artefacto,
                                          'padres': Mispadres,
+                                         'hijos': Mishijos,
                                          'antecesores': antecesores,
                                          'fase': fase,
                                          })
