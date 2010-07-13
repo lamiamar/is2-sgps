@@ -10,7 +10,6 @@ TIPO_ROL = (
 ESTADO = (
           ('I', 'Implementando'),
           ('A', 'Aprobado'),
-          ('D', 'Desaprobado')
           )
 ETAPA = (
               ('E', 'Especificacion de Requerimientos'),
@@ -19,9 +18,11 @@ ETAPA = (
               )
 PRIORIDAD = (
              ('B', 'Baja'),
-             ('U', 'Urgente'),
-             ('A', 'Alta'),
              ('M', 'Media'),
+             ('A', 'Alta'),
+             ('U', 'Urgente'),
+             
+             
              )
 COMPLEJIDAD = (
                       ('1', '1'),

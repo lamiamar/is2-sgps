@@ -7,7 +7,24 @@
      <li> <strong>Nombre de Artefacto:</strong>{{ artefacto.Nombre }}</li>
      <li> <strong>Descripcion Corta:</strong>{{ artefacto.DescripcionCorta }}</li>
      <li> <strong>Descripcion Larga:</strong>{{ artefacto.DescripcionLarga }}</li>
-</ul>      
+     <li> <strong>Version:</strong>{{ artefacto.Version }}</li>
+     <li> <strong>Complejidad:</strong>{{ artefacto.Complejidad }}</li>
+     <li> <strong>Estado:</strong>{{ Estado }}</li>
+     <li> <strong>Usuario creador:</strong>{{ artefacto.Usuario }}</li>
+     <li> <strong>Prioridad:</strong>{{ Prioridad }}</li>
+      
+</ul> 
+<h4>Adjuntos:</h4>
+{% if archivos %}
+    <ul>
+    {% for archivo in archivos %}
+       <li><strong> <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.id}}/obtener_adjunto/{{archivo.id}}/ "> {{ archivo.Nom_Archivo }} </a>
+       </strong> </li>
+    {% endfor %}
+    </ul>
+{% else %}
+<p>A&uacute;n no se han adjuntado archivos al artefacto </p>
+{% endif %}     
 <h4>Relaciones:</h4>
 
 {% if padres or antecesores %}
@@ -29,11 +46,40 @@
             {% for artefacto2 in antecesores%}
                 <li>{{artefacto2.Nombre}}
             {% endfor %}
+            </ul>
         {% endif %}
-        </ul>
+        
 {% else %}
     <p>No existe ninguna Relacion </p>
 {% endif %}
+
+<h4>Hijos:</h4>
+ {% if hijosF or hijosS %}       
+         {% if hijosF %}
+           <h4>Mis hijos de la misma Fase:</h4>
+            Hijos:
+            <ul>
+              {% for ar in hijosF%}
+                 <li>{{ar.Nombre}}
+              {% endfor %}
+                  </ul>
+        {% endif %}
+         
+        {% if hijosS %}
+             <h4>Mis hijos de la Fase siguiente:</h4>
+              Hijos:
+              <ul>
+              {% for artefacto2 in hijosS %}
+                  <li>{{artefacto2.Nombre}}
+              {% endfor %}
+        {% endif %}
+             </ul>
+{% else %}
+    <p>No existe ningun hijo </p>
+{% endif %}
+
+
+
 {% ifequal Fase 'E' %}
         <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
     {% endifequal %}
