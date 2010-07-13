@@ -2,7 +2,7 @@
 {% block title %}Proyecto{% endblock %}
 {% block head %}Especificaci&oacute;n de Requerimientos<br>{% endblock %}
 {% block content %}
-<h4>Informacion general:</h4>
+<h3>Informacion general:</h3>
 <ul>
      <li> <strong>Nombre de Artefacto:</strong>{{ artefacto.Nombre }}</li>
      <li> <strong>Descripcion Corta:</strong>{{ artefacto.DescripcionCorta }}</li>
@@ -14,7 +14,7 @@
      <li> <strong>Prioridad:</strong>{{ Prioridad }}</li>
       
 </ul> 
-<h4>Adjuntos:</h4>
+<h3>Adjuntos:</h3>
 {% if archivos %}
     <ul>
     {% for archivo in archivos %}
@@ -25,55 +25,72 @@
 {% else %}
 <p>A&uacute;n no se han adjuntado archivos al artefacto </p>
 {% endif %}     
-<h4>Relaciones:</h4>
 
+<h3>Artefactos de los que depende:</h3>
 {% if padres or antecesores %}
-        
-        {% if padres %}
-            <h4>Relaciones con Artefactos de la misma Fase:</h4>
-            Padres:
-            <ul>
-            {% for ar in padres%}
-                <li>{{ar.Nombre}}
-            {% endfor %}
-            </ul>
-        {% endif %}
+<ul> 
+       <li><h4>Relaciones con Artefactos de la misma Fase:</h4></li>
+	    {% if padres %}
+            Padre:
+	        <ul>
+		    {% for ar in padres%}
+		    	<li>
+		    	<a href="/proyecto/{{proyecto.id}}/verInfo/{{ar.id}}/" class="edit">{{ar.Nombre}}</a></li>
+		    {% endfor %}
+		   
+	        </ul>
+ 
+	    {% endif %}
  
         {% if antecesores %}
-            <h4>Relaciones con Artefactos de la Fase Anterior:</h4>
+	    	<li><h4>Relaciones con Artefactos de la Fase Anterior:</h4></li>
+
             Antecesores:
-            <ul>
-            {% for artefacto2 in antecesores%}
-                <li>{{artefacto2.Nombre}}
-            {% endfor %}
-            </ul>
-        {% endif %}
-        
+	    	<ul>
+			{% for artefacto2 in antecesores%}
+			    {% ifequal artefacto2.Tipo_Artefacto.Fase 'E' %}
+<li><a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}</a>: (Especificacion de Requerimientos)</li>
+				   
+				 {% endifequal %}
+				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'D' %}
+				   <li><a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}</a>:(Disenho)</li> 
+				 {% endifequal %}
+			{% endfor %}
+	    {% endif %}
+		</ul>
+</ul>
 {% else %}
-    <p>No existe ninguna Relacion </p>
+	<p>No existe ninguna Relacion </p>
 {% endif %}
 
-<h4>Hijos:</h4>
+
+<h3>Artefactos hijos o descendientes:</h3>
+<ul> 
  {% if hijosF or hijosS %}       
          {% if hijosF %}
-           <h4>Mis hijos de la misma Fase:</h4>
-            Hijos:
+           <li><h4>Hijos de la misma Fase:</h4></li>
             <ul>
               {% for ar in hijosF%}
-                 <li>{{ar.Nombre}}
+              <li><a href="/proyecto/{{proyecto.id}}/verInfo/{{ar.id}}/" class="edit">{{ar.Nombre}}</a></li> 
               {% endfor %}
                   </ul>
         {% endif %}
          
         {% if hijosS %}
-             <h4>Mis hijos de la Fase siguiente:</h4>
-              Hijos:
+             <li><h4>Hijos de la Fase siguiente:</h4></li>
               <ul>
               {% for artefacto2 in hijosS %}
-                  <li>{{artefacto2.Nombre}}
+              
+				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'D' %}
+				 <li><a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}</a>: (Disenho)</li> 
+				 {% endifequal %}
+				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'I' %}
+				   <li><a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}}</a>:(Implementacion)</li> 
+				 {% endifequal %}
               {% endfor %}
         {% endif %}
              </ul>
+</ul> 
 {% else %}
     <p>No existe ningun hijo </p>
 {% endif %}

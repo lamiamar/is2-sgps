@@ -1,34 +1,62 @@
 {% extends "base.html" %}
 {% block title %}Proyectos{% endblock %}
-{% block head %}Relaciones del Artefacto{% endblock %}
+{% block head %}Relaciones del Artefacto {{artefacto.Nombre}}{% endblock %}
 {% block content %}
 
 	
 
+   <h3>Artefactos Ancestros y Antecesores:</h3>
 {% if padres or antecesores %}
-        <h4>Relaciones con Artefactos de la misma Fase:</h4>
+<ul> 
+       <li><h4>Relaciones con Artefactos de la misma Fase:</h4></li>
 	    {% if padres %}
-            Padres:
+            Padre:
 	        <ul>
 		    {% for ar in padres%}
 		    	<li>{{ar.Nombre}}
 <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ ar.id }}/" class="edit">[eliminar]</a></li>
 		    {% endfor %}
 	        </ul>
+ 
 	    {% endif %}
  
         {% if antecesores %}
-	    	<h4>Relaciones con Artefactos de la Fase Anterior:</h4>
+	    	<li><h4>Relaciones con Artefactos de la Fase Anterior:</h4></li>
+
             Antecesores:
 	    	<ul>
 			{% for artefacto2 in antecesores%}
-				<li>{{artefacto2.Nombre}}
+			    {% ifequal artefacto2.Tipo_Artefacto.Fase 'E' %}
+				   <li>{{artefacto2.Nombre}}:  (Especificacion de Requerimientos)
 					<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
+				 {% endifequal %}
+				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'D' %}
+				   <li>{{artefacto2.Nombre}}:  (Diseño)
+					<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
+				 {% endifequal %}
+				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'I' %}
+				   <li>{{artefacto2.Nombre}}:  (Implementacion)
+					<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
+				 {% endifequal %}
+		 
 			{% endfor %}
 	    {% endif %}
 		</ul>
+</ul>
 {% else %}
 	<p>No existe ninguna Relacion </p>
+{% endif %}
+
+<h3>Artefactos hijos o descendientes:</h3>
+{% if hijos %}
+
+	        <ul>
+		    {% for ar in hijos%}
+		    	<li>{{ar.Nombre}}
+		    {% endfor %}
+	        </ul>
+{% else %}
+	<p>No existe ningun hijo o artefacto dependiente</p>
 {% endif %}
 
 <input type="button" value="Agregar Relaci&oacute;n" onClick = "location.href='/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}/listarArtefactos' "/>
