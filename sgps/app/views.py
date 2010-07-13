@@ -717,14 +717,14 @@ def agregarArtefacto(request, id, fase):
                 numero= Numeracion.objects.get(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)
             
             if numero:
-                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre  + '(' + str(numero.Ultimo_nro) + ')'
+                artefacto.Nombre= artefacto.Tipo_Artefacto.Codigo  +  str(numero.Ultimo_nro)
                 numero.Ultimo_nro= numero.Ultimo_nro + 1
                 numero.save()
             else:
-                artefacto.Nombre= artefacto.Tipo_Artefacto.Nombre + '(' + str(0) + ')'
+                artefacto.Nombre= artefacto.Tipo_Artefacto.Codigo +  str(1) 
 #                print artefacto.Nombre
                 numero=Numeracion(Proyecto=artefacto.Proyecto, Tipo_Artefacto = artefacto.Tipo_Artefacto)   
-                numero.Ultimo_nro=1
+                numero.Ultimo_nro=2
                 numero.save()        
     
             
@@ -842,6 +842,7 @@ def Agregar_tipo_artefacto(request):
         if form.is_valid():
             tipo = Tipo_Artefacto(
                       Nombre = form.cleaned_data['Nombre'],
+                      Codigo= form.cleaned_data['Codigo'],
                       Fase = form.cleaned_data['Fase'],
                       Descripcion= form.cleaned_data['Descripcion'],
             )
@@ -919,6 +920,7 @@ def crearTipoArtefactosProyecto(request, p_id):
         if form.is_valid():
             tipoProyecto = Tipo_Artefacto_Proyecto(
                       Nombre = form.cleaned_data['Nombre'],
+                      Codigo= form.cleaned_data['Codigo'],
                       Fase = form.cleaned_data['Fase'],
                       Descripcion= form.cleaned_data['Descripcion'],
                       Proyecto=proyecto
