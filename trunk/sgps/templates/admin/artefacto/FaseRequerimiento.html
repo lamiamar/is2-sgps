@@ -6,7 +6,11 @@
     {% for artefacto in artefactos %}
       <li>
 	  <strong>{{ artefacto.Nombre }}: </strong>{{ artefacto.Tipo_Artefacto.Fase }}
+      
         {% if not Aprobado %}
+        
+              <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
+              
               {% if confrelaciones %}
                 <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}" class="edit">Relaciones</a>
               {%endif%}
@@ -28,16 +32,19 @@
         		<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">Eliminar</a>
              {% endif %}
         {% else %}
+        
+             <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
+            
              {% if impacto %}
                 <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
-              {%endif%}
-              <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Informacion</a>
-              <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/listar_adjunto_aprobado/{{artefacto.id}}/" class="edit">Ver Archivos</a>
+             {%endif%}
+
         {% endif %}
      </li>
     {% endfor %}
     </ul>
     {% if not Aprobado %}
+    
             {% if CrearArtefactoReq %}
             <input type="button" value="Nuevo Artefacto" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/nuevo/' "/>
         	{% endif %}

@@ -6,7 +6,11 @@
     {% for artefacto in artefactos %}
       <li>
 	  <strong>{{ artefacto.Nombre }}: </strong>{{ artefacto.Tipo_Artefacto.Fase }}
+	  
+	  
       {% if Paso %}
+              <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
+             
               {% if confrelaciones %}
                 <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}" class="edit">Relaciones</a>
               {%endif%}
@@ -28,11 +32,11 @@
               {% endif %}	
              </li>
       {% else %}
+             <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
              {% if impacto %}
                 <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
               {%endif%}
-              <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Informacion</a>
-              <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/listar_adjunto_aprobado/{{artefacto.id}}/" class="edit">Ver Archivos</a>
+              
       {% endif %}
 
     {% endfor %}

@@ -653,8 +653,42 @@ def verInformacion_Artefacto(request, pid, id):
     Mispadres = Artefacto.objects.filter(id__in=Mispadres).order_by('id')
     antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     Mispadres = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True).values_list('artefactoHijo', flat=True)
+    Mishijos = Artefacto.objects.filter(id__in=Mishijos).order_by('id')
+    
+    hijosFaseSigte = Mishijos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    hijosMismaFase = Mishijos.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+     
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+    if artefacto.Estado== 'I':
+        estado= "Implementando"
+    else:
+        estado= "Aprobado"
+        
+    if artefacto.Prioridad== 'B':
+        Prioridad= "Baja"
+    if artefacto.Prioridad== 'M':
+        Prioridad= "Media"
+    if artefacto.Prioridad== 'A':
+        Prioridad= "Alta"
+    if artefacto.Prioridad== 'U':
+        Prioridad= "Urgente"
+    
+    
     Fase=artefacto.Tipo_Artefacto.Fase
-    return render_to_response('admin/artefacto/informacion_artefacto.html', {'user': user, 'artefacto': artefacto, 'padres':Mispadres , 'antecesores': antecesores, 'proyecto':proyecto, 'Fase':Fase})
+    contexto = RequestContext(request, {'user': user,
+                                        'artefacto': artefacto,
+                                        'padres':Mispadres ,
+                                        'antecesores': antecesores,
+                                        'hijosS': hijosFaseSigte,
+                                        'hijosF': hijosMismaFase,
+                                        'proyecto':proyecto,
+                                        'Fase':Fase,
+                                        'Estado': estado,
+                                        'archivos': archivos,
+                                        'Prioridad': Prioridad,
+                                        })
+    return render_to_response('admin/artefacto/informacion_artefacto.html', contexto )
 
         
 @login_required
