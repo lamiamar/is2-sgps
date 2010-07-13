@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Impacto{% endblock %}
-{% block head %}Calculo Impacto de {{ artefacto.Tipo_Artefacto.Nombre}}<br>{% endblock %}
+{% block head %}Calculo Impacto de {{ artefacto.Nombre}}<br>{% endblock %}
 {% block content %}
 
 	<dl>
 	    <li> Complejidad del Artefacto {{ artefacto.Nombre }} : {{ artefacto.Complejidad }} </li>
-		<li> <strong>Calculo Impacto hacia la izquierda:</strong> 
+		<li> <strong>Calculo Impacto hacia la izquierda:</strong> {{izquierda }}
 			{% if padres %}
 				<li>PADRES:</li>
                 <ul>
@@ -32,7 +32,7 @@
 			{% endif %}
 		</li>
             
-		<li> <strong> Calculo Impacto hacia la derecha:</strong> 
+		<li> <strong> Calculo Impacto hacia la derecha:</strong> {{derecha }}
 			{% if hijos %}
                 <li>HIJOS:</li>
 				<ul>
