@@ -3,7 +3,8 @@
 {% block head %}Editar Tipo de Artefacto {% endblock %}
 {% block content %}
 <form method="post" action=""> 
-Nombre: {{ tipo_artefacto.Nombre }}
+<p><strong>Nombre:</strong> {{ tipo_artefacto.Nombre }}</p>
+<p><strong>Codigo:</strong> {{ tipo_artefacto.Codigo }}</p>
 	<table>
     {{form.as_p}}
 	</table>

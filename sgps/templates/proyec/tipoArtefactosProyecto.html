@@ -9,13 +9,13 @@
         <td><strong>{{ Tipos.Nombre }}</strong></td>:
         <td>
         {% ifequal Tipos.Fase 'E' %}
-            Especificacion de Requerimientos
+            (Especificacion de Requerimientos)
         {% endifequal %}
         {% ifequal Tipos.Fase 'I' %}
-            Implementacion
+            (Implementacion)
         {% endifequal %}
         {% ifequal Tipos.Fase 'D' %}
-            Analisis y Disenho
+            (Analisis y Disenho)
         {% endifequal %}
         </td>
         {% if EditarTipoArtefactoEspecifico %}    

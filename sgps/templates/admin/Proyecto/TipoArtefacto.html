@@ -6,17 +6,16 @@
     <ul>
     {% for Tipos in Tipo %}
    <li>
-	    <td><strong>Nombre:{{ Tipos.Nombre }}</strong></td>
-        <td><strong>Codigo:{{ Tipos.Codigo }}</strong></td>:
+	    <td><strong>{{ Tipos.Nombre }}</strong></td>
         <td>
         {% ifequal Tipos.Fase 'E' %}
-            Especificacion de Requerimientos
+            (Especificacion de Requerimientos)
         {% endifequal %}
         {% ifequal Tipos.Fase 'I' %}
-            Implementacion
+            (Implementacion)
         {% endifequal %}
         {% ifequal Tipos.Fase 'D' %}
-            Analisis y Disenho
+            (Analisis y Disenho)
         {% endifequal %}
         </td>
 		{% if EditarTipoDeArtefacto %}
