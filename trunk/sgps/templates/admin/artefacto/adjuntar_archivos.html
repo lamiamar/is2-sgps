@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Archivos{% endblock %}
-{% block head %}Adjuntar Archivos{% endblock %}
+{% block head %}Adjuntar Archivos a {{ artefacto.Nombre }}{% endblock %}
 {% block content %}
 
 <p>Adjuntar archivo para el artefacto:</p>
-<p><strong> ID: ({{ artefacto.id }})</strong> {{ artefacto.Tipo_Artefacto }}</p>
+
 <form enctype="multipart/form-data" method="post" action="">
     {{ form.as_p }}
 
