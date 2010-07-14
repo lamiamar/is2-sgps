@@ -845,6 +845,18 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
     relacionesPadre = RelacionArtefacto.objects.filter(artefactoPadre = artefacto, Activo=True)
     relacionesHijo = RelacionArtefacto.objects.filter(artefactoHijo = artefacto, Activo=True)
     error= None
+    
+    Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True).values_list('artefactoPadre', flat=True)
+    Mispadres = Artefacto.objects.filter(id__in=Mispadres).order_by('id')
+    antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Mispadres = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True).values_list('artefactoHijo', flat=True)
+    Mishijos = Artefacto.objects.filter(id__in=Mishijos).order_by('id')
+    hijosFaseSigte = Mishijos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    hijosMismaFase = Mishijos.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+     
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+    
     if relacionesPadre:
         error= 'Hay artefacto que dependen de el. No se puede eliminar si existe dependencias'
     if request.method == 'POST':
@@ -867,7 +879,7 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
         if fase == 'I':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/implementacion/")
 
-    return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p, 'mensaje':error,})
+    return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'archivos':archivos, 'padres': Mispadres, 'hijosM':hijosMismaFase, 'hijosF': hijosFaseSigte, 'antecesores': antecesores, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p, 'mensaje':error,})
 
 
 

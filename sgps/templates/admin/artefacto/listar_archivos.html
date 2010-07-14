@@ -4,7 +4,7 @@
 {% block content %}
 
 {% if archivos %}
-    <p>Archivos adjuntos a este artefacto de {{artefacto.Tipo_Artefacto}}</p>
+    <p>Archivos adjuntos a este artefacto de {{artefacto.Nombre}}</p>
     <ul>
     {% for archivo in archivos %}
         <li><strong>{{ archivo.Nom_Archivo }}</strong>
