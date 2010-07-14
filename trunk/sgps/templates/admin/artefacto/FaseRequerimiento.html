@@ -18,7 +18,6 @@
               <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/" class="edit">Historial</a>
         	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">Editar</a>
               <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/" class="edit">Archivos<a/>
-              <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>              
               <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
               {% endif %}
               {% if AprobarArtefacto %}
@@ -31,13 +30,12 @@
         		<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/eliminar/{{artefacto.id}}/" class="edit">Eliminar</a>
              {% endif %}
         {% else %}
-        
-             <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
-            
-           
-                
-             
+              <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
 
+              {% if EditarArtefactoReq%}
+                 <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
+              {% endif %}
+                    
         {% endif %}
      </li>
     {% endfor %}
