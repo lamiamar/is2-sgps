@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Proyecto{% endblock %}
-{% block head %}Artefacto {{ artefacto.Nombre }} <br>{% endblock %}
+{% block head %}Artefacto {{ artefacto.Nombre }}<br>{% endblock %}
 {% block content %}
 <h3>Informacion general:</h3>
 <ul>
-    <li> <strong>Nombre de Artefacto:</strong>{{ artefacto.Nombre }}</li>
+     <li> <strong>Nombre de Artefacto:</strong>{{ artefacto.Nombre }}</li>
      {% ifequal artefacto.Tipo_Artefacto.Fase 'E' %}
    <li> <strong>Fase del Artefacto:</strong>Especificacion de Requerimientos</li>
     {% endifequal %}
@@ -43,8 +43,7 @@
             Padre:
 	        <ul>
 		    {% for ar in padres%}
-		    	<li>
-		    	<a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{ar.id}}/" class="edit">{{ar.Nombre}}</a></li>
+		    	<li>{{ar.Nombre}}</li>
 		    {% endfor %}
 		   
 	        </ul>
@@ -58,11 +57,10 @@
 	    	<ul>
 			{% for artefacto2 in antecesores%}
 			    {% ifequal artefacto2.Tipo_Artefacto.Fase 'E' %}
-<li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}</a>: (Especificacion de Requerimientos)</li>
-				   
-				 {% endifequal %}
+                <li>{{artefacto2.Nombre}}: (Especificacion de Requerimientos)</li>
+				{% endifequal %}
 				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'D' %}
-				   <li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}</a>:(Disenho)</li> 
+				   <li>{{artefacto2.Nombre}}:(Disenho)</li> 
 				 {% endifequal %}
 			{% endfor %}
 	    {% endif %}
@@ -77,10 +75,10 @@
 <ul> 
  {% if hijosF or hijosS %}       
          {% if hijosF %}
-           <li><h4>Hijos:</h4></li>
+           <li><h4>Hijos :</h4></li>
             <ul>
               {% for ar in hijosF%}
-              <li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{ar.id}}/" class="edit">{{ar.Nombre}}</a></li> 
+              <li>{{ar.Nombre}}</li> 
               {% endfor %}
                   </ul>
         {% endif %}
@@ -91,10 +89,10 @@
               {% for artefacto2 in hijosS %}
               
 				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'D' %}
-				 <li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}</a>: (Disenho)</li> 
+				 <li>{{artefacto2.Nombre}}: (Disenho)</li> 
 				 {% endifequal %}
 				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'I' %}
-				   <li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}}</a>:(Implementacion)</li> 
+				   <li>{{artefacto2.Nombre}}}:(Implementacion)</li> 
 				 {% endifequal %}
               {% endfor %}
         {% endif %}
@@ -116,4 +114,4 @@
         <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
     {% endifequal %}
     
-{% endblock %}
+{% endblock %} 

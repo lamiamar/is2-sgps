@@ -60,6 +60,7 @@ urlpatterns = patterns('',
     (r'^proyectos/(\d+)/fase/artefactos/aprobar/(\d+)/(\w+)/$', aprobarArtefacto),
     (r'^proyecto/(\d+)/impacto/(\d+)/$', Calculo_Impacto),
     (r'^proyecto/(\d+)/verInfo/(\d+)/$', verInformacion_Artefacto),
+    (r'^proyecto/(\d+)/verInfoParcial/(\d+)/$', verInformacion_Parcial_Artefacto),
     
     #Control de roles..............
     (r'^administracion/roles/$', administrar_roles),
