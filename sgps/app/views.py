@@ -1319,7 +1319,8 @@ def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
                                          'artefacto': artefactoPadre,
                                          'artefactoH': artefactoHijo,
                                          })
-    return render_to_response('admin/artefacto/eliminar_relacion.html', contexto)
+    return render_to_response('admin/artefacto/eliminar_relacion.html', contexto)       
+    
 
 @login_required
 def aprobarArtefacto(request, p_id, a_id, fase):
@@ -1327,19 +1328,35 @@ def aprobarArtefacto(request, p_id, a_id, fase):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
     artefacto = Artefacto.objects.get(id=a_id)
-
-    artefacto.Estado = 'A'
-    artefacto.save()
     
-    #registrarHistorialArt(artefacto)
-      
-    if fase =='E':
-                return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/requerimientos/")
-    if fase =='D':
-                return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/diseno/")
-    if fase == 'I':
-                return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/implementacion/")
+    Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True).values_list('artefactoPadre', flat=True)
+    Mispadres = Artefacto.objects.filter(id__in=Mispadres).order_by('id')
+    antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Mispadres = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True).values_list('artefactoHijo', flat=True)
+    Mishijos = Artefacto.objects.filter(id__in=Mishijos).order_by('id')
+    hijosFaseSigte = Mishijos.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    hijosMismaFase = Mishijos.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+     
+    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
 
+    if request.method == 'POST':
+        artefacto.Estado = 'A'
+        artefacto.save()
+          
+        if fase =='E':
+                    return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/requerimientos/")
+        if fase =='D':
+                    return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/diseno/")
+        if fase == 'I':
+                    return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/implementacion/")
+  
+
+
+    return render_to_response('admin/artefacto/aprobarArtefacto.html', {'user': user, 'archivos':archivos, 'padres': Mispadres, 'hijosM':hijosMismaFase, 'hijosF': hijosFaseSigte, 'antecesores': antecesores, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': p_id,})
+
+
+    
 
 @login_required
 def Calculo_Impacto(request, p_id, artefacto_id):
@@ -1770,7 +1787,7 @@ def GenerarLineaBase(request, p_id, fase):
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
     
     if artefactos:
-        error=comprobarCondiciones(artefactos, lista, fase)
+        error=comprobarCondiciones(artefactos, lista, fase, proyecto)
         print error
         if not error:
             if request.method == 'POST':
@@ -1788,7 +1805,7 @@ def GenerarLineaBase(request, p_id, fase):
     
     return render_to_response('proyec/generarLB.html', contexto)
 
-def comprobarCondiciones(artefactos, lista, fase):
+def comprobarCondiciones(artefactos, lista, fase, proyecto):
       NoAprobados = artefactos.exclude(Estado='A')
       if  NoAprobados:
           lista.extend(NoAprobados)
@@ -1800,10 +1817,46 @@ def comprobarCondiciones(artefactos, lista, fase):
           else:
                for artefacto in artefactos:
                   relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
-                  if not relaciones:
-                     lista.append(artefacto)
+                  flag=0
+                  for rel in relaciones:
+                      if (rel.artefactoPadre.Tipo_Artefacto.Fase)!= fase:
+                          flag=1
+                  if flag==0:
+                      lista.append(artefacto)    
                if lista:
                   mensaje= "Hay artefactos que no estan relacionados con ningun artefacto de la face anterior"
                   return  mensaje
-               else: 
-                 return None
+               else:
+                   if fase == 'D':
+                      TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase='E', Proyecto=proyecto)
+                      artefactos2 = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
+                      for artefacto in artefactos2:
+                          relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
+                          flag2=0
+                          for rel in relaciones:
+                              if (rel.artefactoHijo.Tipo_Artefacto.Fase)!= (rel.artefactoPadre.Tipo_Artefacto.Fase):
+                                  flag2=1
+                          if flag2==0:
+                              lista.append(artefacto)
+                      if lista:
+                          mensaje= "Hay artefactos huerfanos en la fase de Requerimientos."
+                          return  mensaje
+                      else:
+                          return None
+                   if fase == 'I':
+                      TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase='D', Proyecto=proyecto)
+                      artefactos3 = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
+                      for artefacto in artefactos3:
+                          relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
+                          flag3=0
+                          for rel in relaciones:
+                              if (rel.artefactoHijo.Tipo_Artefacto.Fase)!= (rel.artefactoPadre.Tipo_Artefacto.Fase):
+                                  flag3=1
+                          if flag3==0:
+                              lista.append(artefacto)
+                      if lista:
+                          mensaje= "Hay artefactos huerfanos en la fase de Disenho."
+                          return  mensaje
+                      else:
+                          return None
+                    

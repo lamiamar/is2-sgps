@@ -20,7 +20,21 @@
 
 {% else %}
 	<h3>Esta seguro que desea eliminar el artefacto?</h3>
+<form method="post" action=""> 
+    <input type="submit" value="eliminar" />
+    {% ifequal fase 'E' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/requerimientos/' "/>
+	{% endifequal %}
 	
+	{% ifequal fase 'D' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/diseno/' "/>
+	{% endifequal %}
+	
+	{% ifequal fase 'I' %}
+		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/implementacion/' "/>
+	{% endifequal %}
+
+</form> 
 	
 						
 					<ul>
@@ -122,23 +136,7 @@
 					{% else %}
 					    <p>No existe ningun hijo </p>
 					{% endif %}
-<form method="post" action=""> 
-<input type="submit" value="eliminar" />
 
-
-	{% ifequal fase 'E' %}
-		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/requerimientos/' "/>
-	{% endifequal %}
-	
-	{% ifequal fase 'D' %}
-		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/diseno/' "/>
-	{% endifequal %}
-	
-	{% ifequal fase 'I' %}
-		<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{ProyectoId}}/implementacion/' "/>
-	{% endifequal %}
-
-	</form> 
 {% endif %}
 {% endblock %}
 
