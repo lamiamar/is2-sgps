@@ -21,7 +21,6 @@
         	  <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">Editar</a>
               <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/" class="edit">Archivos<a/>
               <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>      
-               <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
               {% endif %}
               {% if AprobarArtefacto %}
               {% ifnotequal artefacto.Estado 'A' %}
@@ -33,10 +32,10 @@
         	 {% endif %}
              </li>
     {% else %}
-             <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
-            
-               
-              
+             {% if EditarArtefactoImp %}
+              <a href="/proyecto/{{proyecto.id}}/verInfo/{{artefacto.id}}/" class="edit">Ver Artefacto</a>
+              <a href="/proyecto/{{proyecto.id}}/impacto/{{artefacto.id}}/" class="edit">Impacto</a>
+              {% endif %}           
    {% endif %}
     {% endfor %}
     </ul>
