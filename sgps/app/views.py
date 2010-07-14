@@ -360,11 +360,11 @@ def proyecto(request, id):
     for urp in usrolpro:
         permi = urp.rol.permisos.all()
         for per in permi:
-            if per.Nombre =='CrearArtefactoReq' or per.Nombre =='EditarArtefactoReq' or per.Nombre == 'EliminarArtefactoReq' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'VerArtefactosReq' or per.Nombre == 'AprobarArtefacto':
+            if per.Nombre =='CrearArtefactoReq' or per.Nombre =='EditarArtefactoReq' or per.Nombre == 'EliminarArtefactoReq' or per.Nombre == 'VerArtefactosReq' or per.Nombre == 'AprobarArtefacto':
                 Requerimientos = True
-            if per.Nombre =='CrearArtefactoDis' or per.Nombre =='EditarArtefactoDis' or per.Nombre == 'EliminarArtefactoDis' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'VerArtefactosDis' or per.Nombre == 'AprobarArtefacto':
+            if per.Nombre =='CrearArtefactoDis' or per.Nombre =='EditarArtefactoDis' or per.Nombre == 'EliminarArtefactoDis' or per.Nombre == 'VerArtefactosDis' or per.Nombre == 'AprobarArtefacto':
                 Diseno = True
-            if per.Nombre =='CrearArtefactoImp' or per.Nombre =='EditarArtefactoImp' or per.Nombre == 'EliminarArtefactoImp' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'VerArtefactosImp' or per.Nombre == 'AprobarArtefacto':
+            if per.Nombre =='CrearArtefactoImp' or per.Nombre =='EditarArtefactoImp' or per.Nombre == 'EliminarArtefactoImp' or per.Nombre == 'VerArtefactosImp' or per.Nombre == 'AprobarArtefacto':
                 Implementacion = True              
             if per.Nombre =='EditarProyecto':
                 EditarProyecto = True
@@ -1063,8 +1063,6 @@ def FaseERequerimientos(request, id):
         CrearArtefactoReq = urp.rol.permisos.filter(Nombre = 'CrearArtefactoReq')
         EditarArtefactoReq = urp.rol.permisos.filter(Nombre = 'EditarArtefactoReq')
         EliminarArtefactoReq = urp.rol.permisos.filter(Nombre = 'EliminarArtefactoReq')
-        confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
-        impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'AprobarArtefacto':AprobarArtefacto,
                                          'artefactos': artefactos,
@@ -1073,8 +1071,6 @@ def FaseERequerimientos(request, id):
                                          'EliminarArtefactoReq': EliminarArtefactoReq,
                                          'CrearArtefactoReq': CrearArtefactoReq,
                                          'Aprobado': Aprobado,
-                                         'confrelaciones':confrelaciones,
-                                         'impacto':impacto,
                                          })
     return render_to_response('admin/artefacto/FaseRequerimiento.html', contexto)
 
@@ -1101,9 +1097,6 @@ def FaseDiseno(request, id):
         CrearArtefactoDis = urp.rol.permisos.filter(Nombre = 'CrearArtefactoDis')
         EditarArtefactoDis = urp.rol.permisos.filter(Nombre = 'EditarArtefactoDis')
         EliminarArtefactoDis = urp.rol.permisos.filter(Nombre = 'EliminarArtefactoDis')
-        confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
-        confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
-        impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'AprobarArtefacto':AprobarArtefacto,
                                          'artefactos': artefactos,
@@ -1112,8 +1105,6 @@ def FaseDiseno(request, id):
                                          'EditarArtefactoDis': EditarArtefactoDis,
                                          'EliminarArtefactoDis': EliminarArtefactoDis,
                                          'CrearArtefactoDis': CrearArtefactoDis,
-                                         'confrelaciones':confrelaciones,
-                                         'impacto':impacto,
                                          })
     return render_to_response('admin/artefacto/FaseDiseno.html', contexto)
 
@@ -1137,8 +1128,6 @@ def FaseImplementacion(request, id):
         CrearArtefactoImp = urp.rol.permisos.filter(Nombre = 'CrearArtefactoImp')
         EditarArtefactoImp = urp.rol.permisos.filter(Nombre = 'EditarArtefactoImp')
         EliminarArtefactoImp = urp.rol.permisos.filter(Nombre = 'EliminarArtefactoImp')
-        confrelaciones = urp.rol.permisos.filter(Nombre = 'ConfigurarRelaciones')
-        impacto = urp.rol.permisos.filter(Nombre = 'CalcularImpacto')
     contexto = RequestContext(request, {'proyecto': proyecto,
                                          'AprobarArtefacto':AprobarArtefacto,
                                          'artefactos': artefactos,
@@ -1147,8 +1136,6 @@ def FaseImplementacion(request, id):
                                          'EditarArtefactoImp': EditarArtefactoImp,
                                          'EliminarArtefactoImp': EliminarArtefactoImp,
                                          'CrearArtefactoImp': CrearArtefactoImp,
-                                         'confrelaciones':confrelaciones,
-                                         'impacto':impacto,
                                          })
     return render_to_response('admin/artefacto/FaseImplementacion.html', contexto)
 
