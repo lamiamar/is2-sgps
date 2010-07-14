@@ -74,7 +74,7 @@ def pagina_principal(request):
                 Usuarios = True
             if per.Nombre =='CrearRoles' or per.Nombre =='EditarRoles' or per.Nombre == 'EliminarRoles' or per.Nombre == 'ConfigurarPermisos' or per.Nombre == 'VerRoles':
                 Roles = True              
-            if per.Nombre =='CrearTipoDeArtefacto' or per.Nombre =='EditarTipoDeArtefacto' or per.Nombre == 'EliminarTipoDeArtefacto' or per.Nombre == 'VerArtefactos':
+            if per.Nombre =='CrearTipoDeArtefacto' or per.Nombre =='EditarTipoDeArtefacto' or per.Nombre == 'EliminarTipoDeArtefacto' or per.Nombre == 'VerTiposArtefactos':
                 Tipo_Artefactos = True
     contexto = RequestContext(request, {
                 'proyectoUser': proyectoUser,
@@ -360,18 +360,18 @@ def proyecto(request, id):
     for urp in usrolpro:
         permi = urp.rol.permisos.all()
         for per in permi:
-            if per.Nombre =='CrearArtefactoReq' or per.Nombre =='EditarArtefactoReq' or per.Nombre == 'EliminarArtefactoReq' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto' or per.Nombre == 'VerArtefactosEspecificos' or per.Nombre == 'AprobarArtefacto':
+            if per.Nombre =='CrearArtefactoReq' or per.Nombre =='EditarArtefactoReq' or per.Nombre == 'EliminarArtefactoReq' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'VerArtefactosReq' or per.Nombre == 'AprobarArtefacto':
                 Requerimientos = True
-            if per.Nombre =='CrearArtefactoDis' or per.Nombre =='EditarArtefactoDis' or per.Nombre == 'EliminarArtefactoDis' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto' or per.Nombre == 'VerArtefactosEspecificos' or per.Nombre == 'AprobarArtefacto':
+            if per.Nombre =='CrearArtefactoDis' or per.Nombre =='EditarArtefactoDis' or per.Nombre == 'EliminarArtefactoDis' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'VerArtefactosDis' or per.Nombre == 'AprobarArtefacto':
                 Diseno = True
-            if per.Nombre =='CrearArtefactoImp' or per.Nombre =='EditarArtefactoImp' or per.Nombre == 'EliminarArtefactoImp' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'CalcularImpacto' or per.Nombre == 'VerArtefactosEspecificos' or per.Nombre == 'AprobarArtefacto':
+            if per.Nombre =='CrearArtefactoImp' or per.Nombre =='EditarArtefactoImp' or per.Nombre == 'EliminarArtefactoImp' or per.Nombre == 'ConfigurarRelaciones' or per.Nombre == 'VerArtefactosImp' or per.Nombre == 'AprobarArtefacto':
                 Implementacion = True              
             if per.Nombre =='EditarProyecto':
                 EditarProyecto = True
             if per.Nombre =='CrearMiembro' or per.Nombre =='EditarMiembro' or per.Nombre =='EliminarMiembro':
                 AgregarMiembro = True
             print AgregarMiembro
-            if per.Nombre =='CrearTipoArtefactoEspecifico' or per.Nombre =='EditarTipoArtefactoEspecifico' or per.Nombre =='EliminarTipoArtefactoEspecifico':
+            if per.Nombre =='CrearTipoArtefactoEspecifico' or per.Nombre =='EditarTipoArtefactoEspecifico' or per.Nombre =='EliminarTipoArtefactoEspecifico' or per.Nombre =='VerTiposArtefactosEspecificos':
                 TipoArtefactoEspecifico = True
             if per.Nombre =='GenerarLineaBase':
                 GenerarLineaBase = True
