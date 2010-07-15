@@ -12,13 +12,13 @@
                    
 				{% for padre in padres %}
 					{% ifequal padre.Tipo_Artefacto.Fase 'E' %}
-                    <li>Complejidad de {{padre.Nombre}}(Especificacion de Requerimientos):{{padre.Complejidad}}</li>
+                    <li>Complejidad de {{padre.Nombre}} (Especificacion de Requerimientos):{{padre.Complejidad}}</li>
 				    {% endifequal %}
 				 {% ifequal padre.Tipo_Artefacto.Fase 'D' %}
-                    <li>Complejidad de {{padre.Nombre}}(Disenho):{{padre.Complejidad}}</li>
+                    <li>Complejidad de {{padre.Nombre}} (Disenho):{{padre.Complejidad}}</li>
 				    {% endifequal %}
                 {% ifequal padre.Tipo_Artefacto.Fase 'I' %}
-                    <li>Complejidad de {{padre.Nombre}}(Implementacion):{{padre.Complejidad}}</li>
+                    <li>Complejidad de {{padre.Nombre}} (Implementacion):{{padre.Complejidad}}</li>
 				    {% endifequal %}
 				{% endfor %}
                SubTotal:  {{ CalculoPadres }}
@@ -29,13 +29,13 @@
                 <ul>
                  {% for ante in antesesores %}
 					{% ifequal ante.Tipo_Artefacto.Fase 'E' %}
-                    <li>Complejidad de {{ante.Nombre}}(Especificacion de Requerimientos):{{ante.Complejidad}}</li>
+                    <li>Complejidad de {{ante.Nombre}} (Especificacion de Requerimientos):{{ante.Complejidad}}</li>
 				    {% endifequal %}
 				 {% ifequal ante.Tipo_Artefacto.Fase 'D' %}
-                    <li>Complejidad de {{ante.Nombre}}(Disenho):{{ante.Complejidad}}</li>
+                    <li>Complejidad de {{ante.Nombre}} (Disenho):{{ante.Complejidad}}</li>
 				    {% endifequal %}
                 {% ifequal ante.Tipo_Artefacto.Fase 'I' %}
-                    <li>Complejidad de {{ante.Nombre}}(Implementacion):{{ante.Complejidad}}</li>
+                    <li>Complejidad de {{ante.Nombre}} (Implementacion):{{ante.Complejidad}}</li>
 				    {% endifequal %}
 
 				{% endfor %}
@@ -50,13 +50,13 @@
 				<ul>
 				{% for hijo in hijos %}
                     {% ifequal hijo.Tipo_Artefacto.Fase 'E' %}
-                    <li>Complejidad de {{hijo.Nombre}}(Especificacion de Requerimientos):{{hijo.Complejidad}}</li>
+                    <li>Complejidad de {{hijo.Nombre}} (Especificacion de Requerimientos):{{hijo.Complejidad}}</li>
 				    {% endifequal %}
 				 {% ifequal hijo.Tipo_Artefacto.Fase 'D' %}
-                    <li>Complejidad de {{hijo.Nombre}}(Disenho):{{hijo.Complejidad}}</li>
+                    <li>Complejidad de {{hijo.Nombre}} (Disenho):{{hijo.Complejidad}}</li>
 				    {% endifequal %}
                 {% ifequal hijo.Tipo_Artefacto.Fase 'I' %}
-                    <li>Complejidad de {{hijo.Nombre}}(Implementacion):{{hijo.Complejidad}}</li>
+                    <li>Complejidad de {{hijo.Nombre}} (Implementacion):{{hijo.Complejidad}}</li>
 				    {% endifequal %}
 				{% endfor %}
                 SubTotal:  {{ CalculoHijos }}
@@ -69,13 +69,13 @@
                    
 				{% for anteS in sucesores %}
 				 {% ifequal anteS.Tipo_Artefacto.Fase 'E' %}
-                    <li>Complejidad de {{anteS.Nombre}}(Especificacion de Requerimientos):{{anteS.Complejidad}}</li>
+                    <li>Complejidad de {{anteS.Nombre}} (Especificacion de Requerimientos):{{anteS.Complejidad}}</li>
 				    {% endifequal %}
 				 {% ifequal anteS.Tipo_Artefacto.Fase 'D' %}
-                    <li>Complejidad de {{anteS.Nombre}}(Disenho):{{anteS.Complejidad}}</li>
+                    <li>Complejidad de {{anteS.Nombre}} (Disenho):{{anteS.Complejidad}}</li>
 				    {% endifequal %}
                 {% ifequal anteS.Tipo_Artefacto.Fase 'I' %}
-                    <li>Complejidad de {{anteS.Nombre}}(Implementacion):{{anteS.Complejidad}}</li>
+                    <li>Complejidad de {{anteS.Nombre}} (Implementacion):{{anteS.Complejidad}}</li>
 				    {% endifequal %}
 				{% endfor %}
                SubTotal:  {{ CalculoSucesores }}

@@ -19,7 +19,7 @@
 	{% endifequal %}
 
 {% else %}
-	<h3>Esta seguro que desea eliminar el artefacto?</h3>
+	<h3>Esta seguro que desea eliminar el artefacto {{ artefacto.Nombre }}?</h3>
 <form method="post" action=""> 
     <input type="submit" value="eliminar" />
     {% ifequal fase 'E' %}

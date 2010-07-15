@@ -114,7 +114,7 @@ class Numeracion(models.Model):
 class Artefacto(models.Model):
     Nombre=models.CharField(max_length=40)
     Tipo_Artefacto = models.ForeignKey(Tipo_Artefacto_Proyecto)
-    DescripcionCorta = models.CharField(max_length=650, null=True)
+    DescripcionCorta = models.CharField(max_length=650)
     DescripcionLarga = models.TextField(null=True)
     Proyecto = models.ForeignKey(Proyecto)
     Prioridad = models.CharField(max_length=1)

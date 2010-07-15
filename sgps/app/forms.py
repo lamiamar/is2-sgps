@@ -156,7 +156,7 @@ class ArtefactoForm(forms.Form):
     Tipo_Artefacto = forms.ModelChoiceField(queryset=None, label='Tipo Artefacto')
     Prioridad = forms.CharField(max_length=1, widget=forms.Select(choices=PRIORIDAD), label=u'Prioridad')
     Complejidad = forms.CharField(max_length=2, widget=forms.Select(choices=COMPLEJIDAD), label=u'Complejidad')
-    DescripcionCorta = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Corta')
+    DescripcionCorta = forms.CharField(widget=forms.Textarea(), label='Descripcion Corta')
     DescripcionLarga = forms.CharField(widget=forms.Textarea(), required=False, label='Descripcion Larga')
      
     def __init__(self, id, fase, *args, **kwargs):
