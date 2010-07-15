@@ -1315,6 +1315,7 @@ def Calculo_Impacto(request, p_id, artefacto_id):
     CalculoHijos=0
     CalculoAntecesores=0
     CalculoSucesores=0
+    CalculoPapa=0
 
     ArtefactosHijos = Artefacto.objects.filter(id__in=Hijos, Activo=True)
     ArtefactosPadres = Artefacto.objects.filter(id__in=Padres, Activo=True)
@@ -1323,6 +1324,9 @@ def Calculo_Impacto(request, p_id, artefacto_id):
     ArtefactosHijos = ArtefactosHijos.exclude(id__in=ArtefactoSucesores)
     ArtefactosPadres = ArtefactosPadres.exclude(id__in=ArtefactosAntecesores)
     
+    ArtefactoPapa=RelacionArtefacto.objects.filter(artefactoHijo=artefacto, artefactoPadre__Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase, Activo=True).values_list('artefactoPadre', flat=True)
+    ArtefactoPapa= Artefacto.objects.filter(id__in=ArtefactoPapa)
+    ArtefactosPadres = ArtefactosPadres.exclude(id__in=ArtefactoPapa)
     if ArtefactosPadres:
         for Ar in ArtefactosPadres:
             complejidad= int(Ar.Complejidad)
@@ -1340,7 +1344,11 @@ def Calculo_Impacto(request, p_id, artefacto_id):
         for Ar in ArtefactoSucesores:
             complejidad= int(Ar.Complejidad)
             CalculoSucesores = CalculoSucesores + complejidad
-    CalculoImpacto = int(artefacto.Complejidad) + CalculoPadres + CalculoHijos + CalculoAntecesores + CalculoSucesores
+    if ArtefactoPapa:
+        for Ar in ArtefactoPapa:
+            complejidad= int(Ar.Complejidad)
+            CalculoPapa = complejidad
+    CalculoImpacto = int(artefacto.Complejidad)+ CalculoPapa + CalculoPadres + CalculoHijos + CalculoAntecesores + CalculoSucesores
     
     izquierda= CalculoPadres + CalculoAntecesores
     derecha=CalculoHijos + CalculoSucesores
@@ -1351,6 +1359,7 @@ def Calculo_Impacto(request, p_id, artefacto_id):
                                          'hijos': ArtefactosHijos,
                                          'CalculoPadres': CalculoPadres,
                                          'padres': ArtefactosPadres,
+                                         'papa':ArtefactoPapa,
                                          'antesesores': ArtefactosAntecesores,
                                          'izquierda':izquierda,
                                          'derecha':derecha,
@@ -1396,7 +1405,7 @@ def guardarArchivo(request, id_p, fase, id_ar):
         if form.is_valid():
                     registrarHistorialArt(artefacto) #registrar en el historial el artefacto antes de cambiarlo
                     adjunto = request.FILES['archivo']
-                    
+
                     try:
                         archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
                                                                Nom_Archivo=adjunto.name,
@@ -1416,11 +1425,11 @@ def guardarArchivo(request, id_p, fase, id_ar):
                                                    )
                         archivo.save(force_insert=True)
 
+
                     except:
                         artefacto.Estado='I'
                         artefacto.Version = artefacto.Version + 1
                         artefacto.save()
-                        
                         archivo = ArchivosAdjuntos(Artefacto = artefacto,
                                                    Nom_Archivo = adjunto.name,
                                                    Contenido = base64.b64encode(adjunto.read()),
@@ -1429,7 +1438,7 @@ def guardarArchivo(request, id_p, fase, id_ar):
                                                    Activo = True,
                                                    )
                         archivo.save()
-    
+                        
     form = ArchivosAdjuntosForm()    
     artefacto = Artefacto.objects.get(id=id_ar)
 
@@ -1486,8 +1495,8 @@ def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
     archivo = get_object_or_404(ArchivosAdjuntos, pk=archivo_id)
     
     if request.method == 'POST':
-        registrarHistorialArt(artefacto)
 
+        registrarHistorialArt(artefacto)
         archivo.Activo = False
         archivo.save()
         
@@ -1495,7 +1504,9 @@ def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
         artefacto.Version = artefacto.Version + 1
         artefacto.save()
 
-        return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + fase + "/adjuntar/" + str(artefacto.id))
+        return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + fase + "/listar_adjunto/" + str(artefacto.id) + "/")    
+
+        
     contexto = RequestContext(request, {'proyecto': proyecto,
                                         'Fase': fase,
                                         'artefacto': artefacto,
@@ -1610,6 +1621,7 @@ def comprobarCondiciones(artefactos, lista, fase, proyecto):
                           return  mensaje
                       else:
                           return None
+
 
 ##################################### HISTORIAL - VERSIONES ##################################################################
 

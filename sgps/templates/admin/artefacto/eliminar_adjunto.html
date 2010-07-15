@@ -3,10 +3,11 @@
 {% block head %}Eliminar Archivo {{ archivo.Nom_Archivo }}{% endblock %}
 {% block content %}
 <p>Esta seguro que desea eliminar el archivo <strong>{{ archivo.Nom_Archivo }}</strong>?</p>
-<p>Perteneciente al artefacto <strong>{{ artefacto.id }}:</strong> de {{ artefacto.Tipo_Artefacto.Nombre }}</p>
+<p>Perteneciente al artefacto <strong>{{ artefacto.Nombre}}:</strong> </p>
 <form method="post" action=""> 
 <input type="submit" value="Eliminar" />
-<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}' " />
+<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/listar_adjunto/{{artefacto.id}}/' "/>
+
 </form> 
 
 {% endblock %}

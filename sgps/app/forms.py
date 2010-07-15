@@ -254,7 +254,7 @@ class Edi_Tipo_Artefacto_Proyecto_ImpForm(forms.Form):
         raise forms.ValidationError('No puede cambiar la fase, esta siendo utilizada por un Artefacto')    
 class ArchivosAdjuntosForm(forms.Form):
     archivo = forms.FileField(label=u'Adjuntar archivo')
-    
+ 
     
     
     
