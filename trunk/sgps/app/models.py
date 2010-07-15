@@ -185,17 +185,19 @@ class HistorialArt(models.Model):
     Usuario = models.ForeignKey(User)
     Estado = models.CharField(max_length=1, choices=ESTADO)
     Activo = models.BooleanField(default = True)
-    Actual = models.BooleanField()
     Fecha_mod = models.DateTimeField(auto_now =False, auto_now_add=True, editable=False)
     
     class Meta:
         unique_together = [("Artefacto", "Version", "Activo")]
     
 class HistorialRel(models.Model):
-    artefactoPadre = models.ForeignKey(Artefacto, related_name='artPadre')
+    #artefactoPadre = models.ForeignKey(Artefacto, related_name='artPadre')
+    artefactoPadre = models.ForeignKey(Artefacto)
     padreVersion = models.IntegerField()
-    artefactoHijo = models.ForeignKey(Artefacto, related_name='artHijo')
-    Activo = models.BooleanField()
+    #artefactoHijo = models.ForeignKey(Artefacto, related_name='artHijo')
+    artefactoHijo = models.ForeignKey(HistorialArt)
+    hijoVersion = models.IntegerField()
+    #Activo = models.BooleanField()
     Fecha_mod = models.DateTimeField(auto_now =False, auto_now_add=True, editable=False)
     
     
