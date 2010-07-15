@@ -10,20 +10,7 @@
 
 <input type="submit" value="Guardar" />
 
-{% ifequal Fase 'E' %}
-    <input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
-{% endifequal %}
-
-{% ifequal Fase 'D' %}
-    <input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/diseno/' "/>
-{% endifequal %}
-
-{% ifequal Fase 'I' %}
-    <input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
-{% endifequal %}
-<br>
-<br>
-<input type="button" value="Ver adjuntos" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/listar_adjunto/{{artefacto.id}}/' "/>
+<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/listar_adjunto/{{artefacto.id}}/' "/>
 
 </form> 
 {% endblock %}

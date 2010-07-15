@@ -14,7 +14,7 @@
         	  {% if EditarArtefactoDis %}
                 <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/" class="edit">Historial</a>
         	  	<a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/editar/{{artefacto.id}}/" class="edit">Editar</a>
-                <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/" class="edit">Archivos<a/>
+                <a href="/proyecto/{{proyecto.id}}/fase/{{Fase}}/listar_adjunto/{{artefacto.id}}/" class="edit">Archivos<a/>  
                 <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id|urlencode }}" class="edit">Relaciones</a>
               {% endif %}
               {% if AprobarArtefacto %}                 		

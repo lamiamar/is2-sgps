@@ -27,15 +27,15 @@
 	    	<ul>
 			{% for artefacto2 in antecesores%}
 			    {% ifequal artefacto2.Tipo_Artefacto.Fase 'E' %}
-<li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{ar.id}}/" class="edit">{{artefacto2.Nombre}}:(Especificacion de Requerimientos)</a>
+<li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}:(Especificacion de Requerimientos)</a>
 					<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
 				 {% endifequal %}
 				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'D' %}
-<li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{ar.id}}/" class="edit">{{artefacto2.Nombre}}:(Diseño)</a>
+<li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}:(Diseño)</a>
 					<a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
 				 {% endifequal %}
 				 {% ifequal artefacto2.Tipo_Artefacto.Fase 'I' %}
-				   <li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{ar.id}}/" class="edit">{{artefacto2.Nombre}}:(Implementacion)</a>
+				   <li><a href="/proyecto/{{proyecto.id}}/verInfoParcial/{{artefacto2.id}}/" class="edit">{{artefacto2.Nombre}}:(Implementacion)</a>
 				   <a href="/proyectos/{{proyecto.id}}/fase/artefactos/relaciones/{{ artefacto.id }}/eliminarRelacion/{{ artefacto2.id }}/" class="edit">[eliminar]</a></li>
 				 {% endifequal %}
 		 

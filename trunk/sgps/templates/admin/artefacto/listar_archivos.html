@@ -8,15 +8,29 @@
     <ul>
     {% for archivo in archivos %}
         <li><strong>{{ archivo.Nom_Archivo }}</strong>
-        <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.id}}/obtener_adjunto/{{archivo.id}}/ "> Editar</a>
+        <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.id}}/obtener_adjunto/{{archivo.id}}/ "> Descargar</a>
         <a href="/proyecto/{{ proyecto.id }}/fase/{{Fase}}/{{artefacto.id}}/eliminar_adjunto/{{archivo.id}}/ "> Eliminar</a>
         </li>
     {% endfor %}
+    
     </ul>
-    <p>La opci&oacute;n editar le permite descargar el archivo guardado para insertar modificaciones. Una vez actualizado el archivo, 
-    vuelva a adjuntarlo con el mismo nombre.</p>
+    <input type="button" value="Adjuntar Archivo" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/' "/>
+
 {% else %}
 <p>A&uacute;n no se han adjuntado archivos al artefacto<strong> {{artefacto.Nombre}}</strong></p>
+<input type="button" value="Adjuntar Archivo" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/' "/>
 {% endif %}
-<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/' "/>
+{% ifequal Fase 'E' %}
+    <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
+{% endifequal %}
+
+{% ifequal Fase 'D' %}
+    <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/diseno/' "/>
+{% endifequal %}
+
+{% ifequal Fase 'I' %}
+    <input type="button" value="Volver" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
+{% endifequal %}
+<br>
+<br>
 {% endblock %}

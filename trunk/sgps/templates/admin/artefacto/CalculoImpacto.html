@@ -6,10 +6,20 @@
 	<dl>
 	    <li><strong>  Complejidad del Artefacto {{ artefacto.Nombre }}</strong>  : {{ artefacto.Complejidad }} </li>
 		<li> <strong>Calculo Impacto hacia la izquierda:</strong> {{izquierda }}
+			{% if papa %}
+			<li>PAPA:</li>
+				<ul>
+			   {% for pa in papa %}
+			   
+			   		<li>Complejidad de {{ pa.Nombre }} : {{ pa.Complejidad }}</li>
+            {% endfor %}
+            	</ul>
+            {% endif %}
+			
 			{% if padres %}
+			    				
 				<li>ANCESTROS:</li>
                 <ul>
-                   
 				{% for padre in padres %}
 					{% ifequal padre.Tipo_Artefacto.Fase 'E' %}
                     <li>Complejidad de {{padre.Nombre}} (Especificacion de Requerimientos):{{padre.Complejidad}}</li>
