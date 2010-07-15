@@ -16,7 +16,7 @@
     <p>La opci&oacute;n editar le permite descargar el archivo guardado para insertar modificaciones. Una vez actualizado el archivo, 
     vuelva a adjuntarlo con el mismo nombre.</p>
 {% else %}
-<p>A&uacute;n no se han adjuntado archivos al artefacto ({{ artefacto.id }}) de {{ artefacto.Tipo_Artefacto }}</p>
+<p>A&uacute;n no se han adjuntado archivos al artefacto<strong> {{artefacto.Nombre}}</strong></p>
 {% endif %}
 <input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/adjuntar/{{artefacto.id}}/' "/>
 {% endblock %}
