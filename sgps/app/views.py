@@ -13,47 +13,6 @@ from django.contrib.auth.decorators import login_required
 from sgps.app.models import *
 from sgps.app.forms import *
 
-#################### funciones auxiliares para historial ###########################
-
-def registrarHistorialArt(artefacto):
-    registroHistorial = HistorialArt(                                     
-                                     Artefacto = artefacto,
-                                     Nombre = artefacto.Nombre,
-                                     Tipo_Artefacto = artefacto.Tipo_Artefacto,
-                                     DescripcionCorta = artefacto.DescripcionCorta,
-                                     DescripcionLarga = artefacto.DescripcionLarga,
-                                     Proyecto = artefacto.Proyecto,
-                                     Prioridad = artefacto.Prioridad,
-                                     Version = artefacto.Version,
-                                     Complejidad = artefacto.Complejidad,
-                                     Usuario = artefacto.Usuario,
-                                     Estado = artefacto.Estado,
-                                     Activo = artefacto.Activo,
-                                     Actual = True,
-                                     Fecha_mod = datetime.date.today(),
-                                     )
-    
-    registroHistorial.save(force_insert=True)
-    
-    files = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
-    for archivo in files:
-        historialAdj = HistorialAdj(
-                                        Artefacto = registroHistorial,
-                                        Archivo = archivo,
-                                        )
-        historialAdj.save()
-    
-def registrarHistorialRel(relacion_artefacto):
-    historialRelaciones = HistorialRel(
-                                      artefactoPadre=relacion_artefacto.artefactoPadre,
-                                      padreVersion=relacion_artefacto.artefactoPadre.Version, 
-                                      artefactoHijo=relacion_artefacto.artefactoHijo,
-                                      Activo = relacion_artefacto.Activo,
-                                      Fecha_mod = datetime.date.today(),
-                                      )
-    historialRelaciones.save()
-
-###################################### SISTEMA ##################################################
 
 @login_required
 def pagina_principal(request):
@@ -604,37 +563,170 @@ def agregar_permisos(request,id):
                                          'rol': rol,
                                          })
     return render_to_response('admin/Permisos/agregar_permisos.html', contexto)
+###########################Tipo de Artefcato########################    
+
+
+def TipoArtefactos(request):
+
+    Tipo = Tipo_Artefacto.objects.all().order_by('Nombre')
+    proyectos = Proyecto.objects.all().order_by('Nombre')
+    user = User.objects.get(username=request.user.username)
+    usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
+    for urs in usrolsis:
+        CrearTipoDeArtefacto = urs.rol.permisos.filter(Nombre = 'CrearTipoDeArtefacto')
+        EditarTipoDeArtefacto = urs.rol.permisos.filter(Nombre = 'EditarTipoDeArtefacto')
+        EliminarTipoDeArtefacto = urs.rol.permisos.filter(Nombre = 'EliminarTipoDeArtefacto')
+    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'user': user, 'Tipo': Tipo,'EditarTipoDeArtefacto':EditarTipoDeArtefacto, 'EliminarTipoDeArtefacto':EliminarTipoDeArtefacto, 'CrearTipoDeArtefacto':CrearTipoDeArtefacto,})
+
+
+def Agregar_tipo_artefacto(request):
+    user = User.objects.get(username=request.user.username)
+    proyectos = Proyecto.objects.all()
+    if request.method == 'POST':
+        form = Tipo_ArtefactoForm(request.POST)
+        if form.is_valid():
+            tipo = Tipo_Artefacto(
+                      Nombre = form.cleaned_data['Nombre'],
+                      Codigo= form.cleaned_data['Codigo'],
+                      Fase = form.cleaned_data['Fase'],
+                      Descripcion= form.cleaned_data['Descripcion'],
+            )
+            tipo.save()
+            for proyecto in proyectos:
+                tipopro = Tipo_Artefacto_Proyecto(
+                      Nombre = form.cleaned_data['Nombre'],
+                      Fase = form.cleaned_data['Fase'],
+                      Descripcion= form.cleaned_data['Descripcion'],
+                      TipoArtefactoGeneral = tipo,
+                      Proyecto = proyecto
+                )
+                tipopro.save()
+            return HttpResponseRedirect('/administracion/tipo_artefacto/')
+    else:
+        form = Tipo_ArtefactoForm()
+    return render_to_response('admin/Proyecto/agregarTipo_artefacto.html', {'user': user, 'form': form })
+
+def modificar_tipo_artefacto(request, id):
+    user = User.objects.get(username=request.user.username)
+    if request.method == 'POST':
+        tipo_artefacto = Tipo_Artefacto.objects.get(id=id)
+        form = Mod_Tipo_ArtefactoForm(request.POST)
+        if form.is_valid():
+            tipo_artefacto.Fase=form.cleaned_data['Fase']
+            tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
+            tipo_artefacto.save()
+            return HttpResponseRedirect('/administracion/tipo_artefacto/')
+    else:
+        tipo_artefacto = get_object_or_404(Tipo_Artefacto, id=id)
+        form = Mod_Tipo_ArtefactoForm(initial={
+                             'Nombre': tipo_artefacto.Nombre,
+                             'Fase': tipo_artefacto.Fase,
+                             'Descripcion':tipo_artefacto.Descripcion})
 
 
 
-##########################CONTROL DE PRIVILEGIOS###########################
+    return render_to_response('admin/artefacto/editarTipo_artefacto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,})
 
-#@login_required
-#def GestionarPrivilegios(request,id,per_id):
-#    rol = Rol.objects.get(id=id)
-#    permiso = Permiso.objects.get(id=per_id)
-#    rolpe = rol.permisos.filter(id = permiso.id)
-#    if request.method == 'POST':
-#        form = PrivilegioForm(request.POST)
-#        if form.is_valid():
-#            permiso.privilegios.clear()
-#            privilegios=form.cleaned_data['Privilegios']
-#            for privilegio in privilegios:
-#                permiso.privilegios.add(privilegio)
-#            permiso.save()  
-#            return HttpResponseRedirect('/administracion/roles/permisos/' + str(id) +'/' + rol.Tipo + '/')
-#    else:
-#        dict = {}
-#        listaprivilegios=permiso.privilegios.all()
-#        for privilegio in listaprivilegios:
-#            dict[privilegio.id] = True
-#        form = PrivilegioForm({'Privilegios': dict})
-#    contexto = RequestContext(request, {'form': form,
-#                                         'rol': rol,
-#                                         'permiso': permiso,
-#                                         })
-#    return render_to_response('admin/Permisos/GestionPrivilegios.html', contexto)
+
+@login_required
+def eliminar_tipo_artefacto(request, id):
+    user = User.objects.get(username=request.user.username)
+    tipo_artefacto = get_object_or_404(Tipo_Artefacto, pk=id)
+    artefactos = Artefacto.objects.filter(Activo=True, Tipo_Artefacto=tipo_artefacto)
+    eliminar = None
+    if artefactos:
+        eliminar = True
+    if request.method == 'POST':
+        tipo_artefacto.delete()
+        return HttpResponseRedirect('/administracion/tipo_artefacto/')
+    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'eliminar':eliminar,})
+
+
+def TipoArtefactosProyecto(request, id_p):
     
+    proyecto = Proyecto.objects.get(pk=id_p)
+    Tipo = Tipo_Artefacto_Proyecto.objects.filter(Proyecto=proyecto).order_by('Nombre')
+    user = User.objects.get(username=request.user.username)
+    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user).exclude(rol = None)
+    for urp in usrolpro:
+        CrearTipoArtefactoEspecifico = urp.rol.permisos.filter(Nombre = 'CrearTipoArtefactoEspecifico')
+        EditarTipoArtefactoEspecifico= urp.rol.permisos.filter(Nombre = 'EditarTipoArtefactoEspecifico')
+        EliminarTipoArtefactoEspecifico = urp.rol.permisos.filter(Nombre = 'EliminarTipoArtefactoEspecifico')
+    return render_to_response('proyec/tipoArtefactosProyecto.html', {'user': user, 'Tipo': Tipo, 'Proyecto':proyecto,'CrearTipoArtefactoEspecifico':CrearTipoArtefactoEspecifico,'EditarTipoArtefactoEspecifico':EditarTipoArtefactoEspecifico,'EliminarTipoArtefactoEspecifico':EliminarTipoArtefactoEspecifico,})
+
+
+
+def crearTipoArtefactosProyecto(request, p_id):
+    user = User.objects.get(username=request.user.username)
+    proyecto=Proyecto.objects.get(pk=p_id)
+    if request.method == 'POST':
+        form = Tipo_Artefacto_ProyectoForm(request.POST)
+        if form.is_valid():
+            tipoProyecto = Tipo_Artefacto_Proyecto(
+                      Nombre = form.cleaned_data['Nombre'],
+                      Codigo= form.cleaned_data['Codigo'],
+                      Fase = form.cleaned_data['Fase'],
+                      Descripcion= form.cleaned_data['Descripcion'],
+                      Proyecto=proyecto
+            )
+            tipoProyecto.save()
+            return HttpResponseRedirect('/proyecto/' + str(proyecto.id) + '/tipoArtefacto/')
+    else:
+        form = Tipo_Artefacto_ProyectoForm()
+    return render_to_response('proyec/crearTipoArtefactosProyecto.html', {'user': user, 'form': form, 'Proyecto': proyecto, })
+
+def editarTipoArtefactosProyecto(request, id, id_ta):
+    user = User.objects.get(username=request.user.username)
+    if request.method == 'POST':
+        tipo_artefacto = Tipo_Artefacto_Proyecto.objects.get(id=id_ta)
+        artefactos = Artefacto.objects.all()
+        ta = False
+        for artefacto in artefactos:
+            if artefacto.Tipo_Artefacto == tipo_artefacto:
+                ta = True
+        if ta:
+            fase = tipo_artefacto.Fase
+            if fase == 'E':
+                form = Edi_Tipo_Artefacto_Proyecto_ReqForm(request.POST)
+            if fase == 'D':
+                form = Edi_Tipo_Artefacto_Proyecto_DisForm(request.POST)
+            if fase == 'I':
+                form = Edi_Tipo_Artefacto_Proyecto_ImpForm(request.POST)
+            if form.is_valid():
+                tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
+                tipo_artefacto.save()
+        else:
+            form = Edi_Tipo_Artefacto_ProyectoForm(request.POST)
+        if form.is_valid():
+            tipo_artefacto.Fase=form.cleaned_data['Fase']
+            tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
+            tipo_artefacto.save()
+            return HttpResponseRedirect('/proyecto/' + str(id) + '/tipoArtefacto/')
+    else:
+        tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, id=id_ta)
+        form = Edi_Tipo_Artefacto_ProyectoForm(initial={
+                             'Fase': tipo_artefacto.Fase,
+                             'Descripcion':tipo_artefacto.Descripcion})
+
+
+
+    return render_to_response('proyec/editarTipoArtefactosProyecto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,'proyecto': id})
+
+
+@login_required
+def eliminarTipoArtefactosProyecto(request, id, id_ta):
+    user = User.objects.get(username=request.user.username)
+    proyecto = Proyecto.objects.get(id=id)
+    tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id_ta)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto=tipo_artefacto)
+    eliminar = None
+    if artefactos:
+        eliminar = True
+    if request.method == 'POST':
+        tipo_artefacto.delete()
+        return HttpResponseRedirect('/proyecto/' + str(id) + '/tipoArtefacto/')
+    return render_to_response('proyec/eliminarTipoArtefactosProyecto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'proyecto':id,'eliminar': eliminar,})
+
 
 ###########################CONTROL DE ARTEFACTOS###########################
 @login_required
@@ -860,17 +952,18 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
     if relacionesPadre:
         error= 'Hay artefacto que dependen de el. No se puede eliminar si existe dependencias'
     if request.method == 'POST':
-        artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
-        artefacto_hist.Actual = False
-        artefacto_hist.save()
+        #artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+        #artefacto_hist.Actual = False
+        #artefacto_hist.save()
         
         artefacto.Activo=False
+        artefacto.Esatdo='I'
         for rel in relacionesHijo:
             rel.Activo = False
             rel.save()
         artefacto.save()
         
-        registrarHistorialArt(artefacto)
+        #registrarHistorialArt(artefacto)
 
         if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/requerimientos/")
@@ -882,170 +975,6 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
     return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'archivos':archivos, 'padres': Mispadres, 'hijosM':hijosMismaFase, 'hijosF': hijosFaseSigte, 'antecesores': antecesores, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p, 'mensaje':error,})
 
 
-
-def TipoArtefactos(request):
-
-    Tipo = Tipo_Artefacto.objects.all().order_by('Nombre')
-    proyectos = Proyecto.objects.all().order_by('Nombre')
-    user = User.objects.get(username=request.user.username)
-    usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
-    for urs in usrolsis:
-        CrearTipoDeArtefacto = urs.rol.permisos.filter(Nombre = 'CrearTipoDeArtefacto')
-        EditarTipoDeArtefacto = urs.rol.permisos.filter(Nombre = 'EditarTipoDeArtefacto')
-        EliminarTipoDeArtefacto = urs.rol.permisos.filter(Nombre = 'EliminarTipoDeArtefacto')
-    return render_to_response('admin/Proyecto/TipoArtefacto.html', {'user': user, 'Tipo': Tipo,'EditarTipoDeArtefacto':EditarTipoDeArtefacto, 'EliminarTipoDeArtefacto':EliminarTipoDeArtefacto, 'CrearTipoDeArtefacto':CrearTipoDeArtefacto,})
-
-
-def Agregar_tipo_artefacto(request):
-    user = User.objects.get(username=request.user.username)
-    proyectos = Proyecto.objects.all()
-    if request.method == 'POST':
-        form = Tipo_ArtefactoForm(request.POST)
-        if form.is_valid():
-            tipo = Tipo_Artefacto(
-                      Nombre = form.cleaned_data['Nombre'],
-                      Codigo= form.cleaned_data['Codigo'],
-                      Fase = form.cleaned_data['Fase'],
-                      Descripcion= form.cleaned_data['Descripcion'],
-            )
-            tipo.save()
-            for proyecto in proyectos:
-                tipopro = Tipo_Artefacto_Proyecto(
-                      Nombre = form.cleaned_data['Nombre'],
-                      Fase = form.cleaned_data['Fase'],
-                      Descripcion= form.cleaned_data['Descripcion'],
-                      TipoArtefactoGeneral = tipo,
-                      Proyecto = proyecto
-                )
-                tipopro.save()
-            return HttpResponseRedirect('/administracion/tipo_artefacto/')
-    else:
-        form = Tipo_ArtefactoForm()
-    return render_to_response('admin/Proyecto/agregarTipo_artefacto.html', {'user': user, 'form': form })
-
-def modificar_tipo_artefacto(request, id):
-    user = User.objects.get(username=request.user.username)
-    if request.method == 'POST':
-        tipo_artefacto = Tipo_Artefacto.objects.get(id=id)
-        form = Mod_Tipo_ArtefactoForm(request.POST)
-        if form.is_valid():
-            tipo_artefacto.Fase=form.cleaned_data['Fase']
-            tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
-            tipo_artefacto.save()
-            return HttpResponseRedirect('/administracion/tipo_artefacto/')
-    else:
-        tipo_artefacto = get_object_or_404(Tipo_Artefacto, id=id)
-        form = Mod_Tipo_ArtefactoForm(initial={
-                             'Nombre': tipo_artefacto.Nombre,
-                             'Fase': tipo_artefacto.Fase,
-                             'Descripcion':tipo_artefacto.Descripcion})
-
-
-
-    return render_to_response('admin/artefacto/editarTipo_artefacto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,})
-
-
-@login_required
-def eliminar_tipo_artefacto(request, id):
-    user = User.objects.get(username=request.user.username)
-    tipo_artefacto = get_object_or_404(Tipo_Artefacto, pk=id)
-    artefactos = Artefacto.objects.filter(Activo=True, Tipo_Artefacto=tipo_artefacto)
-    eliminar = None
-    if artefactos:
-        eliminar = True
-    if request.method == 'POST':
-        tipo_artefacto.delete()
-        return HttpResponseRedirect('/administracion/tipo_artefacto/')
-    return render_to_response('admin/artefacto/eliminarTipo_artefacto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'eliminar':eliminar,})
-
-##################Falta implementar todaviaaa###################################################
-
-def TipoArtefactosProyecto(request, id_p):
-    
-    proyecto = Proyecto.objects.get(pk=id_p)
-    Tipo = Tipo_Artefacto_Proyecto.objects.filter(Proyecto=proyecto).order_by('Nombre')
-    user = User.objects.get(username=request.user.username)
-    usrolpro= UsuarioRolProyecto.objects.filter(usuario = user).exclude(rol = None)
-    for urp in usrolpro:
-        CrearTipoArtefactoEspecifico = urp.rol.permisos.filter(Nombre = 'CrearTipoArtefactoEspecifico')
-        EditarTipoArtefactoEspecifico= urp.rol.permisos.filter(Nombre = 'EditarTipoArtefactoEspecifico')
-        EliminarTipoArtefactoEspecifico = urp.rol.permisos.filter(Nombre = 'EliminarTipoArtefactoEspecifico')
-    return render_to_response('proyec/tipoArtefactosProyecto.html', {'user': user, 'Tipo': Tipo, 'Proyecto':proyecto,'CrearTipoArtefactoEspecifico':CrearTipoArtefactoEspecifico,'EditarTipoArtefactoEspecifico':EditarTipoArtefactoEspecifico,'EliminarTipoArtefactoEspecifico':EliminarTipoArtefactoEspecifico,})
-
-
-
-def crearTipoArtefactosProyecto(request, p_id):
-    user = User.objects.get(username=request.user.username)
-    proyecto=Proyecto.objects.get(pk=p_id)
-    if request.method == 'POST':
-        form = Tipo_Artefacto_ProyectoForm(request.POST)
-        if form.is_valid():
-            tipoProyecto = Tipo_Artefacto_Proyecto(
-                      Nombre = form.cleaned_data['Nombre'],
-                      Codigo= form.cleaned_data['Codigo'],
-                      Fase = form.cleaned_data['Fase'],
-                      Descripcion= form.cleaned_data['Descripcion'],
-                      Proyecto=proyecto
-            )
-            tipoProyecto.save()
-            return HttpResponseRedirect('/proyecto/' + str(proyecto.id) + '/tipoArtefacto/')
-    else:
-        form = Tipo_Artefacto_ProyectoForm()
-    return render_to_response('proyec/crearTipoArtefactosProyecto.html', {'user': user, 'form': form, 'Proyecto': proyecto, })
-
-def editarTipoArtefactosProyecto(request, id, id_ta):
-    user = User.objects.get(username=request.user.username)
-    if request.method == 'POST':
-        tipo_artefacto = Tipo_Artefacto_Proyecto.objects.get(id=id_ta)
-        artefactos = Artefacto.objects.all()
-        ta = False
-        for artefacto in artefactos:
-            if artefacto.Tipo_Artefacto == tipo_artefacto:
-                ta = True
-        if ta:
-            fase = tipo_artefacto.Fase
-            if fase == 'E':
-                form = Edi_Tipo_Artefacto_Proyecto_ReqForm(request.POST)
-            if fase == 'D':
-                form = Edi_Tipo_Artefacto_Proyecto_DisForm(request.POST)
-            if fase == 'I':
-                form = Edi_Tipo_Artefacto_Proyecto_ImpForm(request.POST)
-            if form.is_valid():
-                tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
-                tipo_artefacto.save()
-        else:
-            form = Edi_Tipo_Artefacto_ProyectoForm(request.POST)
-        if form.is_valid():
-            tipo_artefacto.Fase=form.cleaned_data['Fase']
-            tipo_artefacto.Descripcion= form.cleaned_data['Descripcion'],
-            tipo_artefacto.save()
-            return HttpResponseRedirect('/proyecto/' + str(id) + '/tipoArtefacto/')
-    else:
-        tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, id=id_ta)
-        form = Edi_Tipo_Artefacto_ProyectoForm(initial={
-                             'Fase': tipo_artefacto.Fase,
-                             'Descripcion':tipo_artefacto.Descripcion})
-
-
-
-    return render_to_response('proyec/editarTipoArtefactosProyecto.html', {'user': user, 'form': form, 'tipo_artefacto': tipo_artefacto,'proyecto': id})
-
-
-@login_required
-def eliminarTipoArtefactosProyecto(request, id, id_ta):
-    user = User.objects.get(username=request.user.username)
-    proyecto = Proyecto.objects.get(id=id)
-    tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id_ta)
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto=tipo_artefacto)
-    eliminar = None
-    if artefactos:
-        eliminar = True
-    if request.method == 'POST':
-        tipo_artefacto.delete()
-        return HttpResponseRedirect('/proyecto/' + str(id) + '/tipoArtefacto/')
-    return render_to_response('proyec/eliminarTipoArtefactosProyecto.html', {'user': user,'tipo_artefacto': tipo_artefacto,'proyecto':id,'eliminar': eliminar,})
-
-###############################################################################################
 
 @login_required
 def FaseERequerimientos(request, id):
@@ -1249,34 +1178,34 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
     artefactoHijo = Artefacto.objects.get(id=arHijo_id)
     Relacion_Artefacto = RelacionArtefacto.objects.filter(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
     if Relacion_Artefacto:
-        artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
-        artefacto_hist.Actual = False
-        artefacto_hist.save()
-        
+       #artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
+        #artefacto_hist.Actual = False
+        #artefacto_hist.save()
         relacion_artefacto=RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacion_artefacto.Activo=True
         relacion_artefacto.save()
-        registrarHistorialRel(relacion_artefacto)
         
+        artefactoPadre.Estado='I'
+        artefactoPadre.save()
+        #registrarHistorialRel(relacion_artefacto)
         artefactoPadre.Version = artefactoPadre.Version + 1
         artefactoPadre.save()
-        registrarHistorialArt(artefactoPadre)
-        
+        #registrarHistorialArt(artefactoPadre)
     else:
-        artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
-        artefacto_hist.Actual = False
-        artefacto_hist.save()
-        
+        #artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
+        #artefacto_hist.Actual = False
+        #artefacto_hist.save()
         relacion_artefacto = RelacionArtefacto(artefactoPadre=artefactoHijo,
                                        artefactoHijo=artefactoPadre, Activo=True)
-    
         relacion_artefacto.save()
-        registrarHistorialRel(relacion_artefacto)
         
+        artefactoPadre.Estado='I'
+        artefactoPadre.save()
+        
+        #registrarHistorialRel(relacion_artefacto)
         artefactoPadre.Version = artefactoPadre.Version + 1
         artefactoPadre.save()
-        registrarHistorialArt(artefactoPadre)
-        
+        #registrarHistorialArt(artefactoPadre)
     return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
 @login_required
@@ -1285,20 +1214,23 @@ def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
     proyecto = Proyecto.objects.get(pk=p_id)
     artefactoPadre = Artefacto.objects.get(pk=arPadre_id)
     artefactoHijo = Artefacto.objects.get(pk=arHijo_id)
-
+    
     if request.method == 'POST':
-        artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
-        artefacto_hist.Actual = False
-        artefacto_hist.save()
+        #artefacto_hist= HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
+        #artefacto_hist.Actual = False
+        #artefacto_hist.save()
         
         relacionArtefacto = RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacionArtefacto.Activo=False
         relacionArtefacto.save()
-        registrarHistorialRel(relacionArtefacto)
+        artefactoPadre.Estado='I'
+        artefactoPadre.save()
+    
+        #registrarHistorialRel(relacionArtefacto)
         
         artefactoPadre.Version = artefactoPadre.Version + 1
         artefactoPadre.save()
-        registrarHistorialArt(artefactoPadre)
+        #registrarHistorialArt(artefactoPadre)
         
         return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
@@ -1435,52 +1367,54 @@ def guardarArchivo(request, id_p, fase, id_ar):
 
     proyecto = Proyecto.objects.get(id=id_p)
     if request.method == 'POST':
+        
         form = ArchivosAdjuntosForm(request.POST, request.FILES)
-        
         artefacto = Artefacto.objects.get(id=id_ar)
+        if form.is_valid():
+                    adjunto = request.FILES['archivo']
+                    artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+                    try:
+                        archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
+                                                               Nom_Archivo=adjunto.name,
+                                                               Activo=True) 
+                        archivo.Activo = False
+                        archivo.save()
+                        artefacto.Estado='I'
+                        artefacto.save()
+                        archivo = ArchivosAdjuntos(Artefacto = artefacto,
+                                                   Nom_Archivo = adjunto.name,
+                                                   Contenido = base64.b64encode(adjunto.read()),
+                                                   Tamano = adjunto.size,
+                                                   TipoContenido = adjunto.content_type,
+                                                   Activo = True,
+                                                   )
+                        archivo.save(force_insert=True)
+                        artefacto_hist.Actual = False
+                        artefacto_hist.save()
+                        
+                        artefacto.Version = artefacto.Version + 1
+                        artefacto.save()
+                        registrarHistorialArt(artefacto)
             
-        adjunto = request.FILES['archivo']
-        artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
-        
-        try:
-            archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
-                                                   Nom_Archivo=adjunto.name,
-                                                   Activo=True) 
-            archivo.Activo = False
-            archivo.save()
-            archivo = ArchivosAdjuntos(Artefacto = artefacto,
-                                       Nom_Archivo = adjunto.name,
-                                       Contenido = base64.b64encode(adjunto.read()),
-                                       Tamano = adjunto.size,
-                                       TipoContenido = adjunto.content_type,
-                                       Activo = True,
-                                       )
-            archivo.save(force_insert=True)
-
-            artefacto_hist.Actual = False
-            artefacto_hist.save()
-            
-            artefacto.Version = artefacto.Version + 1
-            artefacto.save()
-            registrarHistorialArt(artefacto)
-
-        except:
-            archivo = ArchivosAdjuntos(Artefacto = artefacto,
-                                       Nom_Archivo = adjunto.name,
-                                       Contenido = base64.b64encode(adjunto.read()),
-                                       Tamano = adjunto.size,
-                                       TipoContenido = adjunto.content_type,
-                                       Activo = True,
-                                       )
-            archivo.save()
-            
-            artefacto_hist.Actual = False
-            artefacto_hist.save()
-            
-            artefacto.Version = artefacto.Version + 1
-            artefacto.save()
-            
-            registrarHistorialArt(artefacto)
+                    except:
+                        archivo = ArchivosAdjuntos(Artefacto = artefacto,
+                                                   Nom_Archivo = adjunto.name,
+                                                   Contenido = base64.b64encode(adjunto.read()),
+                                                   Tamano = adjunto.size,
+                                                   TipoContenido = adjunto.content_type,
+                                                   Activo = True,
+                                                   )
+                        artefacto.Estado='I'
+                        artefacto.save()
+                        archivo.save()
+                        artefacto.save()
+                        artefacto_hist.Actual = False
+                        artefacto_hist.save()
+                        
+                        artefacto.Version = artefacto.Version + 1
+                        artefacto.save()
+                        
+                        registrarHistorialArt(artefacto)
     
     form = ArchivosAdjuntosForm()    
     artefacto = Artefacto.objects.get(id=id_ar)
@@ -1542,7 +1476,7 @@ def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
 
         archivo.Activo = False
         archivo.save()
-
+        artefacto.Estado='I'
         artefacto.Version = artefacto.Version + 1
         artefacto.save()
         
@@ -1555,6 +1489,157 @@ def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
                                          'archivo': archivo,
                                          })
     return render_to_response('admin/artefacto/eliminar_adjunto.html', contexto)
+
+
+
+@login_required
+def LineaBase(request, p_id):
+    proyecto = Proyecto.objects.get(id=p_id)
+    requerimientos= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
+    fase='E'
+    if requerimientos:
+        disenho= Linea_Base.objects.filter(Proyecto=proyecto, Fase='D')
+        fase= 'D'
+        if disenho:
+            implementacion= Linea_Base.objects.filter(Proyecto=proyecto, Fase='I')
+            fase='I'
+            if implementacion:
+                fase='T'
+    
+    contexto = RequestContext(request, {
+                'proyecto': proyecto,
+                'fase':fase,
+                })
+
+    return render_to_response('proyec/lineaBase.html', contexto)
+
+      
+
+
+@login_required
+def GenerarLineaBase(request, p_id, fase):
+    
+    proyecto = Proyecto.objects.get(id=p_id)
+    lista=[]
+    error= None
+   
+    TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase=fase, Proyecto=proyecto)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
+    
+    if artefactos:
+        error=comprobarCondiciones(artefactos, lista, fase, proyecto)
+        print error
+        if not error:
+            if request.method == 'POST':
+                LineaBase= Linea_Base(Fase=fase, Proyecto=proyecto)
+                LineaBase.save()
+                return HttpResponseRedirect('/proyecto/'+ str(proyecto.id) + '/lineaBase/')
+    else:
+        error= "No existe ningun artefacto en la Fase"
+    contexto = RequestContext(request, {
+                            'mensaje': error,
+                            'artefactos':lista,                        
+                            'proyecto': proyecto,
+                            'fase': fase,
+                            })
+    
+    return render_to_response('proyec/generarLB.html', contexto)
+
+def comprobarCondiciones(artefactos, lista, fase, proyecto):
+      NoAprobados = artefactos.exclude(Estado='A')
+      if  NoAprobados:
+          lista.extend(NoAprobados)
+          mensaje="Hay artefactos no aprobados aun"
+          return mensaje
+      else:
+          if fase == 'E':
+             return None
+          else:
+               for artefacto in artefactos:
+                  relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
+                  flag=0
+                  for rel in relaciones:
+                      if (rel.artefactoPadre.Tipo_Artefacto.Fase)!= fase:
+                          flag=1
+                  if flag==0:
+                      lista.append(artefacto)    
+               if lista:
+                  mensaje= "Hay artefactos que no estan relacionados con ningun artefacto de la face anterior"
+                  return  mensaje
+               else:
+                   if fase == 'D':
+                      TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase='E', Proyecto=proyecto)
+                      artefactos2 = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
+                      for artefacto in artefactos2:
+                          relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
+                          flag2=0
+                          for rel in relaciones:
+                              if (rel.artefactoHijo.Tipo_Artefacto.Fase)!= (rel.artefactoPadre.Tipo_Artefacto.Fase):
+                                  flag2=1
+                          if flag2==0:
+                              lista.append(artefacto)
+                      if lista:
+                          mensaje= "Hay artefactos huerfanos en la fase de Requerimientos."
+                          return  mensaje
+                      else:
+                          return None
+                   if fase == 'I':
+                      TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase='D', Proyecto=proyecto)
+                      artefactos3 = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
+                      for artefacto in artefactos3:
+                          relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
+                          flag3=0
+                          for rel in relaciones:
+                              if (rel.artefactoHijo.Tipo_Artefacto.Fase)!= (rel.artefactoPadre.Tipo_Artefacto.Fase):
+                                  flag3=1
+                          if flag3==0:
+                              lista.append(artefacto)
+                      if lista:
+                          mensaje= "Hay artefactos huerfanos en la fase de Disenho."
+                          return  mensaje
+                      else:
+                          return None
+#################### Historial #############################################
+############################################################################
+############################################################################
+
+def registrarHistorialArt(artefacto):
+    registroHistorial = HistorialArt(                                     
+                                     Artefacto = artefacto,
+                                     Nombre = artefacto.Nombre,
+                                     Tipo_Artefacto = artefacto.Tipo_Artefacto,
+                                     DescripcionCorta = artefacto.DescripcionCorta,
+                                     DescripcionLarga = artefacto.DescripcionLarga,
+                                     Proyecto = artefacto.Proyecto,
+                                     Prioridad = artefacto.Prioridad,
+                                     Version = artefacto.Version,
+                                     Complejidad = artefacto.Complejidad,
+                                     Usuario = artefacto.Usuario,
+                                     Estado = artefacto.Estado,
+                                     Activo = artefacto.Activo,
+                                     Actual = True,
+                                     Fecha_mod = datetime.date.today(),
+                                     )
+    
+    registroHistorial.save(force_insert=True)
+    
+    files = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+    for archivo in files:
+        historialAdj = HistorialAdj(
+                                        Artefacto = registroHistorial,
+                                        Archivo = archivo,
+                                        )
+        historialAdj.save()
+    
+def registrarHistorialRel(relacion_artefacto):
+    historialRelaciones = HistorialRel(
+                                      artefactoPadre=relacion_artefacto.artefactoPadre,
+                                      padreVersion=relacion_artefacto.artefactoPadre.Version, 
+                                      artefactoHijo=relacion_artefacto.artefactoHijo,
+                                      Activo = relacion_artefacto.Activo,
+                                      Fecha_mod = datetime.date.today(),
+                                      )
+    historialRelaciones.save()
 
 ##################################### HISTORIAL - VERSIONES ##################################################################
 
@@ -1737,113 +1822,5 @@ def activarArchivos(artefacto, prev_artefacto_id, version_archivos):
                 archivo_act.save()
 
 #################################################################################################
-
-
-@login_required
-def LineaBase(request, p_id):
-    proyecto = Proyecto.objects.get(id=p_id)
-    requerimientos= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
-    fase='E'
-    if requerimientos:
-        disenho= Linea_Base.objects.filter(Proyecto=proyecto, Fase='D')
-        fase= 'D'
-        if disenho:
-            implementacion= Linea_Base.objects.filter(Proyecto=proyecto, Fase='I')
-            fase='I'
-            if implementacion:
-                fase='T'
-    
-    contexto = RequestContext(request, {
-                'proyecto': proyecto,
-                'fase':fase,
-                })
-
-    return render_to_response('proyec/lineaBase.html', contexto)
-
-      
-
-
-@login_required
-def GenerarLineaBase(request, p_id, fase):
-    
-    proyecto = Proyecto.objects.get(id=p_id)
-    lista=[]
-    error= None
-   
-    TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase=fase, Proyecto=proyecto)
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
-    
-    if artefactos:
-        error=comprobarCondiciones(artefactos, lista, fase, proyecto)
-        print error
-        if not error:
-            if request.method == 'POST':
-                LineaBase= Linea_Base(Fase=fase, Proyecto=proyecto)
-                LineaBase.save()
-                return HttpResponseRedirect('/proyecto/'+ str(proyecto.id) + '/lineaBase/')
-    else:
-        error= "No existe ningun artefacto en la Fase"
-    contexto = RequestContext(request, {
-                            'mensaje': error,
-                            'artefactos':lista,                        
-                            'proyecto': proyecto,
-                            'fase': fase,
-                            })
-    
-    return render_to_response('proyec/generarLB.html', contexto)
-
-def comprobarCondiciones(artefactos, lista, fase, proyecto):
-      NoAprobados = artefactos.exclude(Estado='A')
-      if  NoAprobados:
-          lista.extend(NoAprobados)
-          mensaje="Hay artefactos no aprobados aun"
-          return mensaje
-      else:
-          if fase == 'E':
-             return None
-          else:
-               for artefacto in artefactos:
-                  relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
-                  flag=0
-                  for rel in relaciones:
-                      if (rel.artefactoPadre.Tipo_Artefacto.Fase)!= fase:
-                          flag=1
-                  if flag==0:
-                      lista.append(artefacto)    
-               if lista:
-                  mensaje= "Hay artefactos que no estan relacionados con ningun artefacto de la face anterior"
-                  return  mensaje
-               else:
-                   if fase == 'D':
-                      TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase='E', Proyecto=proyecto)
-                      artefactos2 = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
-                      for artefacto in artefactos2:
-                          relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
-                          flag2=0
-                          for rel in relaciones:
-                              if (rel.artefactoHijo.Tipo_Artefacto.Fase)!= (rel.artefactoPadre.Tipo_Artefacto.Fase):
-                                  flag2=1
-                          if flag2==0:
-                              lista.append(artefacto)
-                      if lista:
-                          mensaje= "Hay artefactos huerfanos en la fase de Requerimientos."
-                          return  mensaje
-                      else:
-                          return None
-                   if fase == 'I':
-                      TipoArtefacto = Tipo_Artefacto_Proyecto.objects.filter(Fase='D', Proyecto=proyecto)
-                      artefactos3 = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto__in=TipoArtefacto, Activo=True)
-                      for artefacto in artefactos3:
-                          relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
-                          flag3=0
-                          for rel in relaciones:
-                              if (rel.artefactoHijo.Tipo_Artefacto.Fase)!= (rel.artefactoPadre.Tipo_Artefacto.Fase):
-                                  flag3=1
-                          if flag3==0:
-                              lista.append(artefacto)
-                      if lista:
-                          mensaje= "Hay artefactos huerfanos en la fase de Disenho."
-                          return  mensaje
-                      else:
-                          return None
-                    
+###################################### SISTEMA ##################################################
+                 
