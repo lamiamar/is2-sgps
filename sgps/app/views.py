@@ -14,6 +14,48 @@ from sgps.app.models import *
 from sgps.app.forms import *
 
 
+def registrarHistorialArt(artefacto):
+    registroHistorial = HistorialArt(                                     
+                                     Artefacto = artefacto,
+                                     Nombre = artefacto.Nombre,
+                                     Tipo_Artefacto = artefacto.Tipo_Artefacto,
+                                     DescripcionCorta = artefacto.DescripcionCorta,
+                                     DescripcionLarga = artefacto.DescripcionLarga,
+                                     Proyecto = artefacto.Proyecto,
+                                     Prioridad = artefacto.Prioridad,
+                                     Version = artefacto.Version,
+                                     Complejidad = artefacto.Complejidad,
+                                     Usuario = artefacto.Usuario,
+                                     Estado = artefacto.Estado,
+                                     Activo = artefacto.Activo,
+                                     Fecha_mod = datetime.date.today(),
+                                     )
+    
+    registroHistorial.save(force_insert=True)
+    
+    files = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+    if files:
+        for archivo in files:
+            historialAdj = HistorialAdj(
+                                        Artefacto = registroHistorial,
+                                        Archivo = archivo,
+                                        )
+            historialAdj.save()
+        
+    relacion_padre = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True).values_list('artefactoPadre', flat=True)
+    padres = Artefacto.objects.filter(id__in=relacion_padre, Activo=True)
+    if padres:
+        for padre in padres:
+            historialRelaciones = HistorialRel(
+                                      artefactoPadre=padre,
+                                      padreVersion=padre.Version, 
+                                      artefactoHijo=registroHistorial,
+                                      hijoVersion=registroHistorial.Version,
+                                      Fecha_mod = datetime.date.today(),
+                                      )
+        historialRelaciones.save()
+
+#######################################
 @login_required
 def pagina_principal(request):
     user = User.objects.get(username=request.user.username)
@@ -871,8 +913,7 @@ def agregarArtefacto(request, id, fase):
     
             
             artefacto.save()
-            
-            registrarHistorialArt(artefacto)
+
             if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id) + "/requerimientos/")
             if fase =='D':
@@ -896,13 +937,12 @@ def modificarArtefacto(request, id_p, fase, id_ar):
         #actualizar la version a la cual estara apuntando el historial, luego de la modificacion
        ##########aK SALE ERROR CUANDO NO AY HISTORIAL###############
        
-        artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+        #artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
         
         ################################################################
         form = ModificarArtefactoForm(request.POST)
         if form.is_valid():
-            artefacto_hist.Actual = False
-            artefacto_hist.save()
+            registrarHistorialArt(artefacto)
             
             artefacto.Estado='I'
             artefacto.DescripcionCorta=form.cleaned_data['DescripcionCorta'],
@@ -913,7 +953,6 @@ def modificarArtefacto(request, id_p, fase, id_ar):
             artefacto.Usuario = request.user
             artefacto.save()
             
-            registrarHistorialArt(artefacto)
             if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/requerimientos/")
             if fase =='D':
@@ -952,9 +991,6 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
     if relacionesPadre:
         error= 'Hay artefacto que dependen de el. No se puede eliminar si existe dependencias'
     if request.method == 'POST':
-        #artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
-        #artefacto_hist.Actual = False
-        #artefacto_hist.save()
         
         artefacto.Activo=False
         artefacto.Esatdo='I'
@@ -1178,34 +1214,27 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
     artefactoHijo = Artefacto.objects.get(id=arHijo_id)
     Relacion_Artefacto = RelacionArtefacto.objects.filter(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
     if Relacion_Artefacto:
-       #artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
-        #artefacto_hist.Actual = False
-        #artefacto_hist.save()
+        registrarHistorialArt(artefactoPadre)
+        
+        artefactoPadre.Estado='I'
+        artefactoPadre.Version = artefactoPadre.Version + 1
+        artefactoPadre.save()
+        
         relacion_artefacto=RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacion_artefacto.Activo=True
         relacion_artefacto.save()
         
+    else:
+        registrarHistorialArt(artefactoPadre)
+        
         artefactoPadre.Estado='I'
-        artefactoPadre.save()
-        #registrarHistorialRel(relacion_artefacto)
         artefactoPadre.Version = artefactoPadre.Version + 1
         artefactoPadre.save()
-        #registrarHistorialArt(artefactoPadre)
-    else:
-        #artefacto_hist = HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
-        #artefacto_hist.Actual = False
-        #artefacto_hist.save()
+        
         relacion_artefacto = RelacionArtefacto(artefactoPadre=artefactoHijo,
                                        artefactoHijo=artefactoPadre, Activo=True)
         relacion_artefacto.save()
-        
-        artefactoPadre.Estado='I'
-        artefactoPadre.save()
-        
-        #registrarHistorialRel(relacion_artefacto)
-        artefactoPadre.Version = artefactoPadre.Version + 1
-        artefactoPadre.save()
-        #registrarHistorialArt(artefactoPadre)
+
     return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
 @login_required
@@ -1216,21 +1245,15 @@ def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
     artefactoHijo = Artefacto.objects.get(pk=arHijo_id)
     
     if request.method == 'POST':
-        #artefacto_hist= HistorialArt.objects.get(Artefacto=artefactoPadre, Actual=True)
-        #artefacto_hist.Actual = False
-        #artefacto_hist.save()
+        registrarHistorialArt(artefactoPadre)
         
         relacionArtefacto = RelacionArtefacto.objects.get(artefactoPadre = artefactoHijo, artefactoHijo=artefactoPadre)
         relacionArtefacto.Activo=False
         relacionArtefacto.save()
-        artefactoPadre.Estado='I'
-        artefactoPadre.save()
-    
-        #registrarHistorialRel(relacionArtefacto)
         
+        artefactoPadre.Estado='I'
         artefactoPadre.Version = artefactoPadre.Version + 1
         artefactoPadre.save()
-        #registrarHistorialArt(artefactoPadre)
         
         return HttpResponseRedirect("/proyectos/" + str(proyecto.id) + "/fase/artefactos/relaciones/" + str(arPadre_id) + "/")
 
@@ -1371,8 +1394,9 @@ def guardarArchivo(request, id_p, fase, id_ar):
         form = ArchivosAdjuntosForm(request.POST, request.FILES)
         artefacto = Artefacto.objects.get(id=id_ar)
         if form.is_valid():
+                    registrarHistorialArt(artefacto) #registrar en el historial el artefacto antes de cambiarlo
                     adjunto = request.FILES['archivo']
-                    artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+                    
                     try:
                         archivo = ArchivosAdjuntos.objects.get(Artefacto=artefacto,
                                                                Nom_Archivo=adjunto.name,
@@ -1380,7 +1404,9 @@ def guardarArchivo(request, id_p, fase, id_ar):
                         archivo.Activo = False
                         archivo.save()
                         artefacto.Estado='I'
-                        artefacto.save()
+                        artefacto.Version = artefacto.Version + 1
+                        artefacto.save() #la nueva version a la que apuntara el archivo subido
+                        
                         archivo = ArchivosAdjuntos(Artefacto = artefacto,
                                                    Nom_Archivo = adjunto.name,
                                                    Contenido = base64.b64encode(adjunto.read()),
@@ -1389,14 +1415,12 @@ def guardarArchivo(request, id_p, fase, id_ar):
                                                    Activo = True,
                                                    )
                         archivo.save(force_insert=True)
-                        artefacto_hist.Actual = False
-                        artefacto_hist.save()
-                        
+
+                    except:
+                        artefacto.Estado='I'
                         artefacto.Version = artefacto.Version + 1
                         artefacto.save()
-                        registrarHistorialArt(artefacto)
-            
-                    except:
+                        
                         archivo = ArchivosAdjuntos(Artefacto = artefacto,
                                                    Nom_Archivo = adjunto.name,
                                                    Contenido = base64.b64encode(adjunto.read()),
@@ -1404,17 +1428,7 @@ def guardarArchivo(request, id_p, fase, id_ar):
                                                    TipoContenido = adjunto.content_type,
                                                    Activo = True,
                                                    )
-                        artefacto.Estado='I'
-                        artefacto.save()
                         archivo.save()
-                        artefacto.save()
-                        artefacto_hist.Actual = False
-                        artefacto_hist.save()
-                        
-                        artefacto.Version = artefacto.Version + 1
-                        artefacto.save()
-                        
-                        registrarHistorialArt(artefacto)
     
     form = ArchivosAdjuntosForm()    
     artefacto = Artefacto.objects.get(id=id_ar)
@@ -1470,17 +1484,16 @@ def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     archivo = get_object_or_404(ArchivosAdjuntos, pk=archivo_id)
-    artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
+    
     if request.method == 'POST':
-        artefacto_hist.Actual = False
+        registrarHistorialArt(artefacto)
 
         archivo.Activo = False
         archivo.save()
+        
         artefacto.Estado='I'
         artefacto.Version = artefacto.Version + 1
         artefacto.save()
-        
-        registrarHistorialArt(artefacto)
 
         return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + fase + "/adjuntar/" + str(artefacto.id))
     contexto = RequestContext(request, {'proyecto': proyecto,
@@ -1489,8 +1502,6 @@ def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
                                          'archivo': archivo,
                                          })
     return render_to_response('admin/artefacto/eliminar_adjunto.html', contexto)
-
-
 
 @login_required
 def LineaBase(request, p_id):
@@ -1599,47 +1610,6 @@ def comprobarCondiciones(artefactos, lista, fase, proyecto):
                           return  mensaje
                       else:
                           return None
-#################### Historial #############################################
-############################################################################
-############################################################################
-
-def registrarHistorialArt(artefacto):
-    registroHistorial = HistorialArt(                                     
-                                     Artefacto = artefacto,
-                                     Nombre = artefacto.Nombre,
-                                     Tipo_Artefacto = artefacto.Tipo_Artefacto,
-                                     DescripcionCorta = artefacto.DescripcionCorta,
-                                     DescripcionLarga = artefacto.DescripcionLarga,
-                                     Proyecto = artefacto.Proyecto,
-                                     Prioridad = artefacto.Prioridad,
-                                     Version = artefacto.Version,
-                                     Complejidad = artefacto.Complejidad,
-                                     Usuario = artefacto.Usuario,
-                                     Estado = artefacto.Estado,
-                                     Activo = artefacto.Activo,
-                                     Actual = True,
-                                     Fecha_mod = datetime.date.today(),
-                                     )
-    
-    registroHistorial.save(force_insert=True)
-    
-    files = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
-    for archivo in files:
-        historialAdj = HistorialAdj(
-                                        Artefacto = registroHistorial,
-                                        Archivo = archivo,
-                                        )
-        historialAdj.save()
-    
-def registrarHistorialRel(relacion_artefacto):
-    historialRelaciones = HistorialRel(
-                                      artefactoPadre=relacion_artefacto.artefactoPadre,
-                                      padreVersion=relacion_artefacto.artefactoPadre.Version, 
-                                      artefactoHijo=relacion_artefacto.artefactoHijo,
-                                      Activo = relacion_artefacto.Activo,
-                                      Fecha_mod = datetime.date.today(),
-                                      )
-    historialRelaciones.save()
 
 ##################################### HISTORIAL - VERSIONES ##################################################################
 
@@ -1701,9 +1671,11 @@ def detallesVersion(request, id_p, fase, id_ar, version):
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     
-    relaciones = HistorialRel.objects.filter(artefactoHijo=artefacto, Activo=False).values_list('artefactoPadre', flat=True)
+    artefactoHist = HistorialArt.objects.get(Artefacto=artefacto, Version=version)
+    
+    relaciones = HistorialRel.objects.filter(artefactoHijo=artefactoHist).values_list('artefactoPadre', flat=True)
 
-    Mispadres = Artefacto.objects.filter(id__in=relaciones, Version=version, Activo=True).order_by('id')
+    Mispadres = Artefacto.objects.filter(id__in=relaciones, Activo=True).order_by('id')
     
     antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     
@@ -1726,16 +1698,20 @@ def detallesVersion(request, id_p, fase, id_ar, version):
     return render_to_response('admin/artefacto/detalles_version.html', contexto)
 
 def reversionar(request, id_p, fase, id_ar, version):
+    #parametros:
+    #id_p -> proyecto actual
+    #fase -> fase actual
+    #id_ar -> artefacto en cuestion
+    #version -> version a la que se quiere volver
+
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     
     version_archivos = artefacto.Version
     
-    artefacto_hist = HistorialArt.objects.get(Artefacto = artefacto, Version = artefacto.Version)
-    artefacto_hist.Actual = False
-    artefacto_hist.save()
-    
     prev_version = HistorialArt.objects.get(Artefacto=id_ar, Version=version)
+    #guardar la version actual antes de cambiar sus atributos
+    registrarHistorialArt(artefacto)
     
     anularRelacionesActuales(artefacto)
     
@@ -1752,9 +1728,7 @@ def reversionar(request, id_p, fase, id_ar, version):
     
     artefacto.save()
     
-    registrarHistorialArt(artefacto)
-    
-    #prev_artefacto = Artefacto.objects.get(id=id_ar, Version=version)    
+    #obtener las relaciones de la version a la que se quiere volver
     relaciones_padres = HistorialRel.objects.filter(artefactoHijo=prev_version).values_list('artefactoPadre', flat=True)
     
     padres_valid = Artefacto.objects.filter(id__in=relaciones_padres, Activo=True).order_by('id')
@@ -1765,62 +1739,118 @@ def reversionar(request, id_p, fase, id_ar, version):
     
     Mipadre = padres_valid.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
    
-    relaciones_hijos = HistorialRel.objects.filter(artefactoPadre=prev_version).values_list('artefactoHijo', flat=True)
+    #relaciones_hijos = HistorialRel.objects.filter(artefactoPadre=prev_version).values_list('artefactoHijo', flat=True)
     
-    hijos_valid = Artefacto.objects.filter(id__in=relaciones_hijos, Activo=True).order_by('id')
-    hijos_invalid = Artefacto.objects.filter(id__in=relaciones_hijos, Activo=False).order_by('id')
+    #hijos_valid = Artefacto.objects.filter(id__in=relaciones_hijos, Activo=True).order_by('id')
+    #hijos_invalid = Artefacto.objects.filter(id__in=relaciones_hijos, Activo=False).order_by('id')
     
-    activarRelacionesAnteriores(artefacto, padres_valid, antecesores_valid, hijos_valid)
+    version_hist=version    
+    activarRelacionesAnteriores(artefacto, padres_valid, antecesores_valid, version_hist)
 
-    activarArchivos(artefacto, prev_version.Artefacto.id, version_archivos)
+    activarArchivos(artefacto, version_hist, version_archivos)
+    #donde:  artefacto -> es la nueva version registrada
+    #        version_hist -> pertenece a la version a la que se quiere volver
+    #        version_archivos -> es la version actual del artefacto (la que tiene los archivos, para apuntarlos a su nueva version)
+    
+    #aqui se filtran las relaciones actuales (modificadas con una nueva version del artefacto) para que el usuario
+    #visualice los cambios 
+    relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto)
+    relaciones_padres = Artefacto.objects.filter(id__in=relaciones, Activo=True).order_by('id')
+    padres_actuales = relaciones_padres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    antecesores_actuales = relaciones_padres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    archivos_actuales = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
     
     contexto = RequestContext(request, {'proyecto': proyecto,
                                         'Fase': fase,
                                         'artefacto': artefacto,
                                         'version': version,
+                                        'antecesores': antecesores_actuales,
+                                        'padres': padres_actuales,
+                                        'archivos': archivos_actuales,
                                         'antecesores_invalid': antecesores_invalid,
                                         'padres_invalid': padres_invalid,
-                                        'hijos_invalid': hijos_invalid,
                                         })
 
     return render_to_response('admin/artefacto/reversion.html', contexto)
     
     
-def activarRelacionesAnteriores(padres_valid, antecesores_valid, hijos_valid):
+def anularRelacionesActuales(artefacto):
+
+    relacion_padres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True).values_list('artefactoPadre', flat=True)
+    padres = Artefacto.objects.filter(id__in=relacion_padres, Activo=True).order_by('id')
+    
+    antecesores = padres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    padres = padres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    
+    relacion_hijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True).values_list('artefactoHijo', flat=True)
+    hijos = Artefacto.objects.filter(id__in=relacion_hijos, Activo=True).order_by('id')
+    
+    for antecesor in antecesores:
+        relacion = RelacionArtefacto.objects.get(artefactoPadre=antecesor, artefactoHijo=artefacto, Activo=True)
+        relacion.Activo = False
+        relacion.save()
+        
+    for padre in padres:
+        relacion = RelacionArtefacto.objects.get(artefactoPadre=padre, artefactoHijo=artefacto, Activo=True)
+        relacion.Activo = False
+        relacion.save()
+        
+    for hijo in hijos:
+        relacion = RelacionArtefacto.objects.get(artefactoPadre=artefacto, artefactoHijo=hijo, Activo=True)
+        relacion.Activo = False
+        relacion.save()
+    
+def activarRelacionesAnteriores(artefacto, padres_valid, antecesores_valid, version_hist):
+    #parametros:
+    #prve_artefacto -> artefacto en la version a la que se quiere volver
+    #artefacto -> artefacto actual(en su nueva version, la que correspondera a las relaciones que se reactiven)
+    #padres_valid -> padres que aun no se hayan eliminado
+    #antecesores_valid -> antecesores que aun no se hayan eliminado
+    
+    #Buscamos las relaciones correspondientes a la version a la que se quiere volver
+    #Asignamos como artefactoHijo a la version del artefacto modificado
+    prev_artefacto = HistorialArt.objects.get(Artefacto=artefacto, Version=version_hist)
     
     for padre in padres_valid:
-        relacion = RelacionArtefacto.objects.get(artefactoPadre=padre)
+        relacion = RelacionArtefacto.objects.get(artefactoPadre=padre, artefactoHijo=prev_artefacto.Artefacto, Activo=False)
         relacion.Activo = True
+        relacion.artefactoHijo = artefacto
         relacion.save()
         
     for antecesor in antecesores_valid:
-        relacion = RelacionArtefacto.objects.get(artefactoPadre=antecesor)
+        relacion = RelacionArtefacto.objects.get(artefactoPadre=antecesor, artefactoHijo=prev_artefacto, Activo=False)
         relacion.Activo = True
+        relacion.artefactoHijo = artefacto
         relacion.save()
         
-    for hijo in hijos_valid:
-        relacion = RelacionArtefacto.objects.get(artefactoHijo=hijo)
-        relacion.Activo = True
-        relacion.save()
-        
-def activarArchivos(artefacto, prev_artefacto_id, version_archivos):
+def activarArchivos(artefacto, version_hist, version_archivos):
+     #parametros:
+     #artefacto -> es la nueva version registrada
+     #version_hist -> version a la que se quiere volver
+     #version_archivos -> es la version actual del artefacto (la que tiene los archivos, para apuntarlos a su nueva version
     
-    artefacto_anterior = Artefacto.objects.get(pk=prev_artefacto_id)
-    archivos_anterior = ArchivosAdjuntos.objects.filter(Artefacto=artefacto_anterior)
+    #artefacto_anterior = Artefacto.objects.get(pk=prev_artefacto_id)
+    prev_artefacto = HistorialArt.objects.get(Artefacto=artefacto, Version=version_hist)
     
-    artefacto_actual = Artefacto.objects.get(Version=version_archivos)
-    archivos_actual = ArchivosAdjuntos.objects.filter(Artefacto=artefacto_actual)
+    #artefacto_anterior = HistorialArt.objects.get(Artefacto=prev_artefacto.Artefacto, Version=prev_artefacto.Version)
+    archivos_anterior = HistorialAdj.objects.filter(Artefacto=prev_artefacto)
     
+    artefacto_actual = HistorialArt.objects.get(Artefacto=artefacto, Version=version_archivos)
+    archivos_actual = HistorialAdj.objects.filter(Artefacto=artefacto_actual)
+    #se recuperan los archivos que se tenian en esa version (solo los que son diferentes a los actuales)
     for archivo_ant in archivos_anterior:
         for archivo_act in archivos_actual:
-            if archivo_ant.Nom_Archivo != archivo_act.Nom_Archivo:
-                archivo_ant.Activo = True
-                archivo_ant.Artefacto = artefacto
-                archivo_ant.save()
+            if (archivo_ant.Archivo.Nom_Archivo != archivo_act.Archivo.Nom_Archivo) and (archivo_ant.Archivo.Activo == False):
+                archivo = ArchivosAdjuntos.objects.get(Nom_Archivo=archivo_ant.Archivo.Nom_Archivo, Activo=False)
+                archivo.Activo = True
+                archivo.Artefacto = artefacto
+                archivo.save()
+                
+                archivo_act.Archivo.Activo = False
+                archivo_act.Archivo.save()
             else:
-                archivo_act.Artefacto = artefacto
-                archivo_act.save()
+                archivo_act.Archivo.Artefacto = artefacto
+                archivo_act.Archivo.save()
 
 #################################################################################################
 ###################################### SISTEMA ##################################################
-                 
