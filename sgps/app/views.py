@@ -1447,7 +1447,7 @@ def guardarArchivo(request, id_p, fase, id_ar):
                                                    Activo = True,
                                                    )
                         archivo.save()
-                        
+                    return HttpResponseRedirect("/proyecto/" + str(proyecto.id) + "/fase/" + fase + "/listar_adjunto/" + str(artefacto.id) + "/")    
     form = ArchivosAdjuntosForm()    
     artefacto = Artefacto.objects.get(id=id_ar)
 
