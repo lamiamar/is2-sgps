@@ -2,35 +2,79 @@
 {% block title %}Historial{% endblock %}
 {% block head %} Detalles del artefacto {{ artefacto.Nombre }}{% endblock %}
 {% block content %}
-<h3> Version del artefacto: {{ artefacto.Version }} </h3>
-<br>
-<u> Relaciones del artefacto: </u><br>
-{% if antecesores %}
-    <u> Antecesores: </u>
+<h3> Version del artefacto: {{ version }} </h3>
+
+<h3>Informacion general:</h3>
+<ul>
+     <li> <strong>Nombre de Artefacto:</strong>{{ artefactoVersion.Nombre }}</li>
+     {% ifequal artefactoVersion.Tipo_Artefacto.Fase 'E' %}
+   <li> <strong>Fase del Artefacto:</strong>Especificacion de Requerimientos</li>
+    {% endifequal %}
+    {% ifequal artefactoVersion.Tipo_Artefacto.Fase 'D' %}
+    <li> <strong>Fase del Artefacto:</strong>Disenho</li>
+    {% endifequal %}
+    {% ifequal artefactoVersion.Tipo_Artefacto.Fase 'I' %}
+    <li> <strong>Fase del Artefacto:</strong>Implementacion</li>
+    {% endifequal %}
+     <li> <strong>Descripcion Corta:</strong>{{ artefactoVersiono.DescripcionCorta }}</li>
+     <li> <strong>Descripcion Larga:</strong>{{ artefactoVersion.DescripcionLarga }}</li>
+     <li> <strong>Version:</strong>{{ artefactoVersion.Version }}</li>
+     <li> <strong>Complejidad:</strong>{{ artefactoVersion.Complejidad }}</li>
+     <li> <strong>Estado:</strong>{{ artefactoVersion.Estado }}</li>
+     <li> <strong>Usuario creador:</strong>{{ artefactoVersion.Usuario }}</li>
+     <li> <strong>Prioridad:</strong>{{ artefactoVersion.Prioridad }}</li>
+      
+</ul> 
+
+<h3>Adjuntos:</h3>
+{% if archivos %}
+holaaaaaaaa
     <ul>
-    {% for rel in antecesores %}
-        <li><strong>Antecesor:</strong>{{ rel.Nombre }}<br>
+    {% for archivo in archivos %}
+       <li><strong> <a href="/proyecto/{{ proyecto.id }}/fase/{{artefacto.id}}/obtener_adjunto/{{archivo.id}}/ "> {{ archivo.Nom_Archivo }} </a>
+       </strong> </li>
     {% endfor %}
     </ul>
+{% else %}
+<p>A&uacute;n no se han adjuntado archivos al artefacto </p>
+{% endif %} 
+
+<h3>Artefactos de los que depende:</h3>
+{% if padre or antecesores %}
+<ul> 
+       <li><h4>Relaciones con Artefactos de la misma Fase:</h4></li>
+        {% if padre %}
+            Padre:
+            <ul>
+            {% for ar in padre%}
+                <li>{{ar.Nombre}}</li>
+            {% endfor %}
+           
+            </ul>
+ 
+        {% endif %}
+ 
+        {% if antecesores %}
+            <li><h4>Relaciones con Artefactos de la Fase Anterior:</h4></li>
+
+            Antecesores:
+            <ul>
+            {% for artefacto2 in antecesores%}
+                {% ifequal artefacto2.Tipo_Artefacto.Fase 'E' %}
+                <li>{{artefacto2.Nombre}}: (Especificacion de Requerimientos)</li>
+                {% endifequal %}
+                 {% ifequal artefacto2.Tipo_Artefacto.Fase 'D' %}
+                   <li>{{artefacto2.Nombre}}:(Disenho)</li> 
+                 {% endifequal %}
+            {% endfor %}
+        {% endif %}
+        </ul>
+</ul>
+{% else %}
+    <p>No existe ninguna Relacion </p>
 {% endif %}
 
-{% if padre %}
-    <u> Padre: </u>
-    <ul>
-    {% for rel in padre %}
-        <li><strong>Padre:</strong>{{ rel.Nombre }}<br>
-    {% endfor %}
-    </ul>
-{% endif %}
+<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historiales/{{artefacto.id}}/'"/>
+<input type="button" value="Volver a esta versi&oacute;n" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/reversion/{{artefacto.id}}/{{version}}/'"/>
 
-{% if hijos %}
-    <u> Hijos: </u>
-    <ul>
-    {% for rel in hijos %}
-        <li><strong>Hijo:</strong>{{ rel.Nombre }}<br>
-    {% endfor %}
-    </ul>
-{% endif %}
-
-<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historial_art/{{artefacto.id}}'"/>
 {% endblock %} 

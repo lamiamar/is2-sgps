@@ -1,80 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Versiones{% endblock %}
-{% block head %}Detalles de la operaci&oacute;n de reversi&oacute;n{% endblock %}
+{% block head %}Volver a version anterior {% endblock %}
 {% block content %}
-<h3>Artefacto {{ artefacto.Nombre }}</h3>
-<p>Al regresar a esta versi&oacute;n ({{ version }}) del artefacto, surgieron los siguientes cambios</p>
-<h2>Atributos:</h2><br>
-<strong>Tipo: </strong>{{artefacto.Tipo_Artefacto}}
-<strong>Proyecto: </strong>{{artefacto.Proyecto}}
-<strong>Descripcion Corta: </strong>{{artefacto.DescripcionCorta}}
-<strong>Descripcion Larga: </strong>{{artefacto.DescripcionLarga}}
-<strong>Version: </strong>{{artefacto.Version}}
-<strong>Prioridad: </strong>{{artefacto.Prioridad}}
-<strong>Complejidad: </strong>{{artefacto.Complejidad}}
-<strong>Usuario: </strong>{{artefacto.Usuario}}
-<strong>Estado: </strong>{{artefacto.Estado}}
+<form method="post" action=""> 
+    <h3>El artefacto [{{ artefacto.Nombre }}] volvera a la Version: {{ version }}</h3>
+    <h3>Esta seguro que quiere volver a esa version?</h3>
 
-<br><h2>Relaciones:</h2>
-{% ifnotequal Fase 'E' %}
-    {% if antecesores %}
-        <ul>
-        {% for antecesor in antecesores %}
-            <li><strong>{{ antecesor.Nombre }}</strong><br>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <h2>No posee relaciones con fases anteriores</h2>
-    {% endif %}
-{% endifnotequal %}
-
-<h2>Padres:</h2>
-{% if padres %}
-    <ul>
-    {% for padre in padres %}
-        <li><strong>{{ padre.Nombre }}</strong><br>
-    {% endfor %}
-    </ul>
-{% else %}
-    <h2>No posee relaciones con otros artefactos de su fase</h2>
-{% endif %}
-
-<h2>Archivos:</h2>
-{% if archivos %}
-    <ul>
-    {% for archivo in archivos %}
-        <li><strong>{{ archivo.Nom_Archivo }}</strong><br>
-    {% endfor %}
-    </ul>
-{% else %}
-    <h2>No posee archivos adjuntos</h2>
-{% endif %}
-
-{% if antecesores_invalid %}
-    <p>Los siguientes antecesores han sido borrados, por lo que su relaci&oacute;n con este artefacto es ahora inv&aacute;lida</p>
-    <u><h2> Antecesores: </h2></u><br>
-    <ul>
-    {% for antecesor in antecesores_invalid %}
-        <li><strong>{{ antecesor.Nombre }}</strong><br>
-    {% endfor %}
-    </ul>
-{% else %}
-    {% ifnotequal Fase 'E' %}
-    <h2>No posee relaciones con fases anteriores</h2>
-    {% endifnotequal %}
-{% endif %}
-
-{% if padres_invalid %}
-    <p>Los siguientes padres han sido borrados, por lo que su relaci&oacute;n con este artefacto es ahora inv&aacute;lida</p>
-    <u><h2> Padres: </h2></u><br>
-    <ul>
-    {% for padre in padres_invalid %}
-        <li><strong>{{ padre.Nombre }}</strong><br>
-    {% endfor %}
-    </ul>
-{% else %}
-    <h2>No posee relaciones inv&aacute;lidas con artefactos de la misma fase</h2>
-{% endif %}
-
-<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/historial_art/{{artefacto.id}}/'"/>
+<input type="submit" value="Volver a Esta Version" />
+<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/detalles_version/{{artefacto.id}}/{{version}}'"/>
+</form>
 {% endblock %}
