@@ -793,7 +793,7 @@ def eliminar_tipo_artefacto(request, id):
     """
     user = User.objects.get(username=request.user.username)
     tipo_artefacto = get_object_or_404(Tipo_Artefacto, pk=id)
-    artefactos = Artefacto.objects.filter(Activo=True, Tipo_Artefacto=tipo_artefacto)
+    artefactos = Artefacto.objects.filter( Tipo_Artefacto=tipo_artefacto)
     eliminar = None
     if artefactos:
         eliminar = True
@@ -908,7 +908,7 @@ def eliminarTipoArtefactosProyecto(request, id, id_ta):
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
     tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id_ta)
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto=tipo_artefacto)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Tipo_Artefacto=tipo_artefacto)
     eliminar = None
     if artefactos:
         eliminar = True
@@ -1182,15 +1182,16 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
         error= 'Hay artefacto que dependen de el. No se puede eliminar si existe dependencias'
     if request.method == 'POST':
 
-        
+        registrarHistorialArt(artefacto)
         artefacto.Activo=False
         artefacto.Esatdo='I'
+        artefacto.Version= artefacto.Version + 1
         for rel in relacionesHijo:
             rel.Activo = False
             rel.save()
         artefacto.save()
         
-        #registrarHistorialArt(artefacto)
+        #
 
         if fase =='E':
                 return HttpResponseRedirect("/proyecto/" + str(id_p) + "/requerimientos/")
@@ -1201,6 +1202,65 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
 
     return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'archivos':archivos, 'padres': Mispadres, 'hijosM':hijosMismaFase, 'hijosF': hijosFaseSigte, 'antecesores': antecesores, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p, 'mensaje':error,})
 
+def ActivarArtefactosEliminados(request, id_p, fase, id_ar):
+    user = User.objects.get(username=request.user.username)
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    version=artefacto.Version-1
+    artefactoHist = HistorialArt.objects.get(Artefacto=artefacto, Version=version)
+    relaciones = HistorialRel.objects.filter(artefactoHijo=artefactoHist).values_list('artefactoPadre', flat=True)
+    padres_valid=Artefacto.objects.filter(id__in=relaciones)
+    mensaje=None
+    padresborrados=[]
+    
+    if request.method == 'POST':
+
+        mensaje= activarRelacionesAnteriores(artefacto, padres_valid, version, padresborrados)
+        artefacto.Activo=True
+        artefacto.save()
+        return render_to_response('admin/artefacto/InfoActivacionAr.html', {'user': user, 'artefacto': artefacto, 'fase':fase, 'proyecto': proyecto, 'mensaje':mensaje, 'borrados': padresborrados})
+
+        #registrarHistorialArt(artefacto)
+
+    return render_to_response('admin/artefacto/ActivarArtefactoEliminados.html', {'user': user, 'Fase':fase, 'proyecto': proyecto})
+
+def verInformacion_Artefacto_Eliminados(request, id_p, id_ar):
+    user = User.objects.get(username=request.user.username)
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    version=artefacto.Version-1
+    artefactoHist = HistorialArt.objects.get(Artefacto=artefacto, Version=version)
+    relaciones = HistorialRel.objects.filter(artefactoHijo=artefactoHist).values_list('artefactoPadre', flat=True)
+    padres_valid=Artefacto.objects.filter(id__in=relaciones)
+    mensaje=None
+    padresborrados=[]
+    antecesores = padres_valid.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    Mipadre = padres_valid.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
+    archivos = HistorialAdj.objects.filter(Artefacto=artefactoHist).values_list('Archivo', flat=True)
+    archivos = ArchivosAdjuntos.objects.filter(id__in=archivos)
+    Fase=artefacto.Tipo_Artefacto.Fase
+    contexto = RequestContext(request, {'user': user,
+                                        'artefacto': artefactoHist,
+                                        'padres':padres_valid ,
+                                        'antecesores': antecesores,
+                                        'proyecto':proyecto,
+                                        'Fase':Fase,
+                                        'archivos': archivos,
+                                        })
+    return render_to_response('admin/artefacto/informacion_artefactoEliminado.html', contexto )
+
+
+
+def ArtefactosEliminados(request, id_p, fase):
+    user = User.objects.get(username=request.user.username)
+    proyecto = Proyecto.objects.get(id=id_p)
+    tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase=fase, Proyecto=proyecto)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=False, Tipo_Artefacto__in=tipo_artefacto)
+    contexto = RequestContext(request, {'proyecto': proyecto,
+                                         'artefactos': artefactos,
+                                         'Fase':fase,
+                                         })
+    return render_to_response('admin/artefacto/artefactosEliminados.html', contexto)
 
 
 @login_required
@@ -1219,6 +1279,7 @@ def FaseERequerimientos(request, id):
         Aprobado=True
     tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase='E', Proyecto=proyecto)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipo_artefacto)
+    
     usrolpro= UsuarioRolProyecto.objects.filter(usuario = user)
     for urp in usrolpro:
         if user == proyecto.Usuario:
