@@ -13,9 +13,21 @@ from django.contrib.auth.decorators import login_required
 from sgps.app.models import *
 from sgps.app.forms import *
 
+"""
+    Modulo que define las vistas utilizadas en el sistema, para el desarrollo de proyectos,
+    sus artefactos y las operaciones de con los mismos.
+
+    @author: Pablo Araujo
+    @author: Lamia Martinez
+    @author: Lorena Roman 
+"""
 
 @login_required
-def pagina_principal(request):
+def pagina_principal(request):   
+    """
+        Vista para cargar la pagina principal.
+    """
+
     user = User.objects.get(username=request.user.username)
     usrolpros= UsuarioRolProyecto.objects.filter(usuario = user).values_list('proyecto', flat=True).distinct()
     proyectoUser=Proyecto.objects.filter(id__in=usrolpros).order_by('Nombre')
@@ -54,6 +66,11 @@ def logout_page(request):
 
 @login_required
 def administrar_usuarios(request):
+    """
+        Vista que muestra las opciones que se tienen para la
+        administracion de usuarios.
+    """
+    
     user = User.objects.get(username=request.user.username)
     usuarios = User.objects.all().order_by('username')
     usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
@@ -71,6 +88,9 @@ def administrar_usuarios(request):
 
 @login_required
 def agregarUsuario(request):
+    """
+        Vista que permite la creacion de un nuevo usuario.
+    """
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         form = AgregarUsuarioForm(request.POST)
@@ -96,6 +116,12 @@ def agregarUsuario(request):
 
 @login_required
 def editarUsuario(request, id_user):
+    """
+        Vista que permite la modificacion de los datos del usuario.
+    
+        @param id_user: id del usuario cuyos datos seran modificados.
+        @type id_user: integer
+    """
     user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, id=id_user)    
     if request.method == 'POST':
@@ -114,11 +140,13 @@ def editarUsuario(request, id_user):
         form = ModificarUsuarioForm({'nombre': usuario.first_name, 'apellido': usuario.last_name,'direccion': usuario.get_profile().direccion, 'email': usuario.email, })
     return render_to_response('admin/Usuario/editarUsuario.html', {'user': user,'form': form, 'usuario': usuario,})
 
-
-
-
 @login_required
 def ModificarContrasena(request, id_user):
+    """
+        Vista que permite modificar la contraseña del usuario.
+    
+        @param id_user: id del usuario.
+    """
     user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, pk=id_user)
     if request.method == 'POST':
@@ -133,6 +161,12 @@ def ModificarContrasena(request, id_user):
 
 @login_required
 def eliminarUsuario(request, id_user):
+    """
+        Vista que permite eliminar un usuario.
+    
+        @param id_user: id del usuario.
+        @type id_user: integer.
+    """
     user = User.objects.get(username=request.user.username)
     usuario = User.objects.get(pk=id_user)
     proyectos = Proyecto.objects.all()
@@ -150,6 +184,12 @@ def eliminarUsuario(request, id_user):
 
 @login_required
 def asignarRolesSistema(request, usuario_id):
+    """
+        Vista para asignar roles de sistema a un usuario.
+    
+        @param id_user: id del usuario.
+        @type id_user: integer.
+    """
     
     user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, id=usuario_id)
@@ -197,6 +237,10 @@ def asignarRolesSistema(request, usuario_id):
 
 @login_required
 def administrar_proyectos(request):
+    """
+        Vista que lista las opciones para la administracion de proyectos.
+    """
+    
     proyectos = Proyecto.objects.all().order_by('Nombre')
     user = User.objects.get(username=request.user.username)
     usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
@@ -209,6 +253,9 @@ def administrar_proyectos(request):
 
 @login_required
 def nuevo_proyecto(request):
+    """
+        Vista que permite crear un nuevo proyecto.
+    """
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         form = ProyectoForm(request.POST)
@@ -242,6 +289,10 @@ def nuevo_proyecto(request):
 
 
 def modificarProyecto(request, id):
+    """
+        Vista que permite modificar datos de un proyecto determinado.
+    """
+    
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         proyecto = Proyecto.objects.get(id=id)
@@ -277,6 +328,13 @@ def modificarProyecto(request, id):
     return render_to_response('admin/Proyecto/editarProyecto.html', {'user': user, 'form': form, 'proyecto': proyecto,})
 
 def editar_proyecto(request, id):
+    """
+        Vista que permite editar la descripcion de un proyecto.
+    
+        @param id: id del proyecto.
+        @type id: integer.
+    """
+    
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         proyecto = Proyecto.objects.get(id=id)
@@ -294,6 +352,13 @@ def editar_proyecto(request, id):
 
 @login_required
 def eliminar_proyecto(request, id):
+    """
+        Vista para eliminar un proyecto.
+        La eliminacion se realiza en cascada.
+    
+        @param id: id del proyecto a eliminar.
+        @type id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = get_object_or_404(Proyecto, id=id)
     if request.method == 'POST':
@@ -304,6 +369,13 @@ def eliminar_proyecto(request, id):
 
 @login_required
 def proyecto(request, id):
+    """
+        Vista que lista las opciones para el desarrollo de proyecto,
+        y las habilita segun los permisos que se tengan.
+    
+        @param id: id del proyecto.
+        @type id: integer.
+    """
     
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=id)
@@ -339,6 +411,13 @@ def proyecto(request, id):
 
 @login_required
 def usuariosMiembros(request, id):
+    """
+        Vista que permite mostrar las opciones de usuarios respecto a un proyecto.
+    
+        @param id: id del proyecto.
+        @type id: integer. 
+    """
+    
     user = User.objects.get(username=request.user.username)
     usuario = user
     proyecto = Proyecto.objects.get(pk = id)
@@ -356,6 +435,13 @@ def usuariosMiembros(request, id):
 
 @login_required
 def agregar_miembros(request, id):
+    """
+        Vista que permite agregar usuarios a un proyecto.
+    
+        @param id: id del proyecto.
+        @type id: integer.
+    """
+    
     user = User.objects.get(username=request.user.username)
     proyec= Proyecto.objects.get(id=id)
     miembros=UsuarioRolProyecto.objects.filter(proyecto=proyec)
@@ -389,6 +475,15 @@ def agregar_miembros(request, id):
 
 @login_required
 def asignarRolProyecto(request, id, id_us):
+    """
+        Vista que permite asignar roles a un proyecto.
+    
+        @param id: id del proyecto.
+        @type id: integer.
+        @param id_us: id del usuario.
+        @type id: integer. 
+    """
+    
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk = id)
     usuario = User.objects.get(pk = id_us)
@@ -429,6 +524,15 @@ def asignarRolProyecto(request, id, id_us):
 
 @login_required
 def removerMiembro(request, id, id_us):
+    """
+        Vista que permite quitar usuarios de un proyecto.
+    
+        @param id: id del proyecto.
+        @type id: integer.
+        @param id_us: id del usuario.
+        @type id: integer.
+    """
+    
     user = User.objects.get(username=request.user.username)
     usuario = get_object_or_404(User, pk=id_us)
     proyecto = get_object_or_404(Proyecto, pk=id)
@@ -447,8 +551,9 @@ def removerMiembro(request, id, id_us):
 
 @login_required
 def administrar_roles(request):
-
-
+    """
+        Vista que lista los roles creados.
+    """
     roles = Rol.objects.all().order_by('Tipo')
     contexto= RequestContext(request, {
                 'roles': roles,
@@ -457,6 +562,12 @@ def administrar_roles(request):
 
 @login_required
 def administrar_rolesTipo(request, Tipo):
+    """
+        Vista que muestra las opciones de operecion que se tienen con cada rol.
+    
+        @param Tipo: tipo de rol (proyecto o sistema).
+    """
+    
     user = User.objects.get(username=request.user.username)
     roles = Rol.objects.filter(Tipo= Tipo).order_by('Nombre')
     usrolsis= UsuarioRolSistema.objects.filter(usuario = user)
@@ -478,6 +589,11 @@ def administrar_rolesTipo(request, Tipo):
 
 @login_required
 def crearRoles(request, Tipo):
+    """
+        Vista que permite crear roles.
+    
+        @param Tipo: tipo de rol (proyecto o sistema).
+    """
     if request.method == 'POST':
         form = RolForm(request.POST)
         if form.is_valid():
@@ -494,6 +610,13 @@ def crearRoles(request, Tipo):
 
 @login_required
 def modificarRol(request, id, Tipo):
+    """
+        Vista que permite modificar la descripcion de roles.
+    
+        @param id: id del rol.
+        @type id: integer.
+        @param Tipo: tipo de rol (proyecto o sistema).
+    """
     
     if request.method == 'POST':
         rol = Rol.objects.get(id=id)
@@ -510,8 +633,16 @@ def modificarRol(request, id, Tipo):
         form = ModificarRolForm({'Descripcion': rol.Descripcion,})
 
     return render_to_response('admin/Roles/EditarRol.html', {'form': form, 'rol': rol,'Tipo': Tipo,})
+
 @login_required
 def eliminarRoles(request, id, Tipo):
+    """
+        Vista que permite eliminar roles.
+    
+        @param id: id del rol.
+        @type id: integer.
+        @param Tipo: tipo de rol (proyecto o sistema).
+    """
 
     rol = Rol.objects.get(id=id)
     rolprohibido = False
@@ -524,6 +655,13 @@ def eliminarRoles(request, id, Tipo):
 ###########################CONTROL DE PERMISO##############################
 @login_required
 def GestionarPermisos(request,id,Tipo):
+    """
+        Vista que lista todos los permisos disponibles.
+    
+        @param id: id del rol.
+        @type id: integer.
+        @param Tipo: tipo de rol (proyecto o sistema).
+    """
     rol = get_object_or_404(Rol, pk= id)
     permisos = rol.permisos.all().order_by('Nombre')
     contexto= RequestContext(request, {
@@ -536,6 +674,11 @@ def GestionarPermisos(request,id,Tipo):
 
 @login_required
 def agregar_permisos(request,id):
+    """
+        Vista que permite agregar permisos a un rol determinado.
+    
+        @param id: id del rol.
+    """
     rol = Rol.objects.get(id=id)
     if request.method == 'POST':
         
@@ -567,6 +710,9 @@ def agregar_permisos(request,id):
 
 
 def TipoArtefactos(request):
+    """
+        Vista que lista las opciones de operacion con los tipos de artefacto.
+    """
 
     Tipo = Tipo_Artefacto.objects.all().order_by('Nombre')
     proyectos = Proyecto.objects.all().order_by('Nombre')
@@ -580,6 +726,9 @@ def TipoArtefactos(request):
 
 
 def Agregar_tipo_artefacto(request):
+    """
+        Vista que permite agregar un nuevo tipo de artefacto.
+    """
     user = User.objects.get(username=request.user.username)
     proyectos = Proyecto.objects.all()
     if request.method == 'POST':
@@ -607,6 +756,12 @@ def Agregar_tipo_artefacto(request):
     return render_to_response('admin/Proyecto/agregarTipo_artefacto.html', {'user': user, 'form': form })
 
 def modificar_tipo_artefacto(request, id):
+    """
+        Vista para modificar datos de un tipo de artefacto de determinado.
+    
+        @param id: id del tipo de artefacto.
+        @type id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         tipo_artefacto = Tipo_Artefacto.objects.get(id=id)
@@ -630,6 +785,12 @@ def modificar_tipo_artefacto(request, id):
 
 @login_required
 def eliminar_tipo_artefacto(request, id):
+    """
+        Vista que permite eliminar un tipo de artefacto.
+    
+        @param id: id del tipo de artefacto.
+        @type id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     tipo_artefacto = get_object_or_404(Tipo_Artefacto, pk=id)
     artefactos = Artefacto.objects.filter(Activo=True, Tipo_Artefacto=tipo_artefacto)
@@ -643,6 +804,13 @@ def eliminar_tipo_artefacto(request, id):
 
 
 def TipoArtefactosProyecto(request, id_p):
+    """
+        Vista que lista los tipos de artefacto existentes y las opciones que permiten crear
+        tipos de artefactos especificos para un proyecto determinado.
+    
+        @param id_p: id del proyecto.
+        @type id_p: integer.
+    """
     
     proyecto = Proyecto.objects.get(pk=id_p)
     Tipo = Tipo_Artefacto_Proyecto.objects.filter(Proyecto=proyecto).order_by('Nombre')
@@ -657,6 +825,12 @@ def TipoArtefactosProyecto(request, id_p):
 
 
 def crearTipoArtefactosProyecto(request, p_id):
+    """
+        Vista que permite crear un tipo de artefacto especifico para un proyecto determinado.
+    
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto=Proyecto.objects.get(pk=p_id)
     if request.method == 'POST':
@@ -676,6 +850,14 @@ def crearTipoArtefactosProyecto(request, p_id):
     return render_to_response('proyec/crearTipoArtefactosProyecto.html', {'user': user, 'form': form, 'Proyecto': proyecto, })
 
 def editarTipoArtefactosProyecto(request, id, id_ta):
+    """
+        Vista que permite editar datos del tipo de artefacto de un proyecto determinado.
+    
+        @param id: id del proyecto.
+        @type id: integer.
+        @param id_ta: id del tipo de artefacto.
+        @type id_at: integer
+    """
     user = User.objects.get(username=request.user.username)
     if request.method == 'POST':
         tipo_artefacto = Tipo_Artefacto_Proyecto.objects.get(id=id_ta)
@@ -715,6 +897,14 @@ def editarTipoArtefactosProyecto(request, id, id_ta):
 
 @login_required
 def eliminarTipoArtefactosProyecto(request, id, id_ta):
+    """
+        Vista que permite editar datos del tipo de artefacto de un proyecto determinado.
+        
+        @param id: id del proyecto.
+        @type id: integer.
+        @param id_ta: id del tipo de artefacto.
+        @type id_at: integer
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
     tipo_artefacto = get_object_or_404(Tipo_Artefacto_Proyecto, pk=id_ta)
@@ -731,12 +921,24 @@ def eliminarTipoArtefactosProyecto(request, id, id_ta):
 ###########################CONTROL DE ARTEFACTOS###########################
 @login_required
 def administrar_artefactos(request):
+    """
+        Vista para listar los artefactos existentes (que no hayan sido eliminados).
+    """
  
     user = User.objects.get(username=request.user.username)
     artefactos = Artefacto.objects.filter(Activo=True).order_by('Nombre')
     return render_to_response('admin/artefacto/administrar_artefacto.html', {'user': user, 'artefactos': artefactos,})
 
 def verInformacion_Artefacto(request, pid, id):
+    """
+        Vista que muestra al usuario todos los datos relacionados con el artefacto.
+        
+        @param pid: id del proyecto.
+        @type pid: integer.
+        @param id: id del artefacto.
+        @type id: integer.
+    """
+    
     user = User.objects.get(username=request.user.username)
     artefacto = Artefacto.objects.get(pk=id, Activo=True)
     proyecto=Proyecto.objects.get(pk=pid)
@@ -785,6 +987,14 @@ def verInformacion_Artefacto(request, pid, id):
 
 
 def verInformacion_Parcial_Artefacto(request, pid, id):
+    """
+        Vista que muestra al usuario todos los datos relacionados con el artefacto.
+        
+        @param pid: id del proyecto.
+        @type pid: integer.
+        @param id: id del artefacto.
+        @type id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     artefacto = Artefacto.objects.get(pk=id, Activo=True)
     proyecto=Proyecto.objects.get(pk=pid)
@@ -835,6 +1045,14 @@ def verInformacion_Parcial_Artefacto(request, pid, id):
         
 @login_required
 def agregarArtefacto(request, id, fase):
+    """
+        Vista que permite agregar un nuevo artefacto al proyecto.
+        
+        @param id: id del proyecto.
+        @type id: integer.
+        @param fase: fase correspondiente al artefacto.
+        @type fase: char.
+    """
     user = User.objects.get(username=request.user.username)
     proyec = Proyecto.objects.get(pk = id),
     if request.method == 'POST':
@@ -884,6 +1102,16 @@ def agregarArtefacto(request, id, fase):
 
 
 def modificarArtefacto(request, id_p, fase, id_ar):
+    """
+        Vista que permite modificar datos del artefacto.
+        
+        @param id_p: id del proyecto.
+        @type id_p: integer.
+        @param fase: fase correspondiente al artefacto.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     user = User.objects.get(username=request.user.username)
     mensaje=None
     artefacto = Artefacto.objects.get(id=id_ar)
@@ -923,6 +1151,16 @@ def modificarArtefacto(request, id_p, fase, id_ar):
 
 @login_required
 def eliminarArtefacto(request, id_p, fase, id_ar):
+    """
+        Vista para eliminar un artefacto.
+        
+        @param id_p: id del proyecto.
+        @type id_p: integer.
+        @param fase: fase correspondiente al artefacto.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     user = User.objects.get(username=request.user.username)
     artefacto = get_object_or_404(Artefacto, id=id_ar)
     relacionesPadre = RelacionArtefacto.objects.filter(artefactoPadre = artefacto, Activo=True)
@@ -967,6 +1205,12 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
 
 @login_required
 def FaseERequerimientos(request, id):
+    """
+        Vista para listar los artefactos de requerimientos y las opciones de operacion con los mismos.
+        
+        @param id: id del proyecto correspondiente.
+        @type id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
     Aprobado=False
@@ -999,6 +1243,12 @@ def FaseERequerimientos(request, id):
 
 @login_required
 def FaseDiseno(request, id):
+    """
+        Vista para listar los artefactos de diseño y las opciones de operacion con los mismos.
+        
+        @param id: id del proyecto correspondiente.
+        @type id: integer. 
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
     
@@ -1035,6 +1285,12 @@ def FaseDiseno(request, id):
 
 @login_required
 def FaseImplementacion(request, id):
+    """
+        Vista para listar los artefactos de implementacion y las opciones de operacion con los mismos.
+        
+        @param id: id del proyecto correspondiente.
+        @type id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id)
     LineaBaseDisenho= Linea_Base.objects.filter(Proyecto=proyecto, Fase='D')
@@ -1069,6 +1325,14 @@ def FaseImplementacion(request, id):
 
 @login_required
 def AdministrarRelacionArtefacto(request, p_id, a_id):
+    """
+        Vista para listar las relaciones de los artefactos.
+        
+        @param p_id: id del proyecto correspondiente.
+        @type p_id: integer.
+        @param a_id: id del artefacto.
+        @type a_id: integer.
+    """
 
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=p_id)
@@ -1098,6 +1362,14 @@ def AdministrarRelacionArtefacto(request, p_id, a_id):
 
 @login_required
 def listarArtefactoRelacionables(request, p_id, a_id):
+    """
+        Vista para listar los artefactos que se pueden relacionar con uno determinado.
+        
+        @param p_id: id del proyecto correspondiente.
+        @type p_id: integer.
+        @param a_id: id del artefacto.
+        @type a_id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
     artefacto = Artefacto.objects.get(pk=a_id)
@@ -1129,6 +1401,17 @@ def listarArtefactoRelacionables(request, p_id, a_id):
                 })
     return render_to_response('admin/artefacto/listarArtefactosRelacionables.html', contexto)
 def eliminarPadresHijos(listaArtefactos, artefacto):
+    """
+        Funcion que separa padre, antecesores e hijos de un artefacto determinado
+        para evitar ciclos en las relaciones.
+        
+        @param listaArtefactos: lista de artefactos posibles para la relacion.
+        @type p_id: list.
+        @param artefacto: artefacto que se quiere relacionar.
+        
+        @return: lista de artefactos.
+        @rtype: list.
+    """
     
     Mispadres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
     Mishijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
@@ -1141,6 +1424,17 @@ def eliminarPadresHijos(listaArtefactos, artefacto):
     return listaArtefactos
 
 def eliminarDescendientes(artefactos, artefacto):
+    """
+        Funcion que separa descendientes de un artefacto determinado
+        para evitar ciclos en las relaciones.
+        
+        @param artefactos: lista de artefactos posibles para la relacion.
+        @type p_id: list.
+        @param artefacto: artefacto que se quiere relacionar.
+        
+        @return: artefactos.
+        @rtype: list.
+    """
 
     hijos = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
     hijos2= []
@@ -1164,11 +1458,18 @@ def eliminarDescendientes(artefactos, artefacto):
 
     return artefactos 
 
-
-
-
 @login_required
 def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
+    """
+        Vista que permite crear relaciones entre artefactos.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param arPadre_id: id del artefacto padre.
+        @type arPadre_id: integer.
+        @param arHijo_id: id del artefacto hijo.
+        @type arHijo_id: integer.
+    """
 
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
@@ -1201,6 +1502,16 @@ def crearRelacionArtefacto(request, p_id, arPadre_id, arHijo_id):
 
 @login_required
 def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
+    """
+        Vista que permite eliminar relaciones entre artefactos.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param arPadre_id: id del artefacto padre.
+        @type arPadre_id: integer.
+        @param arHijo_id: id del artefacto hijo.
+        @type arHijo_id: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
     artefactoPadre = Artefacto.objects.get(pk=arPadre_id)
@@ -1228,6 +1539,17 @@ def eliminarRelacion(request, p_id, arPadre_id, arHijo_id):
 
 @login_required
 def aprobarArtefacto(request, p_id, a_id, fase):
+    """
+        Vista que permite aprobar un artefacto determinado.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param a_id: id del artefacto.
+        @type a_id: integer.
+        @param fase: fase correspondiente al artefacto.
+        @type fase: char.
+        
+    """
    
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
@@ -1264,6 +1586,14 @@ def aprobarArtefacto(request, p_id, a_id, fase):
 
 @login_required
 def Calculo_Impacto(request, p_id, artefacto_id):
+    """
+        Vista que permite realizar el calculo de impacto de un artefacto determinado.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param artefacto_id: id del artefacto.
+        @type artefacto_id: integer. 
+    """
    
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=p_id)
@@ -1334,6 +1664,14 @@ def Calculo_Impacto(request, p_id, artefacto_id):
     return render_to_response('admin/artefacto/CalculoImpacto.html', contexto)
 
 def calculoImpactoHijos(ids, artefacto_id):
+    """
+        Funcion para calcular el impacto del lado de los hijos, de un artefacto determinado.
+        
+        @param ids: lista de artefactos hijos.
+        @type ids: list.
+        @param artefacto_id: id del artefacto en cuestion.
+        @type artefacto_id: integer.
+    """
 
     artefacto = Artefacto.objects.get(id=artefacto_id)
     relaciones = RelacionArtefacto.objects.filter(artefactoPadre=artefacto, Activo=True)
@@ -1345,6 +1683,14 @@ def calculoImpactoHijos(ids, artefacto_id):
 
 
 def calculoImpactoPadres(ids, artefacto_id):
+    """
+        Funcion para calcular el impacto del lado de los padres, de un artefacto determinado.
+        
+        @param ids: lista de artefactos padres.
+        @type ids: list.
+        @param artefacto_id: id del artefacto en cuestion.
+        @type artefacto_id: integer.
+    """
 
     artefacto = Artefacto.objects.get(id=artefacto_id)
     relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
@@ -1358,6 +1704,17 @@ def calculoImpactoPadres(ids, artefacto_id):
 ############################### ARCHIVOS ##########################################
 @login_required
 def guardarArchivo(request, id_p, fase, id_ar):
+    """
+        Vista que permite adjuntar un archivo a un artefacto determinado.
+        Si el archivo ya existe (un nombre igual a uno almacenado anteriormente, sera sobreescrito).
+        
+        @param id_p: id del proyecto correspondiente.
+        @type id_p: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
 
     proyecto = Proyecto.objects.get(id=id_p)
     if request.method == 'POST':
@@ -1414,6 +1771,16 @@ def guardarArchivo(request, id_p, fase, id_ar):
 
 @login_required
 def listarArchivo(request, id_p, fase, id_ar):
+    """
+        Vista para listar los archivos adjuntos al artefacto.
+        
+        @param id_p: id del proyecto correspondiente.
+        @type id_p: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     
@@ -1443,6 +1810,16 @@ def listarArchivo(request, id_p, fase, id_ar):
 
 @login_required
 def obtenerArchivo(request, id_p, id_ar, archivo_id):
+    """
+        Vista que permite descargar un archivo almacenado en la base de datos.
+        
+        @param id_p: id del proyecto correspondiente.
+        @type id_p: integer.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+        @param archivo_id: id del archivo.
+        @type archivo_id: integer.
+    """
     if request.method == 'GET':
         elArchivo = ArchivosAdjuntos.objects.get(pk=archivo_id)
         response = HttpResponse(base64.b64decode(elArchivo.Contenido), content_type=elArchivo.TipoContenido)
@@ -1453,6 +1830,18 @@ def obtenerArchivo(request, id_p, id_ar, archivo_id):
 
 @login_required
 def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
+    """
+        Vista que permite eliminar el archivo adjunto a un artefacto determinado.
+        
+        @param id_p: id del proyecto correspondiente.
+        @type id_p: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+        @param archivo_id: id del archivo.
+        @type archivo_id: integer.
+    """
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     archivo = get_object_or_404(ArchivosAdjuntos, pk=archivo_id)
@@ -1479,6 +1868,13 @@ def eliminar_adjunto(request, id_p, fase, id_ar, archivo_id):
 
 @login_required
 def LineaBase(request, p_id):
+    """
+        Vista que muestra las condiciones necesarias para generar la linea base
+        y, si existen, las fases que fueron aprobadas.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+    """
     proyecto = Proyecto.objects.get(id=p_id)
     requerimientos= Linea_Base.objects.filter(Proyecto=proyecto, Fase='E')
     fase='E'
@@ -1503,6 +1899,14 @@ def LineaBase(request, p_id):
 
 @login_required
 def GenerarLineaBase(request, p_id, fase):
+    """
+        Vista que permite generar la linea base en una fase determinada.
+        
+        @param id_p: id del proyecto correspondiente.
+        @type id_p: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+    """
     
     proyecto = Proyecto.objects.get(id=p_id)
     lista=[]
@@ -1531,15 +1935,28 @@ def GenerarLineaBase(request, p_id, fase):
     return render_to_response('proyec/generarLB.html', contexto)
 
 def comprobarCondiciones(artefactos, lista, fase, proyecto):
-      NoAprobados = artefactos.exclude(Estado='A')
-      if  NoAprobados:
-          lista.extend(NoAprobados)
-          mensaje="Hay artefactos no aprobados aun"
-          return mensaje
-      else:
-          if fase == 'E':
+    """
+        Funcion para comprobar condiciones necesarias para la generacion de la linea base.
+        @param artefactos: lista de artefactos de una fase determinada.
+        @type artefactos: list.
+        @param lista: lista vacia (para cargarlos en esta funcion con los artefactos correspondientes)
+        @type lista: list.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param proyecto: proyecto correspondiente.
+        
+        @return: mensaje.
+        @rtype: string.
+    """
+    NoAprobados = artefactos.exclude(Estado='A')
+    if  NoAprobados:
+        lista.extend(NoAprobados)
+        mensaje="Hay artefactos no aprobados aun"
+        return mensaje
+    else:
+        if fase == 'E':
              return None
-          else:
+        else:
                for artefacto in artefactos:
                   relaciones = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True)
                   flag=0
@@ -1588,6 +2005,14 @@ def comprobarCondiciones(artefactos, lista, fase, proyecto):
 
 ##################################### HISTORIAL - VERSIONES ##################################################################
 def registrarHistorialArt(artefacto):
+    """
+        funcion para registrar el historial del artefacto, de sus relaciones
+        y de los archivos que le pertenecen en sus diferentes versiones.
+        Se registra el historial con cada cambio que se realize en el artefacto.
+    
+        @param artefacto: el artefacto del cual se creara un nuevo registro en el historial
+        @type artefacto: Artefacto (objeto definido en models) 
+    """
     print artefacto.Version 
     registroHistorial = HistorialArt(                                     
                                      Artefacto = artefacto,
@@ -1632,6 +2057,16 @@ def registrarHistorialArt(artefacto):
 
 @login_required
 def menuHistorial(request, p_id, fase, ar_id):
+    """
+        Vista que permite acceder al historial de un artefacto determinado.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     proyecto = Proyecto.objects.get(pk = p_id)
     artefacto = Artefacto.objects.get(pk = ar_id)
     historial = HistorialArt.objects.filter(Artefacto=artefacto)
@@ -1645,6 +2080,17 @@ def menuHistorial(request, p_id, fase, ar_id):
     
 @login_required
 def verHistorialArt(request, id_p, fase, id_ar):
+    """
+        Vista que muestra las versiones del artefacto, a las cuales se puede acceder
+        para ver los detalles.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     listaHistorialArt = HistorialArt.objects.filter(Artefacto=artefacto)
@@ -1686,6 +2132,18 @@ def verHistorialArt(request, id_p, fase, id_ar):
    # return render_to_response('admin/artefacto/historial_adj.html', contexto)
 
 def detallesVersion(request, id_p, fase, id_ar, version):
+    """
+        Vista que muestra los detalles de la version seleccionada.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+        @param version: version seleccionada.
+        @type version: integer.
+    """
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
     
@@ -1711,10 +2169,22 @@ def detallesVersion(request, id_p, fase, id_ar, version):
     return render_to_response('admin/artefacto/detalles_version.html', contexto)
 
 def reversionar(request, id_p, fase, id_ar, version):
-         proyecto = Proyecto.objects.get(pk=id_p)
-         artefacto = Artefacto.objects.get(pk=id_ar)
-         mensaje=None
-         if request.method == 'POST':               
+    """
+        Vista que permite regresar a una version anterior del artefacto.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+        @param version: version seleccionada.
+        @type version: integer.
+    """
+    proyecto = Proyecto.objects.get(pk=id_p)
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    mensaje=None
+    if request.method == 'POST':               
                         registrarHistorialArt(artefacto)
                         version_archivos = artefacto.Version
                     #### Historial en la cual se kiere volver 
@@ -1755,16 +2225,22 @@ def reversionar(request, id_p, fase, id_ar, version):
 
            
             
-         contexto = RequestContext(request, {'proyecto': proyecto,
+    contexto = RequestContext(request, {'proyecto': proyecto,
                                         'Fase': fase,
                                         'artefacto': artefacto,
                                         'version': version,
                                          })
 
-         return render_to_response('admin/artefacto/reversion.html', contexto)
+    return render_to_response('admin/artefacto/reversion.html', contexto)
     
     
 def anularRelacionesActuales(artefacto):
+    """
+        Funcion que invalida las relaciones actuales del artefacto
+        que se quiere reversionar.
+        
+        @param artefacto: el artefacto en cuestion. 
+    """
 
     relacion_padres = RelacionArtefacto.objects.filter(artefactoHijo=artefacto, Activo=True).values_list('artefactoPadre', flat=True)
     padres = Artefacto.objects.filter(id__in=relacion_padres, Activo=True).order_by('id')
@@ -1775,6 +2251,21 @@ def anularRelacionesActuales(artefacto):
         relacion.save()
     
 def activarRelacionesAnteriores(artefacto, padres_valid, version, padresborrados):
+    """
+        Funcion para activar las relaciones correspondientes a la version
+        a la que se quiere volver.
+        
+        @param artefacto: artefacto en cuestion.
+        @param padres_valid: lista de artefactos con relaciones validas.
+        @type padres_valid: list.
+        @param version: version a la que se quiere volver.
+        @type version: integer.
+        @param padresborrados: lista de artefactos padre que fueron eliminados.
+        @type padresborrados: list.
+        
+        @return: mensaje.
+        @rtype: string.
+    """
 
     prev_artefacto = HistorialArt.objects.get(Artefacto=artefacto, Version=version)
     mensaje=None
@@ -1790,6 +2281,14 @@ def activarRelacionesAnteriores(artefacto, padres_valid, version, padresborrados
 
         
 def activarArchivos(artefacto, version):
+    """
+        Funcion para activar los archivos que correspondian a la version
+        a la que se quiere volver.
+        
+        @param artefacto: artefacto en cuestion.
+        @param version: version a la que se quiere volver.
+        @type version: integer.
+    """
     print "Holaaaaaaaaaaaaaaaaaaa" #parametros:
      #artefacto -> es la nueva version registrada
      #version_hist -> version a la que se quiere volver
