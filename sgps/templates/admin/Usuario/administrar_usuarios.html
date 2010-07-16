@@ -32,5 +32,8 @@
 {% if CrearUsuarios %}
 	<input type="button" value="Agregar Usuario" onClick = "location.href='/administracion/usuarios/registrar/' "/>
 {% endif %}
+{% if usuarios %}
+    <input type="button" value="Crear Reporte" onClick = "location.href='/report/usuarios/' "/>
+{% endif %}
 <input type="button" value="Atras" onClick = "location.href='/' "/>
 {% endblock %}

@@ -100,5 +100,13 @@ urlpatterns = patterns('',
     
     (r'^proyecto/(\d+)/fase/(\w+)/detalles_version/(\d+)/(\d+)/$', detallesVersion),
     (r'^proyecto/(\d+)/fase/(\w+)/reversion/(\d+)/(\d+)/$',reversionar),
+    ########## REPORTES #########
+    (r'^report/proyectos/$',Reporte_Proyectos),
+    (r'^report/usuarios/$',Reporte_Usuarios),
+    (r'^report/roles=(?P<cat>\d+)/$',Reporte_Roles),
+    (r'^report/proyectos/artefactos&id=(?P<proyecto_id>\d+)/historial&id=(?P<art_id>\d+)/$', Reporte_Historiales),
+    (r'^report/proyectos/artefactos&id=(?P<proyecto_id>\d+)&fasesAnt=(?P<fase>\d+)/$', Reporte_Artefactos),
+    (r'^report/proyectos/artefactos&id=(?P<proyecto_id>\d+)/$', reporte_artefactos),
+
     
 )
