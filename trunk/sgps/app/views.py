@@ -1426,19 +1426,19 @@ def listarArchivo(request, id_p, fase, id_ar):
                                          })
     return render_to_response('admin/artefacto/listar_archivos.html', contexto)
 
-@login_required
-def listarArchivoAprobado(request, id_p, fase, id_ar):
-    proyecto = Proyecto.objects.get(pk=id_p)
-    artefacto = Artefacto.objects.get(pk=id_ar)
+#@login_required
+#def listarArchivoAprobado(request, id_p, fase, id_ar):
+#    proyecto = Proyecto.objects.get(pk=id_p)
+#    artefacto = Artefacto.objects.get(pk=id_ar)
     
-    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
+#    archivos = ArchivosAdjuntos.objects.filter(Artefacto=artefacto, Activo=True)
     
-    contexto = RequestContext(request, {'proyecto': proyecto,
-                                        'Fase': fase,
-                                        'artefacto': artefacto,
-                                        'archivos': archivos,
-                                         })
-    return render_to_response('admin/artefacto/listar_archivos_aprobado.html', contexto)
+#    contexto = RequestContext(request, {'proyecto': proyecto,
+#                                        'Fase': fase,
+#                                        'artefacto': artefacto,
+#                                        'archivos': archivos,
+#                                         })
+#    return render_to_response('admin/artefacto/listar_archivos_aprobado.html', contexto)
 
 
 @login_required
@@ -1656,34 +1656,34 @@ def verHistorialArt(request, id_p, fase, id_ar):
                                         })
     return render_to_response('admin/artefacto/historial_art.html', contexto)
 
-@login_required
-def verHistorialRel(request, id_p, fase, id_ar):
-    proyecto = Proyecto.objects.get(pk=id_p)
-    artefacto = Artefacto.objects.get(pk=id_ar)
-    
-    listaHistorialRel = HistorialRel.objects.filter(artefactoHijo=artefacto)
-    
-    contexto = RequestContext(request, {'proyecto': proyecto,
-                                        'Fase': fase,
-                                        'artefacto': artefacto,
-                                        'his_rel': listaHistorialRel,
-                                        })
-    return render_to_response('admin/artefacto/historial_rel.html', contexto)
+#@login_required
+#def verHistorialRel(request, id_p, fase, id_ar):
+#    proyecto = Proyecto.objects.get(pk=id_p)
+#    artefacto = Artefacto.objects.get(pk=id_ar)
+#    
+#    listaHistorialRel = HistorialRel.objects.filter(artefactoHijo=artefacto)
+#    
+#    contexto = RequestContext(request, {'proyecto': proyecto,
+#                                        'Fase': fase,
+#                                        'artefacto': artefacto,
+#                                        'his_rel': listaHistorialRel,
+#                                        })
+#    return render_to_response('admin/artefacto/historial_rel.html', contexto)
 
-@login_required
-def verHistorialAdj(request, id_p, fase, id_ar):
-    proyecto = Proyecto.objects.get(pk=id_p)
-    artefacto = Artefacto.objects.get(pk=id_ar)
-    
-    listaHistorialArt = HistorialArt.objects.filter(Artefacto=artefacto)
-    listaHistorialAdj = HistorialAdj.objects.filter(Artefacto__in=listaHistorialArt)
-
-    contexto = RequestContext(request, {'proyecto': proyecto,
-                                        'Fase': fase,
-                                        'artefacto': artefacto,
-                                        'his_adj': listaHistorialAdj,
-                                        })
-    return render_to_response('admin/artefacto/historial_adj.html', contexto)
+#@login_required
+#def verHistorialAdj(request, id_p, fase, id_ar):
+#    proyecto = Proyecto.objects.get(pk=id_p)
+#    artefacto = Artefacto.objects.get(pk=id_ar)
+#    
+#    listaHistorialArt = HistorialArt.objects.filter(Artefacto=artefacto)
+#    listaHistorialAdj = HistorialAdj.objects.filter(Artefacto__in=listaHistorialArt)
+#
+#    contexto = RequestContext(request, {'proyecto': proyecto,
+#                                        'Fase': fase,
+ #                                       'artefacto': artefacto,
+ #                                       'his_adj': listaHistorialAdj,
+  #                                      })
+   # return render_to_response('admin/artefacto/historial_adj.html', contexto)
 
 def detallesVersion(request, id_p, fase, id_ar, version):
     proyecto = Proyecto.objects.get(pk=id_p)
