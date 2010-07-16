@@ -1588,6 +1588,7 @@ def comprobarCondiciones(artefactos, lista, fase, proyecto):
 
 ##################################### HISTORIAL - VERSIONES ##################################################################
 def registrarHistorialArt(artefacto):
+    print artefacto.Version 
     registroHistorial = HistorialArt(                                     
                                      Artefacto = artefacto,
                                      Nombre = artefacto.Nombre,
@@ -1618,7 +1619,6 @@ def registrarHistorialArt(artefacto):
     padres = Artefacto.objects.filter(id__in=relacion_padre, Activo=True)
     if padres:
         for padre in padres:
-            padre = Artefacto.objects.get(id=padre)
             historialRelaciones = HistorialRel(
                                       artefactoPadre=padre,
                                       padreVersion=padre.Version, 
@@ -1626,7 +1626,7 @@ def registrarHistorialArt(artefacto):
                                       hijoVersion=registroHistorial.Version,
                                       Fecha_mod = datetime.date.today(),
                                       )
-        historialRelaciones.save()
+            historialRelaciones.save()
 
 #######################################
 
@@ -1691,7 +1691,7 @@ def detallesVersion(request, id_p, fase, id_ar, version):
     
     artefactoHist = HistorialArt.objects.get(Artefacto=artefacto, Version=version)
     relaciones = HistorialRel.objects.filter(artefactoHijo=artefactoHist).values_list('artefactoPadre', flat=True)
-    Mispadres = Artefacto.objects.filter(id__in=relaciones, Activo=True).order_by('id')
+    Mispadres = Artefacto.objects.filter(id__in=relaciones).order_by('id')
     antecesores = Mispadres.exclude(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     Mipadre = Mispadres.filter(Tipo_Artefacto__Fase=artefacto.Tipo_Artefacto.Fase)
     
@@ -1740,7 +1740,7 @@ def reversionar(request, id_p, fase, id_ar, version):
                         artefacto.Prioridad = prev_version.Prioridad
                         artefacto.Complejidad = prev_version.Complejidad
                         artefacto.Usuario = request.user
-                        artefacto.Estado = prev_version.Estado
+                        artefacto.Estado = 'I'
                         artefacto.Activo=True
                         artefacto.save()
                         contexto2 = RequestContext(request, {'proyecto': proyecto,
@@ -1770,7 +1770,7 @@ def anularRelacionesActuales(artefacto):
     padres = Artefacto.objects.filter(id__in=relacion_padres, Activo=True).order_by('id')
     
     for padre in padres:
-        relacion = ArtefactoRelaciones.objects.get(artefacto_padre=padre, artefacto_hijo=artefacto)
+        relacion = RelacionArtefacto.objects.get(artefactoPadre=padre, artefactoHijo=artefacto)
         relacion.Activo = False
         relacion.save()
     
