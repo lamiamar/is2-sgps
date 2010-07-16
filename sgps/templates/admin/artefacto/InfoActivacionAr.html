@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Versiones{% endblock %}
+{% block head %}Informacion de activacion {% endblock %}
+{% block content %}
+
+    <h3>El artefacto se activo correctamente</h3>
+    {% if mensaje %}
+      <h4>{{ mensaje }}</h4>
+      {% if borrados %}
+      <ul>
+            {% for b in borrados %}
+               {% ifequal b.Tipo_Artefacto.Fase 'E' %}
+                <li>{{b.Nombre}}: (Especificacion de Requerimientos)</li>
+                {% endifequal %}
+                 {% ifequal b.Tipo_Artefacto.Fase 'D' %}
+                   <li>{{b.Nombre}}:(Disenho)</li> 
+                {% endifequal %}
+                {% ifequal b.Tipo_Artefacto.Fase 'I' %}
+                   <li>{{b.Nombre}}:(Implementacion)</li> 
+                {% endifequal %}     
+            {% endfor %}
+      </ul>
+      {% endif %}
+    {% endif %}
+
+{% ifequal fase 'E' %}
+	<input type="button" value="Aceptar" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
+{% endifequal %}
+
+{% ifequal fase 'D' %}
+	<input type="button" value="Aceptar" onClick = "location.href='/proyecto/{{proyecto.id}}/diseno/' "/>
+{% endifequal %}
+
+{% ifequal fase 'I' %}
+	<input type="button" value="Aceptar" onClick = "location.href='/proyecto/{{proyecto.id}}/implementacion/' "/>
+{% endifequal %}
+
+
+
+
+{% endblock %} 

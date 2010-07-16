@@ -48,6 +48,8 @@ urlpatterns = patterns('',
     (r'^proyecto/(?P<id>\d+)/diseno/$', FaseDiseno),
     (r'^proyecto/(?P<id>\d+)/implementacion/$', FaseImplementacion),
     (r'^administracion/artefactos/$', administrar_artefactos),
+    (r'^proyecto/(\d+)/arEli/fase/(\w+)/$', ArtefactosEliminados),
+    (r'^proyecto/(\d+)/activarArEli/fase/(\w+)/(\d+)/$', ActivarArtefactosEliminados),
     (r'^proyecto/(\d+)/fase/(\w+)/nuevo/$', agregarArtefacto),
     
     (r'^proyecto/(\d+)/fase/(\w+)/eliminar/(\d+)/$', eliminarArtefacto),
@@ -60,6 +62,8 @@ urlpatterns = patterns('',
     (r'^proyectos/(\d+)/fase/artefactos/aprobar/(\d+)/(\w+)/$', aprobarArtefacto),
     (r'^proyecto/(\d+)/impacto/(\d+)/$', Calculo_Impacto),
     (r'^proyecto/(\d+)/verInfo/(\d+)/$', verInformacion_Artefacto),
+    (r'^proyecto/(\d+)/verInfoEliminados/(\d+)/$', verInformacion_Artefacto_Eliminados),
+    
     (r'^proyecto/(\d+)/verInfoParcial/(\d+)/$', verInformacion_Parcial_Artefacto),
     
     #Control de roles..............

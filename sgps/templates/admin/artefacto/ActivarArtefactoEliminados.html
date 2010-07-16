@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Versiones{% endblock %}
+{% block head %}Activar Artefacto {% endblock %}
+{% block content %}
+<form method="post" action=""> 
+    
+    <h3>Esta seguro desea activar este artefacto?</h3>
+
+<input type="submit" value="Activar" />
+
+<input type="button" value="Cancelar" onClick = "location.href='/proyecto/{{proyecto.id}}/arEli/fase/{{Fase}}'"/>
+</form>
+{% endblock %}
