@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Versiones{% endblock %}
+{% block head %}Volver a version anterior {% endblock %}
+{% block content %}
+
+    <h3>El artefacto volvio a la Version: {{ version }} correctamente</h3>
+    {% if mensaje %}
+      <h4>{{ mensaje }}</h4>
+      {% if borrados %}
+      <ul>
+            {% for b in borrados %}
+               {% ifequal b.Tipo_Artefacto.Fase 'E' %}
+                <li>{{b.Nombre}}: (Especificacion de Requerimientos)</li>
+                {% endifequal %}
+                 {% ifequal b.Tipo_Artefacto.Fase 'D' %}
+                   <li>{{b.Nombre}}:(Disenho)</li> 
+                {% endifequal %}
+                {% ifequal b.Tipo_Artefacto.Fase 'I' %}
+                   <li>{{b.Nombre}}:(Implementacion)</li> 
+                {% endifequal %}     
+            {% endfor %}
+      </ul>
+      {% endif %}
+    {% endif %}
+<input type="button" value="Ok" onClick = "location.href='/proyecto/{{proyecto.id}}/fase/{{Fase}}/detalles_version/{{artefacto.id}}/{{version}}'"/>
+
+{% endblock %}
