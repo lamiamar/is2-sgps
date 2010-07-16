@@ -10,8 +10,11 @@ from django.template.loader import get_template
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
+from geraldo.generators import PDFGenerator
 from sgps.app.models import *
 from sgps.app.forms import *
+from sgps.app.reportes import *
+
 
 """
     Modulo que define las vistas utilizadas en el sistema, para el desarrollo de proyectos,
@@ -2375,4 +2378,63 @@ def activarArchivos(artefacto, version):
     
     
 #################################################################################################
-###################################### SISTEMA ##################################################
+###################################### Reportes ##################################################
+@login_required
+def Reporte_Usuarios(request):
+    user = User.objects.get(username=request.user.username)
+    usuarios = User.objects.order_by('username')
+    resp = HttpResponse(mimetype='application/pdf')
+    report = ReporteUsuarios(queryset=usuarios)
+    report.generate_by(PDFGenerator, filename=resp)
+    return resp    
+
+@login_required
+def Reporte_Proyectos(request):
+    user = User.objects.get(username=request.user.username)
+    proyectos = Proyecto.objects.order_by('Nombre')
+    resp = HttpResponse(mimetype='application/pdf')
+    report = ReporteProyectos(queryset=proyectos)
+    report.generate_by(PDFGenerator, filename=resp)
+    return resp
+
+@login_required
+def Reporte_Roles(request, tiporol):
+    user = User.objects.get(username=request.user.username)
+    roles = Rol.objects.filter(TIPO_ROL=tiporol).order_by('Nombre')
+    resp = HttpResponse(mimetype='application/pdf')
+    report = ReporteRoles(queryset=roles)
+    report.generate_by(PDFGenerator, filename=resp)
+    return resp
+
+@login_required
+def Reporte_Artefactos(request, id_p, fase):
+    user = User.objects.get(username=request.user.username)
+    proyecto = get_object_or_404(Proyecto, id=id_p)
+    fase = get_object_or_404(Fase, id=fase)
+    tipoArtefactos = Tipo_Artefacto_Proyecto.objects.filter(Proyecto = proyecto, Fase = fase)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipoArtefactos).order_by('Nombre')
+    resp = HttpResponse(mimetype='application/pdf')
+    report = ReporteArtefactos(queryset=artefactos)
+    report.generate_by(PDFGenerator, filename=resp)
+    return resp
+
+@login_required
+def reporte_artefactos(request, id_p):
+    user = User.objects.get(username=request.user.username)
+    proyecto = get_object_or_404(Proyecto, id_p)
+    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True).order_by('Nombre')
+    resp = HttpResponse(mimetype='application/pdf')
+    report = ReporteArtefacto(queryset=artefactos)
+    report.generate_by(PDFGenerator, filename=resp)
+    return resp
+
+@login_required
+def Reporte_Historiales(request, id_p, id_ar):
+    artefacto = Artefacto.objects.get(pk=id_ar)
+    user = User.objects.get(username=request.user.username)
+    proyect = Proyecto.objects.get(pk=id_p)
+    versiones = HistorialArt.objects.filter(Artefacto=artefacto).order_by('version')
+    resp = HttpResponse(mimetype='application/pdf')
+    report = ReporteHistoriales(queryset=versiones)
+    report.generate_by(PDFGenerator, filename=resp)
+    return resp

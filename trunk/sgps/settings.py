@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'geraldo',
     'sgps.app',
 )
 AUTH_PROFILE_MODULE = 'app.ProfileUsuario'
