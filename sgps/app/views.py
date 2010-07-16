@@ -1206,6 +1206,16 @@ def eliminarArtefacto(request, id_p, fase, id_ar):
     return render_to_response('admin/artefacto/eliminarArtefacto.html', {'user': user, 'archivos':archivos, 'padres': Mispadres, 'hijosM':hijosMismaFase, 'hijosF': hijosFaseSigte, 'antecesores': antecesores, 'artefacto': artefacto, 'fase':fase, 'ProyectoId': id_p, 'mensaje':error,})
 
 def ActivarArtefactosEliminados(request, id_p, fase, id_ar):
+    """
+        Vista que permite activar artefactos eliminados.
+        
+        @param id_p: id del proyecto.
+        @type id_p: integer.
+        @param fase: fase correspondiente al artefacto.
+        @type fase: char.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
@@ -1228,6 +1238,14 @@ def ActivarArtefactosEliminados(request, id_p, fase, id_ar):
     return render_to_response('admin/artefacto/ActivarArtefactoEliminados.html', {'user': user, 'Fase':fase, 'proyecto': proyecto})
 
 def verInformacion_Artefacto_Eliminados(request, id_p, id_ar):
+    """
+        Vista que permite visualizar los datos de los artefactos eliminados.
+        
+        @param id_p: id del proyecto.
+        @type id_p: integer.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(pk=id_p)
     artefacto = Artefacto.objects.get(pk=id_ar)
@@ -1255,6 +1273,14 @@ def verInformacion_Artefacto_Eliminados(request, id_p, id_ar):
 
 
 def ArtefactosEliminados(request, id_p, fase):
+    """
+        Vista que muestra los artefactos eliminados.
+        
+        @param id_p: id del proyecto.
+        @type id_p: integer.
+        @param fase: fase correspondiente al artefacto.
+        @type fase: char.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = Proyecto.objects.get(id=id_p)
     tipo_artefacto= Tipo_Artefacto_Proyecto.objects.filter(Fase=fase, Proyecto=proyecto)
@@ -2381,6 +2407,9 @@ def activarArchivos(artefacto, version):
 ###################################### Reportes ##################################################
 @login_required
 def Reporte_Usuarios(request):
+    """
+        Vista que muestra un reporte de los usuarios existentes.
+    """
     user = User.objects.get(username=request.user.username)
     usuarios = User.objects.order_by('username')
     resp = HttpResponse(mimetype='application/pdf')
@@ -2390,6 +2419,9 @@ def Reporte_Usuarios(request):
 
 @login_required
 def Reporte_Proyectos(request):
+    """
+        Vista que muestra un reporte de los proyectos existentes.
+    """
     user = User.objects.get(username=request.user.username)
     proyectos = Proyecto.objects.order_by('Nombre')
     resp = HttpResponse(mimetype='application/pdf')
@@ -2399,6 +2431,12 @@ def Reporte_Proyectos(request):
 
 @login_required
 def Reporte_Roles(request, tiporol):
+    """
+        Vista que muestra un reporte de los roles existentes, segun su tipo.
+        
+        @param tiporol: tipo del rol.
+        @type tiporol: char.
+    """
     user = User.objects.get(username=request.user.username)
     roles = Rol.objects.filter(TIPO_ROL=tiporol).order_by('Nombre')
     resp = HttpResponse(mimetype='application/pdf')
@@ -2408,6 +2446,14 @@ def Reporte_Roles(request, tiporol):
 
 @login_required
 def Reporte_Artefactos(request, id_p, fase):
+    """
+        Vista que muestra un reporte de los artefactos existentes.
+        
+        @param id_p: id del proyecto.
+        @type id_p: integer.
+        @param fase: fase correspondiente.
+        @type fase: char.
+    """
     user = User.objects.get(username=request.user.username)
     proyecto = get_object_or_404(Proyecto, id=id_p)
     fase = get_object_or_404(Fase, id=fase)
@@ -2430,6 +2476,14 @@ def reporte_artefactos(request, id_p):
 
 @login_required
 def Reporte_Historiales(request, id_p, id_ar):
+    """
+        Vista que muestra un reporte del historial del artefacto.
+        
+        @param p_id: id del proyecto.
+        @type p_id: integer.
+        @param id_ar: id del artefacto.
+        @type id_ar: integer.
+    """
     artefacto = Artefacto.objects.get(pk=id_ar)
     user = User.objects.get(username=request.user.username)
     proyect = Proyecto.objects.get(pk=id_p)
