@@ -2463,15 +2463,6 @@ def Reporte_Artefactos(request, id_p, fase):
     report.generate_by(PDFGenerator, filename=resp)
     return resp
 
-@login_required
-def reporte_artefactos(request, id_p):
-    user = User.objects.get(username=request.user.username)
-    proyecto = get_object_or_404(Proyecto, id_p)
-    artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True).order_by('Nombre')
-    resp = HttpResponse(mimetype='application/pdf')
-    report = ReporteArtefacto(queryset=artefactos)
-    report.generate_by(PDFGenerator, filename=resp)
-    return resp
 
 @login_required
 def Reporte_Historiales(request, id_ar):
