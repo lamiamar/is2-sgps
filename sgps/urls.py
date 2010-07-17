@@ -106,7 +106,7 @@ urlpatterns = patterns('',
     (r'^reporte/proyectos/$',Reporte_Proyectos),
     (r'^reporte/proyectos/(\d+)/fases/(\w+)/$', Reporte_Artefactos),
     (r'^reporte/artefacto/(\d+)/historial/$', Reporte_Historiales),
-    (r'^reporte/proyectos/artefactos&id=(?P<proyecto_id>\d+)/$', reporte_artefactos),
+
 
     
 )
