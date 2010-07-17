@@ -67,8 +67,8 @@ class ReporteProyectos(Report):
         elements=(
             ObjectValue(attribute_name='id', top=0, left=0.5*cm),
             ObjectValue(attribute_name='Usuario', top=0, left=2.5*cm),
-            ObjectValue(attribute_name='Nombre', top=0, left=4.5*cm),
-            ObjectValue(attribute_name='Fecha', top=0, left=6*cm),
+            ObjectValue(attribute_name='Nombre', top=0, left=6*cm),
+            ObjectValue(attribute_name='Fecha', top=0, left=9*cm),
             ObjectValue(attribute_name='Descripcion', top=0, left=12*cm),
             )
        
@@ -79,8 +79,8 @@ class ReporteProyectos(Report):
                 style={'fontName': 'Helvetica-Bold', 'fontSize': 14, 'alignment': TA_CENTER}),
             Label(text="ID", top=0.8*cm, left=0.5*cm),
             Label(text=u"Lide del Proyecto", top=0.8*cm, left=2.5*cm),
-            Label(text=u"Nombre", top=0.8*cm, left=4.5*cm),
-            Label(text=u"Fecha de Creacion", top=0.8*cm, left=6*cm),
+            Label(text=u"Nombre", top=0.8*cm, left=6*cm),
+            Label(text=u"Fecha de Creacion", top=0.8*cm, left=9*cm),
             Label(text=u"Descripcion", top=0.8*cm, left=12*cm),
             SystemField(expression=u'Page %(page_number)d of %(page_count)d', top=0.1*cm,
                 width=BAND_WIDTH, style={'alignment': TA_RIGHT}),
@@ -117,8 +117,8 @@ class ReporteRoles(Report):
         elements=(
             ObjectValue(attribute_name='id', top=0, left=0.5*cm),
             ObjectValue(attribute_name='Nombre', top=0, left=1.5*cm),
-            ObjectValue(attribute_name='Tipo', top=0, left=5*cm),
-            ObjectValue(attribute_name='Descripcion', top=0, left=6.5*cm),
+            ObjectValue(attribute_name='Tipo', top=0, left=9*cm),
+            ObjectValue(attribute_name='Descripcion', top=0, left=10*cm),
             )
        
     class band_page_header(ReportBand):
@@ -128,8 +128,8 @@ class ReporteRoles(Report):
                 style={'fontName': 'Helvetica-Bold', 'fontSize': 14, 'alignment': TA_CENTER}),
             Label(text="ID", top=0.8*cm, left=0.5*cm),
             Label(text=u"Nombre", top=0.8*cm, left=1.5*cm),
-            Label(text=u"Tipo", top=0.8*cm, left=4.5*cm),
-            Label(text=u"Descripcion", top=0.8*cm, left=6.5*cm),
+            Label(text=u"Tipo", top=0.8*cm, left=9*cm),
+            Label(text=u"Descripcion", top=0.8*cm, left=10*cm),
             SystemField(expression=u'Page %(page_number)d of %(page_count)d', top=0.1*cm,
                 width=BAND_WIDTH, style={'alignment': TA_RIGHT}),
             ]
@@ -155,15 +155,15 @@ class ReporteArtefactos(Report):
     class band_detail(ReportBand):
         height = 0.5*cm
         elements=(
-            ObjectValue(attribute_name='id', top=0, left=0.5*cm),
-            ObjectValue(attribute_name='Nombre', top=0, left=2*cm),
-            ObjectValue(attribute_name='DescripcionCorta', top=0, left=3*cm),
+            ObjectValue(attribute_name='id', top=0, left=0*cm),
+            ObjectValue(attribute_name='Nombre', top=0, left=1*cm),
+            ObjectValue(attribute_name='DescripcionCorta', top=0, left=2.5*cm),
             ObjectValue(attribute_name='DescripcionLarga', top=0, left=6*cm),
-            ObjectValue(attribute_name='Proyecto', top=0, left=8*cm),
-            ObjectValue(attribute_name='Complejidad', top=0, left=10*cm),
-            ObjectValue(attribute_name='Prioridad', top=0, left=11*cm),
-            ObjectValue(attribute_name='Version', top=0, left=12*cm),
-            ObjectValue(attribute_name='Usuario', top=0, left=14*cm),
+            ObjectValue(attribute_name='Proyecto', top=0, left=10*cm),
+            ObjectValue(attribute_name='Complejidad', top=0, left=11.5*cm),
+            ObjectValue(attribute_name='Prioridad', top=0, left=13.5*cm),
+            ObjectValue(attribute_name='Version', top=0, left=15*cm),
+            ObjectValue(attribute_name='Usuario', top=0, left=16.5*cm),
             
             )
        
@@ -172,15 +172,15 @@ class ReporteArtefactos(Report):
         elements = [
             SystemField(expression='%(report_title)s', top=0.1*cm, left=0, width=BAND_WIDTH,
                 style={'fontName': 'Helvetica-Bold', 'fontSize': 14, 'alignment': TA_CENTER}),
-            Label(text="ID", top=0.8*cm, left=0.5*cm),
-            Label(text=u"Nombre", top=0.8*cm, left=2*cm),
-            Label(text=u"Descripcion_Corta", top=0.8*cm, left=4*cm),
+            Label(text="ID", top=0.8*cm, left=0*cm),
+            Label(text=u"Nombre", top=0.8*cm, left=1*cm),
+            Label(text=u"Descripcion_Corta", top=0.8*cm, left=2.5*cm),
             Label(text=u"Descripcion_Larga", top=0.8*cm, left=6*cm),
-            Label(text=u"Proyecto", top=0.8*cm, left=9*cm),
-            Label(text=u"Complejidad", top=0.8*cm, left=11*cm),
-            Label(text=u"Prioridad", top=0.8*cm, left=12*cm),
-            Label(text=u"Version", top=0.8*cm, left=13*cm),
-            Label(text=u"Usuario", top=0.8*cm, left=14*cm),
+            Label(text=u"Proyecto", top=0.8*cm, left=10*cm),
+            Label(text=u"Complejidad", top=0.8*cm, left=11.5*cm),
+            Label(text=u"Prioridad", top=0.8*cm, left=13.5*cm),
+            Label(text=u"Version", top=0.8*cm, left=15*cm),
+            Label(text=u"Usuario", top=0.8*cm, left=16.5*cm),
             SystemField(expression=u'Page %(page_number)d of %(page_count)d', top=0.1*cm,
                 width=BAND_WIDTH, style={'alignment': TA_RIGHT}),
             ]
@@ -216,14 +216,14 @@ class ReporteHistoriales(Report):
     class band_detail(ReportBand):
         height = 0.5*cm
         elements=(
-            ObjectValue(attribute_name='id', top=0, left=0.5*cm),
-            ObjectValue(attribute_name='Nombre', top=0, left=1.5*cm),
-            ObjectValue(attribute_name='DescripcionCorta', top=0, left=3.5*cm),
+            ObjectValue(attribute_name='id', top=0, left=0*cm),
+            ObjectValue(attribute_name='Nombre', top=0, left=1*cm),
+            ObjectValue(attribute_name='DescripcionCorta', top=0, left=2.5*cm),
             ObjectValue(attribute_name='DescripcionLarga', top=0, left=6*cm),
-            ObjectValue(attribute_name='Prioridad', top=0, left=7*cm),
-            ObjectValue(attribute_name='Version', top=0, left=8*cm),
-            ObjectValue(attribute_name='Complejidad', top=0, left=9*cm),
-            ObjectValue(attribute_name='Fecha_mod', top=0, left=12*cm),
+            ObjectValue(attribute_name='Prioridad', top=0, left=10*cm),
+            ObjectValue(attribute_name='Version', top=0, left=11.5*cm),
+            ObjectValue(attribute_name='Complejidad', top=0, left=13*cm),
+            ObjectValue(attribute_name='Fecha_mod', top=0, left=15*cm),
             )
        
     class band_page_header(ReportBand):
@@ -231,14 +231,14 @@ class ReporteHistoriales(Report):
         elements = [
             SystemField(expression='%(report_title)s', top=0.1*cm, left=0, width=BAND_WIDTH,
                 style={'fontName': 'Helvetica-Bold', 'fontSize': 14, 'alignment': TA_CENTER}),
-            Label(text="ID", top=0.8*cm, left=0.5*cm),
-            Label(text=u"Nombre", top=0.8*cm, left=1.5*cm),
-            Label(text=u"DescripcionCorta", top=0.8*cm, left=3*cm),
+            Label(text="ID", top=0.8*cm, left=0*cm),
+            Label(text=u"Nombre", top=0.8*cm, left=1*cm),
+            Label(text=u"DescripcionCorta", top=0.8*cm, left=2.5*cm),
             Label(text=u"DescripcionLarga", top=0.8*cm, left=6*cm),
-            Label(text=u"Prioridad", top=0.8*cm, left=7*cm),
-            Label(text=u"Version", top=0.8*cm, left=8*cm),
-            Label(text=u"Complejidad", top=0.8*cm, left=9*cm),
-            Label(text=u"Fecha de Modificacion", top=0.8*cm, left=11*cm),
+            Label(text=u"Prioridad", top=0.8*cm, left=10*cm),
+            Label(text=u"Version", top=0.8*cm, left=11.5*cm),
+            Label(text=u"Complejidad", top=0.8*cm, left=13*cm),
+            Label(text=u"Fecha de Modificacion", top=0.8*cm, left=15*cm),
             SystemField(expression=u'Page %(page_number)d of %(page_count)d', top=0.1*cm,
                 width=BAND_WIDTH, style={'alignment': TA_RIGHT}),
             ]

@@ -146,7 +146,7 @@ def editarUsuario(request, id_user):
 @login_required
 def ModificarContrasena(request, id_user):
     """
-        Vista que permite modificar la contraseña del usuario.
+        Vista que permite modificar la contrasenha del usuario.
     
         @param id_user: id del usuario.
     """
@@ -1334,7 +1334,7 @@ def FaseERequerimientos(request, id):
 @login_required
 def FaseDiseno(request, id):
     """
-        Vista para listar los artefactos de diseño y las opciones de operacion con los mismos.
+        Vista para listar los artefactos de disenho y las opciones de operacion con los mismos.
         
         @param id: id del proyecto correspondiente.
         @type id: integer. 
@@ -2438,7 +2438,7 @@ def Reporte_Roles(request, tiporol):
         @type tiporol: char.
     """
     user = User.objects.get(username=request.user.username)
-    roles = Rol.objects.filter(TIPO_ROL=tiporol).order_by('Nombre')
+    roles = Rol.objects.filter(Tipo=tiporol).order_by('Nombre')
     resp = HttpResponse(mimetype='application/pdf')
     report = ReporteRoles(queryset=roles)
     report.generate_by(PDFGenerator, filename=resp)
@@ -2456,7 +2456,6 @@ def Reporte_Artefactos(request, id_p, fase):
     """
     user = User.objects.get(username=request.user.username)
     proyecto = get_object_or_404(Proyecto, id=id_p)
-    fase = get_object_or_404(Fase, id=fase)
     tipoArtefactos = Tipo_Artefacto_Proyecto.objects.filter(Proyecto = proyecto, Fase = fase)
     artefactos = Artefacto.objects.filter(Proyecto=proyecto, Activo=True, Tipo_Artefacto__in=tipoArtefactos).order_by('Nombre')
     resp = HttpResponse(mimetype='application/pdf')
@@ -2475,7 +2474,7 @@ def reporte_artefactos(request, id_p):
     return resp
 
 @login_required
-def Reporte_Historiales(request, id_p, id_ar):
+def Reporte_Historiales(request, id_ar):
     """
         Vista que muestra un reporte del historial del artefacto.
         
@@ -2486,8 +2485,7 @@ def Reporte_Historiales(request, id_p, id_ar):
     """
     artefacto = Artefacto.objects.get(pk=id_ar)
     user = User.objects.get(username=request.user.username)
-    proyect = Proyecto.objects.get(pk=id_p)
-    versiones = HistorialArt.objects.filter(Artefacto=artefacto).order_by('version')
+    versiones = HistorialArt.objects.filter(Artefacto=artefacto).order_by('Version')
     resp = HttpResponse(mimetype='application/pdf')
     report = ReporteHistoriales(queryset=versiones)
     report.generate_by(PDFGenerator, filename=resp)
