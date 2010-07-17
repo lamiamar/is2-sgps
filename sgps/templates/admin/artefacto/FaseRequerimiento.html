@@ -43,5 +43,6 @@
             <input type="button" value="Artefactos Eliminados" onClick = "location.href='/proyecto/{{proyecto.id}}/arEli/fase/{{Fase}}/' "/>
             {% endif %}
     {% endif %}
+    <input type="button" value="Crear Reporte" onClick = "location.href='/reporte/proyectos/{{proyecto.id}}/fases/{{Fase}}/' "/>
     <input type="button" value="Atras" onClick = "location.href='/proyectos/{{proyecto.id}}/' "/>
 {% endblock %}

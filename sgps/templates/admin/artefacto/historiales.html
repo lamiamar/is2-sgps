@@ -19,7 +19,7 @@
         <p>Este artefacto todav&iacute;a no ha sido modificado</p>
     {% endif %}
 
-    
+    <input type="button" value="Crear Reporte" onClick = "location.href='/reporte/artefacto/{{artefacto.id}}/historial/' "/>
 
 {% ifequal Fase 'E' %}
 	<input type="button" value="Atras" onClick = "location.href='/proyecto/{{proyecto.id}}/requerimientos/' "/>
